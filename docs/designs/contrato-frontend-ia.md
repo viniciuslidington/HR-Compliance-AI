@@ -6,8 +6,9 @@ Este documento diz o que o front espera. Hoje tudo isso é entregue pela `MockAp
 ## Regra de ouro
 
 A UI só fala com a `Api` (`web/src/api/api.ts`), e só por dois hooks de `web/src/api/contexto.tsx`:
-`useConsulta(api => ...)` para ler e `useAcao()` para mutar. Nenhuma tela importa `MockApi`, `domain/` ou
-`localStorage`. Trocar o mock pelo backend real é implementar `HttpApi` e mudar uma linha no `ApiProvider`.
+`useConsulta(api => ...)` para ler e `useAcao()` para mutar. Nenhuma tela importa `MockApi`, o motor
+(`domain/motor`, `domain/validacao`, `domain/leitor_mock`), `store/` ou `localStorage`. De `domain/` as telas importam
+apenas tipos (`domain/tipos`) e formatadores puros de data (`domain/datas`). Trocar o mock pelo backend real é implementar `HttpApi` e mudar uma linha no `ApiProvider`.
 Hoje a `Api` é síncrona (`listar_admissoes(): AdmissaoResumo[]`) e `useConsulta` também. A `HttpApi` real vai exigir que
 os retornos da `Api` virem `Promise<...>` e que `useConsulta`/`useAcao` sejam adaptados (por exemplo, um cache alimentado
 por buscas assíncronas, com estados de carregando e erro). As telas não mudam, porque só usam os hooks.
@@ -42,8 +43,11 @@ comprovante com menos de 90 dias; após recusa o documento volta a `pendente` co
   depois `data_inicio`.
 - `AdmissaoDetalhe`: `{ admissao, modelo_nome, documentos: { documento, tipo | null, envios[] }[], mensagens[] (em ordem),
   lembretes[], escalacoes[] }`. `null` se o id não existe.
-- `EscalacaoView`: `{ escalacao, admissao, documento | null, tipo | null, acao_sugerida, acoes_permitidas[] }`.
-  Sem documento (ex.: prazo estourado), só `falar_com_colaborador`.
+- `EscalacaoView`: `{ escalacao, admissao, documento | null, tipo | null, acao_sugerida, acoes_permitidas[],
+  ultimas_mensagens[], ultimo_envio_url | null }`. Sem documento (ex.: prazo estourado), só `falar_com_colaborador`.
+  `ultimas_mensagens` são as 3 últimas mensagens da admissão (em ordem); `ultimo_envio_url` é o `arquivo_url` do
+  último envio do documento da escalação (passe por `resolver_midia`), `null` sem documento ou sem envio. Assim a
+  tela de escalações não precisa de um `obter_admissao` por cartão.
 - `ModeloComDocumentos`: `{ modelo, tipos[] }`. Catálogo e modelos são só leitura no MVP.
 - `Admissao`, `DocumentoAdmissao`, `EnvioDocumento`, `Mensagem`, `Lembrete`, `Escalacao`, `TipoDocumento`:
   exatamente como em `domain/tipos.ts`.
@@ -63,14 +67,18 @@ comprovante com menos de 90 dias; após recusa o documento volta a `pendente` co
 | `enviar_arquivo(admissao_id, arquivo)` | `File` (foto/PDF) | `Promise<void>` (o agente lê, valida e responde) |
 | `resolver_midia(url)` | `midia_url` | URL que um `<img>` entende (no real: URL assinada ou a própria) |
 | `agora()` | - | `Date` do sistema |
+| `alvo_preset(preset, admissao_id)` | preset | `Date \| null`: para onde o preset levaria o relógio, sem mexer nele; `null` se a admissão não existe ou o alvo já passou (a barra Demo desabilita o botão com "Já passou"). Só no mock |
 | `avancar_tempo(preset, admissao_id)` | preset | só no mock (barra Demo); a `HttpApi` pode não implementar |
-| `resetar()` | - | só no mock |
+| `resetar()` | - | só no mock; grava o seed com `epoca` = anterior + 1 |
+| `epoca()` | - | `number`: 0 no seed, sobe a cada `resetar`. As telas guardam a última vista e, quando muda (reset em qualquer janela), descartam a escolha de contato/admissão. A `HttpApi` pode devolver sempre 0 |
 | `assinar(cb)` | callback | função de cancelar; deve disparar quando QUALQUER janela mudar o estado (no real: polling, SSE ou WebSocket) |
 
 Efeitos esperados de cada mutação (o backend faz, o front só reflete): registrar mensagem de entrada, ler e validar o
 arquivo, aprovar ou recusar com motivo + o que fazer, escalar na 3ª falha, concluir quando faltar zero
 (cadastrar no sistema de destino e preencher `id_externo`), e rodar a cobrança (lembretes `leve` após 24 h sem
 resposta, `prazo` na metade do prazo, `firme` a 2 dias do início, escalação `prazo_estourado` depois do início).
+A cobrança manda no máximo UM lembrete por admissão a cada execução: o de nível mais alto devido (firme > prazo > leve);
+os níveis pulados contam como enviados (um salto grande de relógio gera só o firme, e nada depois o duplica).
 
 ## Campos só do front, a alinhar com o worker
 

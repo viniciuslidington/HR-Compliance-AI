@@ -31,6 +31,15 @@ Minhas (podem ser revistas):
 - Cor do status **Escalada**: `--orange-tint` de fundo + `--orange-deep` no texto (sem token novo). Concluída: `--success-tint` + ponto `--success`, texto `--ink`.
 - `mensagem` ganha `autor?: 'agente' | 'rh'` (só no front) para separar as mensagens do RH das do agente; `Motivo` ganha `o_que_fazer`. Os dois ficam anotados para alinhar com o worker.
 
+
+## Re-escopo (07/11, depois da Task 4)
+
+O usuário definiu: **a parte de IA será desenvolvida em outra frente; nós atuamos só no frontend e na UX.** Consequências:
+- `src/domain/` (motor, validação, leitor simulado) é o **dublê da IA** atrás da `Api`. Fica como está; nada de investir além do que a demo precisa.
+- Tasks 5 e 6 viram uma tarefa enxuta (ações de escalação + cobrança simples), com menos testes.
+- Task 7 também entrega `docs/designs/contrato-frontend-ia.md`: o contrato da `Api` e dos DTOs para o time de IA implementar o lado real.
+- Tasks 8–10 (UI e UX) são o foco.
+
 ## Global Constraints
 
 - Toda cor, fonte, espaço e raio vem de `design-system/tokens.css`; nunca editar `tokens.css` à mão (mudanças passam por `tokens.json` + `node design-system/build-tokens.mjs`).
@@ -240,5 +249,11 @@ Recomendo **subagent-driven** (um subagente por tarefa + revisor entre elas): s�
 
 1. `cd web && npm test` (tudo verde), `npm run lint` e `npm run build` (sem aviso de hidratação).
 2. `npm run dev` (configurar `.claude/launch.json` com porta 3000); abrir `http://localhost:3000/rh` e `http://localhost:3000/whatsapp` em duas janelas do navegador embutido; "Reiniciar dados" na BarraDemo.
-3. Percorrer o roteiro: cadastrar estagiária no "Estágio" + dados bancários (Detalhe mostra 5 pendentes; o celular recebe as boas-vindas) → RG borrado (agente explica e pede de novo; o 2º é aprovado e o checklist muda na outra janela) → comprovante antigo (recusa "é de março…") → +24 h, metade do prazo, 2 dias antes (três níveis de lembrete no celular e alerta de prazo no início do painel) → enviar o resto (status `concluida`, verde, com `id_externo`) → na escalação do Bruno, "Aprovar manualmente" (muda nas duas janelas).
+3. Percorrer o roteiro (mesma ordem de "Roteiro da demo" em `docs/designs/admissao-ui.md`; coberto por `web/src/api/demo.test.ts`):
+   1. Painel: aviso de escalação e "Prazo em risco: Bruno" → Escalações → Bruno (comprovante recusado 3 vezes) → "Aprovar manualmente" (a pill muda nas duas janelas).
+   2. Nova admissão: estagiária, Estágio + Dados bancários, início em ~10 dias (Detalhe mostra 5 pendentes; o celular recebe as boas-vindas e segue a admissão nova).
+   3. Celular: `rg-borrado.jpg` (recusa e explica) → `rg-frente.jpg` (aprovado; o checklist muda no `/rh`).
+   4. `comprovante.jpg` → recusa "é de março…".
+   5. BarraDemo: +24 h, Metade do prazo, 2 dias antes → três níveis de lembrete no celular (leve, prazo, firme) e alerta de prazo no painel; Ana e Diego sem escalação.
+   6. Enviar o resto (`cpf.jpg`, `comprovante.jpg`, `matricula.jpg`, `banco.jpg`) → `concluida`, verde, com `id_externo`; o celular continua na estagiária e mostra a mensagem de conclusão.
 4. Console sem erros; tamanho do `localStorage` após ~10 uploads abaixo de 5 MB; checar largura de celular (375 px) no `/rh`.
