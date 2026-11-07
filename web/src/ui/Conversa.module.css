@@ -76,3 +76,17 @@
     animation: none;
   }
 }
+
+/* Telefone da colaboradora: as mensagens dela (entrada) ficam à direita, as do agente/RH à esquerda. */
+.telefone.do_colaborador .msg[data-direcao="entrada"] {
+  align-self: flex-end;
+  background: var(--surface-sand);
+  border-bottom-left-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-sm);
+}
+.telefone.do_colaborador .msg[data-direcao="saida"] {
+  align-self: flex-start;
+  background: var(--surface-raised);
+  border-bottom-right-radius: var(--radius-xl);
+  border-bottom-left-radius: var(--radius-sm);
+}

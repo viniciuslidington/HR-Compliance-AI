@@ -1,0 +1,34 @@
+.cena {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-4);
+  background: var(--surface);
+  color: var(--ink);
+}
+.topo {
+  text-align: center;
+}
+.titulo,
+.dica {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.titulo {
+  font-weight: 500;
+}
+.dica {
+  color: var(--ink-subtle);
+}
+@media (max-width: 480px) {
+  .cena {
+    height: 100dvh;
+    padding: 0;
+    gap: 0;
+  }
+  .topo {
+    display: none;
+  }
+}

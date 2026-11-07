@@ -1,0 +1,166 @@
+"use client";
+
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
+import { useAcao, useConsulta } from "../api/contexto";
+import { Conversa } from "../ui/Conversa";
+import { Anexar } from "./Anexar";
+import { Digitando } from "./Digitando";
+import { SeletorContato } from "./SeletorContato";
+import estilos from "./Telefone.module.css";
+
+/** Tempo que a resposta do agente fica escondida atrás do "digitando…" (só na UI). */
+const ATRASO_DIGITANDO_MS = 1200;
+
+export interface TelefoneProps {
+  admissao_inicial?: string;
+  ao_trocar_contato?: (id: string) => void;
+}
+
+interface Retencao {
+  admissao_id: string;
+  desde: string;
+}
+
+export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps) {
+  const executar = useAcao();
+  const admissoes = useConsulta((api) => api.listar_admissoes());
+  const [escolhida, setEscolhida] = useState<string | null>(null);
+  const [texto, setTexto] = useState("");
+  const [retencao, setRetencao] = useState<Retencao | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const existe = (id: string | null | undefined): id is string =>
+    !!id && !!admissoes?.some((r) => r.admissao.id === id);
+  const recentes = [...(admissoes ?? [])].sort((a, b) => b.admissao.criada_em.localeCompare(a.admissao.criada_em));
+  const id = existe(escolhida)
+    ? escolhida
+    : existe(admissao_inicial)
+      ? admissao_inicial
+      : (recentes.find((r) => r.admissao.status === "em_coleta") ?? recentes[0])?.admissao.id ?? null;
+
+  const detalhe = useConsulta((api) => (id ? api.obter_admissao(id) : null), [id]);
+
+  const area = useRef<HTMLDivElement>(null);
+  const no_fim = useRef(true);
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const retendo = retencao !== null && retencao.admissao_id === id ? retencao : null;
+  const mensagens = (detalhe?.mensagens ?? []).filter(
+    (m) => !(retendo && m.direcao === "saida" && m.criada_em >= retendo.desde),
+  );
+
+  // Gruda no fim quando chega mensagem nova, se a pessoa já estava no fim.
+  useLayoutEffect(() => {
+    const el = area.current;
+    if (el && no_fim.current) el.scrollTop = el.scrollHeight;
+  }, [id, mensagens.length, retendo]);
+
+  function ao_rolar() {
+    const el = area.current;
+    if (el) no_fim.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
+  }
+
+  function trocar(novo: string) {
+    if (timer.current) clearTimeout(timer.current);
+    setRetencao(null);
+    no_fim.current = true;
+    setEscolhida(novo);
+    ao_trocar_contato?.(novo);
+  }
+
+  function segurar_resposta(admissao_id: string) {
+    if (timer.current) clearTimeout(timer.current);
+    setRetencao({ admissao_id, desde: executar((api) => api.agora()).toISOString() });
+  }
+
+  function soltar_resposta() {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setRetencao(null), ATRASO_DIGITANDO_MS);
+  }
+
+  function enviar_texto(e: FormEvent) {
+    e.preventDefault();
+    const limpo = texto.trim();
+    if (!id || !limpo) return;
+    segurar_resposta(id);
+    executar((api) => api.enviar_texto(id, limpo));
+    soltar_resposta();
+    setTexto("");
+    no_fim.current = true;
+  }
+
+  async function enviar_arquivo(arquivo: File) {
+    if (!id) return;
+    segurar_resposta(id);
+    no_fim.current = true;
+    try {
+      await executar((api) => api.enviar_arquivo(id, arquivo));
+    } catch (erro) {
+      if (timer.current) clearTimeout(timer.current);
+      setRetencao(null);
+      throw erro;
+    }
+    soltar_resposta();
+  }
+
+  return (
+    <div className={estilos.raiz}>
+      {admissoes && admissoes.length > 0 && id && (
+        <SeletorContato admissoes={admissoes} valor={id} ao_trocar={trocar} />
+      )}
+      <section className={estilos.moldura} aria-label="Celular da colaboradora">
+        <header className={estilos.cabecalho}>
+          <span className={`text-label ${estilos.avatar}`} aria-hidden="true">
+            A
+          </span>
+          <div>
+            <h2 className={`text-label ${estilos.nome}`}>Agente de Admissão</h2>
+            <p className={`text-caption ${estilos.sub}`}>RH · responde na hora</p>
+          </div>
+        </header>
+
+        {admissoes && admissoes.length === 0 ? (
+          <p className={`text-body-sm ${estilos.vazio}`}>Nenhuma admissão. Crie uma no painel do RH.</p>
+        ) : (
+          <div ref={area} className={estilos.area} onScroll={ao_rolar}>
+            {detalhe && (
+              <Conversa
+                key={id}
+                variante="telefone"
+                proprio="entrada"
+                mensagens={mensagens}
+                resolver_midia={(u) => executar((api) => api.resolver_midia(u))}
+              />
+            )}
+            {retendo && <Digitando />}
+          </div>
+        )}
+
+        <form className={estilos.barra} onSubmit={enviar_texto}>
+          <Anexar key={id ?? "nenhuma"} ao_enviar={enviar_arquivo}>
+            <input
+              className={`text-body-sm ${estilos.campo}`}
+              aria-label="Mensagem"
+              placeholder="Mensagem"
+              autoComplete="off"
+              value={texto}
+              disabled={!id}
+              onChange={(e) => setTexto(e.target.value)}
+            />
+            <button type="submit" className={estilos.enviar} aria-label="Enviar" disabled={!texto.trim()}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+            </button>
+          </Anexar>
+        </form>
+      </section>
+    </div>
+  );
+}

@@ -1,0 +1,132 @@
+.raiz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 390px;
+  min-height: 0;
+}
+.moldura {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: min(780px, calc(100dvh - 180px));
+  min-height: 480px;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-2xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-window);
+}
+.cabecalho {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-sand);
+}
+.avatar {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--ink);
+}
+.nome,
+.sub {
+  margin: 0;
+}
+.sub {
+  color: var(--ink-subtle);
+}
+.area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.vazio {
+  flex: 1;
+  margin: 0;
+  padding: var(--space-6);
+  color: var(--ink-muted);
+}
+.barra {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--line);
+  background: var(--surface-sand);
+}
+.campo {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 300;
+}
+.campo::placeholder {
+  color: var(--ink-faint);
+}
+.campo:focus-visible,
+.enviar:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.enviar {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: var(--surface);
+  cursor: pointer;
+}
+.enviar:disabled {
+  background: var(--line-strong);
+  color: var(--ink-subtle);
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .raiz {
+    flex: 1;
+    max-width: none;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3) 0;
+  }
+  .moldura {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0 calc(-1 * var(--space-3));
+    width: calc(100% + 2 * var(--space-3));
+    border-top: 1px solid var(--line-strong);
+  }
+}
