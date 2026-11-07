@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { estado_vazio, type Estado } from "../estado";
 import { documentos_do_modelo } from "./admissao";
+import { alerta_prazo } from "./cobranca";
+import { acao_sugerida } from "./escalacoes";
 import { aplicar } from "./index";
 import type { Evento, NovaAdmissaoInput } from "./eventos";
 
@@ -259,14 +261,117 @@ describe("texto_recebido", () => {
 });
 
 describe("outros eventos", () => {
-  it("tempo_avancado, escalacao_resolvida e reset devolvem o estado sem mudança", () => {
+  it("reset devolve o estado sem mudança (o store trata)", () => {
     const { estado } = criar();
-    for (const ev of [
-      { tipo: "tempo_avancado", ate: "2026-11-08T10:00:00.000Z" },
-      { tipo: "escalacao_resolvida", escalacao_id: "x", acao: "aprovar_manualmente" },
-      { tipo: "reset" },
-    ] as Evento[]) {
-      expect(aplicar(estado, ev, AGORA)).toEqual(estado);
-    }
+    expect(aplicar(estado, { tipo: "reset" }, AGORA)).toEqual(estado);
+  });
+});
+
+const resolver = (
+  e: Estado,
+  acao: "aprovar_manualmente" | "pedir_de_novo" | "falar_com_colaborador",
+  texto?: string,
+) => aplicar(e, { tipo: "escalacao_resolvida", escalacao_id: e.escalacoes[0].id, acao, texto }, AGORA);
+
+function escalado(): { estado: Estado; id: string } {
+  const { estado, id } = criar();
+  let e = estado;
+  for (let i = 0; i < 3; i++) e = enviar(e, id, "rg-borrado.jpg");
+  return { estado: e, id };
+}
+
+describe("escalacao_resolvida", () => {
+  it("acao_sugerida por motivo", () => {
+    const base = { id: "x", admissao_id: "a", documento_admissao_id: null, status: "aberta", resolucao: null, criada_em: "" } as const;
+    expect(acao_sugerida({ ...base, motivo: "tres_falhas" })).toBe("Conferir a imagem e aprovar manualmente ou pedir de novo");
+    expect(acao_sugerida({ ...base, motivo: "prazo_estourado" })).toBe("Falar com o colaborador ou adiar o início");
+  });
+
+  it("aprovar manualmente aprova o documento, resolve e volta a em_coleta", () => {
+    const { estado } = escalado();
+    const e = resolver(estado, "aprovar_manualmente");
+    expect(doc(e, "rg_cnh")).toMatchObject({ status: "aprovado", motivo_recusa: null });
+    expect(e.escalacoes[0]).toMatchObject({ status: "resolvida", resolucao: "aprovado manualmente" });
+    expect(e.admissoes[0].status).toBe("em_coleta");
+    expect(ultima_do_agente(e).texto).toContain("aprovado");
+    expect(estado.escalacoes[0].status).toBe("aberta"); // pura
+  });
+
+  it("aprovar o último pendente conclui a admissão", () => {
+    const { estado, id } = escalado();
+    let e = estado;
+    for (const a of ["cpf.jpg", "comprovante-ok.jpg", "declaracao.jpg"]) e = enviar(e, id, a);
+    expect(e.admissoes[0].status).toBe("escalada");
+    e = resolver(e, "aprovar_manualmente");
+    expect(e.admissoes[0].status).toBe("concluida");
+    expect(e.admissoes[0].id_externo).toMatch(/^COL-\d{6}$/);
+    expect(e.escalacoes[0].resolucao).toBe("aprovado manualmente");
+  });
+
+  it("pedir de novo zera tentativas, volta a pendente e manda mensagem com a instrução", () => {
+    const { estado } = escalado();
+    const e = resolver(estado, "pedir_de_novo");
+    expect(doc(e, "rg_cnh")).toMatchObject({ status: "pendente", tentativas: 0 });
+    expect(e.escalacoes[0]).toMatchObject({ status: "resolvida", resolucao: "pediu reenvio" });
+    expect(e.admissoes[0].status).toBe("em_coleta");
+    expect(ultima_do_agente(e).texto).toContain("RG/CNH de novo");
+    expect(ultima_do_agente(e).texto).toContain("Mande uma foto");
+  });
+
+  it("falar com colaborador grava mensagem com autor rh", () => {
+    const { estado } = escalado();
+    const e = resolver(estado, "falar_com_colaborador", "Oi Ana, vou te ligar.");
+    const m = e.mensagens[e.mensagens.length - 1];
+    expect(m).toMatchObject({ direcao: "saida", autor: "rh", texto: "Oi Ana, vou te ligar." });
+    expect(e.escalacoes[0]).toMatchObject({ status: "resolvida", resolucao: "RH falou com o colaborador" });
+    expect(e.admissoes[0].status).toBe("em_coleta");
+  });
+});
+
+const ate = (h: number) => new Date(AGORA.getTime() + h * 3_600_000);
+const avancar = (e: Estado, d: Date) => aplicar(e, { tipo: "tempo_avancado", ate: d.toISOString() }, AGORA);
+const nivel = (e: Estado) => e.lembretes.map((l) => l.nivel);
+
+describe("tempo_avancado (cobrança)", () => {
+  it("+25 h sem resposta gera um leve com o que falta; repetir não duplica", () => {
+    const { estado } = criar();
+    const d = ate(25);
+    const e = avancar(estado, d);
+    expect(nivel(e)).toEqual(["leve"]);
+    expect(e.lembretes[0]).toMatchObject({ enviado_em: d.toISOString(), agendado_para: d.toISOString() });
+    expect(ultima_do_agente(e).texto).toContain("Faltam 4");
+    expect(avancar(e, d)).toEqual(e);
+    expect(nivel(avancar(e, ate(26)))).toEqual(["leve"]);
+  });
+
+  it("2 dias antes do início gera firme e liga o alerta de prazo", () => {
+    const { estado, id } = criar();
+    expect(alerta_prazo(id, estado)).toBe(false);
+    const e = avancar(estado, new Date(2026, 10, 18, 9, 0, 0));
+    expect(nivel(e)).toContain("firme");
+    expect(nivel(e)).toContain("prazo");
+    expect(alerta_prazo(id, e)).toBe(true);
+    expect(e.escalacoes).toHaveLength(0);
+  });
+
+  it("passar de data_inicio abre prazo_estourado, uma só vez", () => {
+    const { estado } = criar();
+    let e = avancar(estado, new Date(2026, 10, 21, 9, 0, 0));
+    expect(e.escalacoes).toHaveLength(1);
+    expect(e.escalacoes[0]).toMatchObject({ motivo: "prazo_estourado", status: "aberta" });
+    expect(e.admissoes[0].status).toBe("escalada");
+    e = avancar(e, new Date(2026, 10, 22, 9, 0, 0));
+    expect(e.escalacoes).toHaveLength(1);
+  });
+
+  it("admissão concluída não recebe lembrete nem escalação", () => {
+    const { estado, id } = criar();
+    let e = estado;
+    for (const a of ["rg-ok.jpg", "cpf.jpg", "comprovante-ok.jpg", "declaracao.jpg"]) e = enviar(e, id, a);
+    const antes = e;
+    e = avancar(e, new Date(2026, 10, 25, 9, 0, 0));
+    expect(e.lembretes).toHaveLength(0);
+    expect(e.escalacoes).toHaveLength(0);
+    expect(e).toEqual(antes);
   });
 });

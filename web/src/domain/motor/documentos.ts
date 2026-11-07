@@ -1,5 +1,4 @@
 import { identificar_tipo, ler_documento_mock } from "../leitor_mock";
-import { cadastrar_colaborador } from "../destino_mock";
 import type { Estado } from "../estado";
 import { novo_id } from "../estado";
 import { validar_envio } from "../validacao";
@@ -7,6 +6,7 @@ import type { DocumentoAdmissao, MotivoEscalacao } from "../tipos";
 import {
   abrir_escalacao,
   achar_admissao,
+  concluir,
   copiar,
   documentos_da,
   mensagem_agente,
@@ -117,19 +117,4 @@ export function receber_arquivo(
   }
   e.rev += 1;
   return e;
-}
-
-function concluir(e: Estado, admissao_id: string, agora: Date): void {
-  const admissao = achar_admissao(e, admissao_id);
-  const { id_externo } = cadastrar_colaborador(admissao, documentos_da(e, admissao_id));
-  admissao.id_externo = id_externo;
-  admissao.concluida_em = agora.toISOString();
-  admissao.status = "concluida";
-  for (const esc of e.escalacoes) {
-    if (esc.admissao_id === admissao_id && esc.status === "aberta") {
-      esc.status = "resolvida";
-      esc.resolucao = "admissão concluída";
-    }
-  }
-  mensagem_agente(e, admissao_id, conversa.conclusao(admissao.nome, id_externo, admissao.data_inicio), agora);
 }

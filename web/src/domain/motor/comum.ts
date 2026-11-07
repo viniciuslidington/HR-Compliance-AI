@@ -1,8 +1,10 @@
 // Helpers compartilhados pelos handlers do motor. Operam sobre uma cópia do estado (mutam a cópia).
 import { CATALOGO } from "../catalogo";
+import { cadastrar_colaborador } from "../destino_mock";
 import type { Estado } from "../estado";
 import { novo_id } from "../estado";
 import type { Admissao, DocumentoAdmissao, Escalacao, MotivoEscalacao, TipoDocumento } from "../tipos";
+import * as conversa from "./conversa";
 import { rotulo_curto } from "./conversa";
 
 export function copiar(estado: Estado): Estado {
@@ -96,4 +98,20 @@ export function abrir_escalacao(
   e.escalacoes.push(esc);
   if (admissao.status !== "concluida") admissao.status = "escalada";
   return esc;
+}
+
+/** Conclui a admissão: cadastra no destino, resolve escalações abertas e avisa a pessoa. */
+export function concluir(e: Estado, admissao_id: string, agora: Date): void {
+  const admissao = achar_admissao(e, admissao_id);
+  const { id_externo } = cadastrar_colaborador(admissao, documentos_da(e, admissao_id));
+  admissao.id_externo = id_externo;
+  admissao.concluida_em = agora.toISOString();
+  admissao.status = "concluida";
+  for (const esc of e.escalacoes) {
+    if (esc.admissao_id === admissao_id && esc.status === "aberta") {
+      esc.status = "resolvida";
+      esc.resolucao = "admissão concluída";
+    }
+  }
+  mensagem_agente(e, admissao_id, conversa.conclusao(admissao.nome, id_externo, admissao.data_inicio), agora);
 }

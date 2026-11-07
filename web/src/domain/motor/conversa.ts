@@ -90,3 +90,29 @@ export function status_pendentes(rotulos: string[]): string {
   if (rotulos.length === 0) return nada_pendente();
   return `${faltam(rotulos)} É só mandar a foto por aqui.`;
 }
+
+export function aprovado_pelo_rh(
+  tipo_documento_id: string | null,
+  personalizado: string | null,
+  rotulos_faltantes: string[],
+): string {
+  const feminino = tipo_documento_id ? ROTULOS[tipo_documento_id]?.feminino : false;
+  const nome = maiuscula(rotulo_curto(tipo_documento_id, personalizado));
+  return `O RH conferiu e ${nome} foi ${feminino ? "aprovada" : "aprovado"}. ${faltam(rotulos_faltantes)}`;
+}
+
+export function pedir_de_novo(rotulo: string, instrucao: string | null): string {
+  return `Preciso que você mande ${rotulo} de novo, por favor.${instrucao ? ` ${instrucao}` : ""}`;
+}
+
+export function lembrete_leve(rotulos: string[]): string {
+  return `Oi! Passando para lembrar dos documentos. ${faltam(rotulos)} Quando puder, é só mandar a foto por aqui.`;
+}
+
+export function lembrete_prazo(data_inicio: string, rotulos: string[]): string {
+  return `Já estamos na metade do prazo. Preciso de tudo até ${dia_mes(data_inicio)}. ${faltam(rotulos)}`;
+}
+
+export function lembrete_firme(data_inicio: string, rotulos: string[]): string {
+  return `O prazo está acabando: seu início é em ${dia_mes(data_inicio)} e ainda ${rotulos.length === 1 ? "falta" : "faltam"} ${lista_natural(rotulos)}. Consegue mandar hoje?`;
+}
