@@ -139,13 +139,12 @@ const PALAVRAS_CHAVE: [string, string[]][] = [
   ["declaracao_matricula", ["matricula", "declaracao"]],
 ];
 
-/** Primeiro candidato cujas palavras-chave aparecem no nome (sem acento/caixa). */
+/** Primeiro candidato (na ordem de `candidatos`) cujas palavras-chave aparecem no nome. */
 export function identificar_tipo(nome_arquivo: string, candidatos: string[]): string | null {
   const arquivo = normalizar(nome_arquivo);
-  for (const [id, palavras] of PALAVRAS_CHAVE) {
-    if (palavras.some((p) => arquivo.includes(p))) {
-      return candidatos.includes(id) ? id : null;
-    }
+  for (const id of candidatos) {
+    const palavras = PALAVRAS_CHAVE.find(([t]) => t === id)?.[1] ?? [];
+    if (palavras.some((p) => arquivo.includes(p))) return id;
   }
   return null;
 }

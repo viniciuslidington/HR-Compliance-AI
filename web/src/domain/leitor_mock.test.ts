@@ -102,6 +102,10 @@ describe("identificar_tipo", () => {
   ])("%s -> %s", (nome, esperado) => {
     expect(identificar_tipo(nome, todos)).toBe(esperado);
   });
+  it("respeita os candidatos e a ordem deles", () => {
+    expect(identificar_tipo("rg-cpf.jpg", ["cpf"])).toBe("cpf");
+    expect(identificar_tipo("cpf-rg.jpg", ["rg_cnh", "cpf"])).toBe("rg_cnh");
+  });
   it("sem palavra-chave ou fora dos candidatos -> null", () => {
     expect(identificar_tipo("foto123.jpg", todos)).toBeNull();
     expect(identificar_tipo("cpf.pdf", ["rg_cnh"])).toBeNull();
