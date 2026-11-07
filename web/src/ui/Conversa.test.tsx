@@ -38,6 +38,24 @@ describe("Conversa", () => {
     expect(screen.getAllByText("RH")).toHaveLength(1);
   });
 
+  it("legenda visível do remetente: Agente, RH e Colaborador", () => {
+    render(
+      <Conversa
+        mensagens={[
+          m("a", { criada_em: "2026-11-07T10:00:00.000Z" }),
+          m("b", { criada_em: "2026-11-07T11:00:00.000Z", autor: "rh" }),
+          m("c", { criada_em: "2026-11-07T12:00:00.000Z", direcao: "entrada" }),
+        ]}
+        resolver_midia={(u) => u}
+      />,
+    );
+    const itens = screen.getAllByRole("listitem");
+    expect(itens[0]).toHaveTextContent("Agente");
+    expect(itens[1]).toHaveTextContent("RH");
+    expect(itens[1]).not.toHaveTextContent("Agente");
+    expect(itens[2]).toHaveTextContent("Colaborador");
+  });
+
   it("é uma região aria-live polite", () => {
     render(<Conversa mensagens={msgs} resolver_midia={(u) => u} />);
     expect(screen.getByRole("log")).toHaveAttribute("aria-live", "polite");

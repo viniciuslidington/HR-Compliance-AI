@@ -5,9 +5,10 @@ import estilos from "./ChecklistDocumentos.module.css";
 
 export interface ChecklistDocumentosProps {
   documentos: DocumentoDetalhe[];
-  resolver_midia: (url: string | null) => string | null;
   ao_selecionar?: (id: string) => void;
 }
+
+const ROTULO_STATUS = { pendente: "Pendente", recebido: "Recebido", aprovado: "Aprovado", recusado: "Recusado" } as const;
 
 function nome_do(d: DocumentoDetalhe): string {
   return d.tipo?.nome ?? d.documento.descricao_personalizada ?? "Documento";
@@ -27,7 +28,7 @@ export function ChecklistDocumentos({ documentos, ao_selecionar }: ChecklistDocu
           role="progressbar"
           aria-label="Documentos aprovados"
           aria-valuemin={0}
-          aria-valuemax={total}
+          aria-valuemax={Math.max(total, 1)}
           aria-valuenow={aprovados}
         >
           <div className={estilos.barra} style={{ width: `${pct}%` }} />
@@ -47,14 +48,14 @@ export function ChecklistDocumentos({ documentos, ao_selecionar }: ChecklistDocu
               </span>
               <StatusPill status={documento.status} />
               {documento.motivo_recusa && (
-                <p className={`text-body-sm ${estilos.motivo}`}>{documento.motivo_recusa}</p>
+                <span className={`text-body-sm ${estilos.motivo}`}>{documento.motivo_recusa}</span>
               )}
             </>
           );
           return (
             <li key={documento.id} className={estilos.item} style={{ "--i": Math.min(i, 8) } as CSSProperties}>
               {ao_selecionar ? (
-                <button type="button" className={estilos.linha} onClick={() => ao_selecionar(documento.id)}>
+                <button type="button" className={estilos.linha} aria-label={`${nome}, ${ROTULO_STATUS[documento.status]}`} onClick={() => ao_selecionar(documento.id)}>
                   {conteudo}
                 </button>
               ) : (

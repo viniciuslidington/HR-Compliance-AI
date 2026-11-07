@@ -47,7 +47,15 @@ export function Table<T>({ colunas, linhas, render, chave_linha, ao_clicar, vazi
               className={`${estilos.linha} ${ao_clicar ? estilos.clicavel : ""}`}
               style={{ "--i": Math.min(i, 8) } as CSSProperties}
               tabIndex={ao_clicar ? 0 : undefined}
-              onClick={ao_clicar ? () => ao_clicar(linha) : undefined}
+              onClick={
+                ao_clicar
+                  ? (e) => {
+                      const interno = (e.target as HTMLElement).closest("button,a");
+                      if (interno && interno !== e.currentTarget) return;
+                      ao_clicar(linha);
+                    }
+                  : undefined
+              }
               onKeyDown={ao_clicar ? (e) => ao_teclar(e, linha) : undefined}
             >
               {colunas.map((c) => (

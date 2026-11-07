@@ -20,10 +20,7 @@
   color: var(--ink-subtle);
 }
 .autor {
-  padding: 0 var(--space-2);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-pill);
-  color: var(--ink);
+  color: var(--ink-subtle);
 }
 .texto {
   margin: 0;

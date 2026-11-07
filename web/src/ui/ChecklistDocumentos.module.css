@@ -63,6 +63,7 @@ button.linha:focus-visible {
   margin-left: var(--space-2);
 }
 .motivo {
+  display: block;
   grid-column: 1 / -1;
   margin: 0;
   color: var(--orange-deep);

@@ -16,6 +16,13 @@ describe("ImagemEnvio", () => {
     expect(screen.getByRole("button", { name: /ampliar/i })).toBeInTheDocument();
   });
 
+  it("clicar na imagem ampliada não fecha o dialog", async () => {
+    render(<ImagemEnvio src="data:image/png;base64,AA==" alt="Foto do RG" />);
+    await userEvent.click(screen.getByRole("button", { name: /ampliar/i }));
+    await userEvent.click(document.querySelector("dialog img")!);
+    expect(document.querySelector("dialog")).toHaveAttribute("open");
+  });
+
   it("abre o dialog ao clicar", async () => {
     render(<ImagemEnvio src="data:image/png;base64,AA==" alt="Foto do RG" />);
     await userEvent.click(screen.getByRole("button", { name: /ampliar/i }));

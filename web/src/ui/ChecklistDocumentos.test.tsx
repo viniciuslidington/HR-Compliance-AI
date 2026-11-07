@@ -33,7 +33,7 @@ const docs = [
 
 describe("ChecklistDocumentos", () => {
   it("mostra nome, status, tentativas e motivo de recusa", () => {
-    render(<ChecklistDocumentos documentos={docs} resolver_midia={(u) => u} />);
+    render(<ChecklistDocumentos documentos={docs} />);
     expect(screen.getByText("RG")).toBeInTheDocument();
     expect(screen.getByText("Certidão de casamento")).toBeInTheDocument();
     expect(screen.getByText("Aprovado")).toBeInTheDocument();
@@ -42,15 +42,15 @@ describe("ChecklistDocumentos", () => {
   });
 
   it("mostra o progresso 'N de M aprovados'", () => {
-    render(<ChecklistDocumentos documentos={docs} resolver_midia={(u) => u} />);
+    render(<ChecklistDocumentos documentos={docs} />);
     expect(screen.getByText("1 de 3 aprovados")).toBeInTheDocument();
     expect(screen.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "1");
   });
 
   it("chama ao_selecionar ao clicar na linha", async () => {
     const f = vi.fn();
-    render(<ChecklistDocumentos documentos={docs} resolver_midia={(u) => u} ao_selecionar={f} />);
-    await userEvent.click(screen.getByRole("button", { name: /RG/ }));
+    render(<ChecklistDocumentos documentos={docs} ao_selecionar={f} />);
+    await userEvent.click(screen.getByRole("button", { name: "RG, Aprovado" }));
     expect(f).toHaveBeenCalledWith("rg");
   });
 });

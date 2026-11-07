@@ -10,7 +10,11 @@
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color 120ms ease, border-color 120ms ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .botao {
+    transition: background-color 120ms ease, border-color 120ms ease;
+  }
 }
 .sm {
   min-height: 40px;

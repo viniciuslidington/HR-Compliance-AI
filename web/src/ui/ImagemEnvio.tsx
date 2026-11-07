@@ -30,7 +30,12 @@ export function ImagemEnvio({ src, alt }: { src: string | null; alt: string }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={alt} />
       </button>
-      <dialog ref={dialogo} className={estilos.dialogo} aria-label={alt} onClick={(e) => e.target === e.currentTarget && fechar()}>
+      <dialog ref={dialogo} className={estilos.dialogo} aria-label={alt} onClick={(e) => {
+          // Só o backdrop (clique fora da caixa) fecha; o target é o próprio <dialog>.
+          const r = e.currentTarget.getBoundingClientRect();
+          const fora = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+          if (e.target === e.currentTarget && fora) fechar();
+        }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={src} alt={alt} className={estilos.grande} />
         <button type="button" className={`text-label ${estilos.fechar}`} onClick={fechar}>

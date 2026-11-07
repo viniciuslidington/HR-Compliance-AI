@@ -37,6 +37,17 @@ describe("Table", () => {
     expect(f).toHaveBeenCalledWith(linhas[1]);
   });
 
+  it("clique em botão interno não aciona ao_clicar da linha", async () => {
+    const f = vi.fn();
+    const g = vi.fn();
+    render(
+      <Table colunas={colunas} linhas={linhas} render={(l, c) => (c === "nome" ? <button onClick={g}>Abrir {l.nome}</button> : l.cargo)} chave_linha={(l) => l.id} ao_clicar={f} />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Abrir Ana" }));
+    expect(g).toHaveBeenCalled();
+    expect(f).not.toHaveBeenCalled();
+  });
+
   it("mostra o estado vazio", () => {
     render(<Table colunas={colunas} linhas={[]} render={render_cel} chave_linha={(l: L) => l.id} vazio={<p>Nenhuma admissão</p>} />);
     expect(screen.getByText("Nenhuma admissão")).toBeInTheDocument();

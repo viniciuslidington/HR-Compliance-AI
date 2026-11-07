@@ -21,7 +21,7 @@ export function Conversa({ mensagens, resolver_midia, variante = "painel" }: Con
     <div role="log" aria-live="polite" aria-label="Conversa">
       <ul className={`${estilos.lista} ${estilos[variante]}`}>
         {ordenadas.map((m, i) => {
-          const rh = m.autor === "rh";
+          const legenda = m.direcao === "entrada" ? "Colaborador" : m.autor === "rh" ? "RH" : "Agente";
           return (
             <li
               key={m.id}
@@ -31,7 +31,7 @@ export function Conversa({ mensagens, resolver_midia, variante = "painel" }: Con
               style={{ "--i": Math.min(i, 8) } as CSSProperties}
             >
               <div className={`text-caption ${estilos.meta}`}>
-                {rh && <span className={estilos.autor}>RH</span>}
+                <span className={estilos.autor}>{legenda}</span>
                 <time dateTime={m.criada_em}>{hora(m.criada_em)}</time>
               </div>
               {m.midia_url && (
