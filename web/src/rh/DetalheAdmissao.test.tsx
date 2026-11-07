@@ -13,7 +13,8 @@ describe("DetalheAdmissao", () => {
     const api = criar_api();
     render(<Com api={api}><DetalheAdmissao id={id_de(api, "Bruno Lima")} /></Com>);
     expect(screen.getByRole("heading", { name: "Bruno Lima" })).toBeInTheDocument();
-    expect(screen.getAllByText("Escalada").length).toBeGreaterThan(0);
+    const cabecalho = screen.getByRole("heading", { name: "Bruno Lima" }).closest("header")!;
+    expect(within(cabecalho).getByText("Escalada")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Resolver escalação" })).toHaveAttribute("href", "/rh/escalacoes");
 
     const comp = screen.getByRole("button", { name: /^Comprovante de residência/ });
@@ -21,6 +22,9 @@ describe("DetalheAdmissao", () => {
     expect(within(comp).getByText(/comprovante é de março/)).toBeInTheDocument();
     expect(within(comp).getByText("3ª tentativa")).toBeInTheDocument();
 
+    // Abre já no comprovante (escalação aberta), sem clicar.
+    expect(comp).toHaveAttribute("aria-current", "true");
+    expect(within(screen.getByRole("region", { name: "Envios" })).getAllByText("Recusado").length).toBe(3);
     await userEvent.click(comp);
     const envios = within(screen.getByRole("region", { name: "Envios" })).getAllByRole("listitem");
     expect(envios.length).toBe(3);

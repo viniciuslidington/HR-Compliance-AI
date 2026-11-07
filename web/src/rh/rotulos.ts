@@ -37,7 +37,7 @@ export const rotulo_campo = (chave: string): string => CAMPOS[chave] ?? humaniza
 export const rotulo_regra = (chave: string): string => REGRAS[chave] ?? humanizar(chave);
 
 export function data_hora(iso: string): string {
-  return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" });
 }
 
 export const MOTIVO_ESCALACAO: Record<string, string> = {

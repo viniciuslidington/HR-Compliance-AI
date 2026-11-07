@@ -90,8 +90,9 @@
 }
 .envio {
   display: grid;
-  grid-template-columns: 72px 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-4);
+  align-items: start;
   padding: var(--space-3) 0;
   border-top: 1px solid var(--line);
 }

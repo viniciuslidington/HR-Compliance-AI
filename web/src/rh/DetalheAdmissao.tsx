@@ -54,11 +54,18 @@ export function DetalheAdmissao({ id }: { id: string }) {
   }
 
   const { admissao, documentos, mensagens, lembretes, escalacoes } = detalhe;
-  const padrao = (documentos.find((d) => d.documento.status !== "aprovado") ?? documentos[0])?.documento.id ?? null;
+  const doc_escalado = escalacoes.find((e) => e.status === "aberta")?.documento_admissao_id;
+  const padrao =
+    (
+      documentos.find((d) => d.documento.id === doc_escalado) ??
+      documentos.find((d) => d.documento.motivo_recusa) ??
+      documentos.find((d) => d.documento.status !== "aprovado") ??
+      documentos[0]
+    )?.documento.id ?? null;
   const selecionado_id = escolhido && documentos.some((d) => d.documento.id === escolhido) ? escolhido : padrao;
   const sel = documentos.find((d) => d.documento.id === selecionado_id) ?? null;
   const aberta = escalacoes.find((e) => e.status === "aberta");
-  const enviados = lembretes.filter((l) => l.enviado_em).sort((a, b) => a.enviado_em!.localeCompare(b.enviado_em!));
+  const enviados = lembretes.filter((l) => l.enviado_em).sort((a, b) => b.enviado_em!.localeCompare(a.enviado_em!));
   const extraidos = sel?.documento.dados_extraidos ? Object.entries(sel.documento.dados_extraidos) : [];
   const envios = sel ? [...sel.envios].sort((a, b) => b.criado_em.localeCompare(a.criado_em)) : [];
   const nome_sel = sel ? (sel.tipo?.nome ?? sel.documento.descricao_personalizada ?? "Documento") : "";
