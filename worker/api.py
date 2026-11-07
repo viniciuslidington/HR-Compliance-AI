@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hmac
 import json
+import logging
 import os
 from datetime import date, datetime
 from pathlib import Path
@@ -32,6 +33,7 @@ from ia.llm import LLM, ErroLLM, FeatherlessLLM, FeatherlessTranscritor
 from ia.matriz import carregar_matriz, situacao_matriz
 from infra.anexos import BucketLocal, RepositorioAnexos
 
+log = logging.getLogger("worker.api")
 RAIZ = Path(__file__).resolve().parent
 CONTRATOS = RAIZ.parent / "contracts"
 MIMES_ACEITOS = {"image/png", "image/jpeg", "image/webp"}
@@ -82,6 +84,7 @@ def criar_app(
             "hoje": hoje().isoformat(),
             "modelo_texto": getattr(llm, "modelo", None),
             "modelo_visao": getattr(transcritor, "modelo", None),
+            "chave_featherless_configurada": bool(os.environ.get("FEATHERLESS_API_KEY")),
         }
 
     @app.get("/pessoas")
@@ -113,12 +116,15 @@ def criar_app(
             tenant=tenant, funcionario_id=pessoa.id, tipo_esperado=tipo, sha256=sha256,
             mime=arquivo.content_type, tamanho=len(conteudo), chave=chave, recebido_em=agora(),
         )
+        erro_tecnico = None
         try:
             resultado = processar_documento(
                 transcritor, llm, conteudo, arquivo.content_type,
                 funcionario=pessoa, exigencia=exigencia, hoje=hoje(), emissores_autonomos=autonomos,
             )
-        except ErroLLM:  # visão ou extração fora do ar: o anexo fica guardado e o caso vai para o DP
+        except ErroLLM as erro:  # visão ou extração fora do ar: o anexo fica guardado e o caso vai para o DP
+            erro_tecnico = str(erro)[:300]
+            log.warning("leitura indisponível no anexo %s: %s", anexo_id, erro_tecnico)
             resultado = ResultadoDocumento(
                 leitura=LeituraDocumento(hash_arquivo=sha256, transcricao=None, extracao=None, problemas_fidelidade=["leitura_indisponivel"]),
                 conferencia=None,
@@ -133,6 +139,7 @@ def criar_app(
             "validade_ate": conferencia.validade_ate.isoformat() if conferencia and conferencia.validade_ate else None,
             "motivos": [m.model_dump() for m in resultado.decisao.motivos],
             "problemas_fidelidade": resultado.leitura.problemas_fidelidade,
+            "erro_tecnico": erro_tecnico,
         }
 
     @app.get("/anexos/{anexo_id}")

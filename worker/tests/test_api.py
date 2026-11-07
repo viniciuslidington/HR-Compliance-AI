@@ -38,6 +38,21 @@ def test_saude_responde_sem_expor_a_chave(tmp_path):
     assert "FEATHERLESS_API_KEY" not in str(corpo)
 
 
+def test_saude_diz_se_a_chave_do_featherless_esta_configurada(tmp_path, monkeypatch):
+    monkeypatch.delenv("FEATHERLESS_API_KEY", raising=False)
+    assert _cliente(tmp_path).get("/saude").json()["chave_featherless_configurada"] is False
+    monkeypatch.setenv("FEATHERLESS_API_KEY", "sk-secreta")
+    corpo = _cliente(tmp_path).get("/saude").json()
+    assert corpo["chave_featherless_configurada"] is True
+    assert "sk-secreta" not in str(corpo)
+
+
+def test_falha_de_leitura_devolve_o_motivo_tecnico(tmp_path):
+    cliente = _cliente(tmp_path, transcritor=TranscritorQuebrado())
+    corpo = cliente.post("/pessoas/F-12/documentos", params={"tipo": "nr35"}, files={"arquivo": PNG}).json()
+    assert corpo["erro_tecnico"] == "visão fora do ar"
+
+
 def test_lista_as_pessoas_do_seed(tmp_path):
     ids = {p["id"] for p in _cliente(tmp_path).get("/pessoas").json()}
     assert {"F-12", "F-31", "F-40"} <= ids
