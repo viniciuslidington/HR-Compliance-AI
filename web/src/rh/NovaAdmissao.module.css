@@ -1,0 +1,120 @@
+.cabecalho {
+  margin-bottom: var(--space-8);
+}
+.titulo {
+  margin: var(--space-2) 0 0;
+}
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-16);
+  align-items: start;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  max-width: 640px;
+}
+.campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+}
+.campos > :first-child {
+  grid-column: 1 / -1;
+}
+.documentos {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.legenda {
+  padding: 0;
+  margin-bottom: var(--space-3);
+}
+.itens {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+}
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 48px;
+  padding: 0 var(--space-2) 0 var(--space-4);
+}
+.item + .item {
+  border-top: 1px solid var(--line);
+}
+.erro {
+  margin: var(--space-2) 0 0;
+  color: var(--orange-deep);
+}
+.adicionar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+.dica {
+  color: var(--ink-subtle);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.previa {
+  position: sticky;
+  top: var(--space-8);
+  padding: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+}
+.previa_titulo {
+  margin: 0 0 var(--space-4);
+}
+.previa_lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.previa_lista li {
+  display: flex;
+  flex-direction: column;
+}
+.esqueleto {
+  height: 360px;
+  margin-top: var(--space-8);
+  max-width: 640px;
+}
+@media (max-width: 1024px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+  .previa {
+    position: static;
+  }
+}
+@media (max-width: 768px) {
+  .campos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,42 @@
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  min-height: 64px;
+  padding: var(--space-3) var(--space-8);
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+}
+.rotulo {
+  color: var(--ink-subtle);
+}
+.campo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.legenda {
+  color: var(--ink-subtle);
+}
+.select {
+  min-height: 40px;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.relogio {
+  margin: 0 0 0 auto;
+  color: var(--ink-subtle);
+}
+@media (max-width: 768px) {
+  .barra {
+    padding: var(--space-4);
+  }
+  .relogio {
+    margin-left: 0;
+  }
+}

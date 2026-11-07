@@ -1,7 +1,9 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { ListaAdmissoes } from "../../rh/ListaAdmissoes";
+
 export default function RhPage() {
-  return (
-    <main style={{ background: "var(--surface)", minHeight: "100vh", padding: "var(--space-8)" }}>
-      <h1 className="text-display-h2">Painel do RH</h1>
-    </main>
-  );
+  const roteador = useRouter();
+  return <ListaAdmissoes ao_abrir={(id) => roteador.push(`/rh/admissoes/${id}`)} />;
 }

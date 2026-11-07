@@ -1,0 +1,4 @@
+.bloco {
+  background: var(--surface-sand);
+  border-radius: var(--radius-xl);
+}
