@@ -1,0 +1,207 @@
+/* Tako — gerado de tokens.json por build-tokens.mjs. Não edite à mão. */
+/* Fonte: https://tako.ai/pt/ — computed styles and CSS custom properties, captured 2026-11-07 */
+
+/* PP Eiko é comercial: sem licença, o stack cai para Instrument Serif (Google Fonts). */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Instrument+Serif&display=swap");
+
+/* Tema "light" (padrão) + tokens independentes de tema */
+:root {
+  --surface: #eeebe7;
+  --surface-sand: #e9e3db;
+  --surface-raised: #ffffff;
+  --surface-deep: #080808;
+  --ink: #0d0d0d;
+  --ink-muted: rgba(13,13,13,0.70);
+  --ink-subtle: rgba(13,13,13,0.55);
+  --ink-faint: rgba(13,13,13,0.30);
+  --zinc-400: #9f9fa9;
+  --zinc-500: #71717b;
+  --line: rgba(10,10,10,0.10);
+  --line-strong: rgba(10,10,10,0.20);
+  --orange: #ff4802;
+  --orange-bright: #ff5e00;
+  --orange-dark: #e13e00;
+  --orange-deep: #b33100;
+  --orange-text: #d33a00;
+  --orange-tint: rgba(255,98,0,0.10);
+  --whatsapp: #25d366;
+  --success: #34d399;
+  --success-tint: rgba(49,216,157,0.10);
+  --danger: #ff6467;
+
+  --font-display: "PP Eiko", "ppEiko", "Instrument Serif", "Times New Roman", serif;
+  --font-sans: "Plus Jakarta Sans", "plusJakarta", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --text-display-hero-font-size: 56px;
+  --text-display-hero-line-height: 58.8px;
+  --text-display-hero-font-weight: 500;
+  --text-display-hero-letter-spacing: -1.4px;
+  --text-display-h2-font-size: 36px;
+  --text-display-h2-line-height: 40px;
+  --text-display-h2-font-weight: 500;
+  --text-display-h2-letter-spacing: -0.9px;
+  --text-display-h2-sm-font-size: 30px;
+  --text-display-h2-sm-line-height: 36px;
+  --text-display-h2-sm-font-weight: 500;
+  --text-display-h2-sm-letter-spacing: -0.75px;
+  --text-display-h3-font-size: 16px;
+  --text-display-h3-line-height: 24px;
+  --text-display-h3-font-weight: 500;
+  --text-stat-font-size: 40px;
+  --text-stat-line-height: 48px;
+  --text-stat-font-weight: 300;
+  --text-stat-letter-spacing: -1px;
+  --text-lead-font-size: 18px;
+  --text-lead-line-height: 27px;
+  --text-lead-font-weight: 300;
+  --text-body-font-size: 16px;
+  --text-body-line-height: 26px;
+  --text-body-font-weight: 300;
+  --text-body-sm-font-size: 14px;
+  --text-body-sm-line-height: 22.75px;
+  --text-body-sm-font-weight: 300;
+  --text-label-font-size: 14px;
+  --text-label-line-height: 20px;
+  --text-label-font-weight: 500;
+  --text-nav-font-size: 12px;
+  --text-nav-line-height: 16px;
+  --text-nav-font-weight: 300;
+  --text-eyebrow-font-size: 12px;
+  --text-eyebrow-line-height: 16px;
+  --text-eyebrow-font-weight: 500;
+  --text-eyebrow-letter-spacing: 0.3px;
+  --text-eyebrow-text-transform: uppercase;
+  --text-caption-font-size: 10px;
+  --text-caption-line-height: 15px;
+  --text-caption-font-weight: 400;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --container: 1152px;
+  --measure: 576px;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+  --radius-pill: 9999px;
+
+  --shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.05);
+  --shadow-card: 0 18px 30px -10px rgba(0,0,0,0.70);
+  --shadow-window: 0 40px 70px -10px rgba(0,0,0,0.70);
+  --shadow-hero: 0 70px 120px -10px rgba(0,0,0,0.85);
+}
+
+/* Tema "dark": aplique em uma seção, não como modo escuro do sistema operacional. */
+[data-theme="dark"],
+.section-dark {
+  --surface: #0d0d0d;
+  --surface-sand: #141414;
+  --surface-raised: #18181b;
+  --surface-deep: #080808;
+  --ink: #eeebe7;
+  --ink-muted: rgba(238,235,231,0.70);
+  --ink-subtle: rgba(238,235,231,0.55);
+  --ink-faint: rgba(238,235,231,0.30);
+  --line: rgba(235,235,235,0.10);
+  --line-strong: rgba(240,235,230,0.20);
+}
+
+/* Estilos de texto */
+.text-display-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-display-hero-font-size);
+  line-height: var(--text-display-hero-line-height);
+  font-weight: var(--text-display-hero-font-weight);
+  letter-spacing: var(--text-display-hero-letter-spacing);
+}
+
+.text-display-h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-h2-font-size);
+  line-height: var(--text-display-h2-line-height);
+  font-weight: var(--text-display-h2-font-weight);
+  letter-spacing: var(--text-display-h2-letter-spacing);
+}
+
+.text-display-h2-sm {
+  font-family: var(--font-display);
+  font-size: var(--text-display-h2-sm-font-size);
+  line-height: var(--text-display-h2-sm-line-height);
+  font-weight: var(--text-display-h2-sm-font-weight);
+  letter-spacing: var(--text-display-h2-sm-letter-spacing);
+}
+
+.text-display-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-display-h3-font-size);
+  line-height: var(--text-display-h3-line-height);
+  font-weight: var(--text-display-h3-font-weight);
+}
+
+.text-stat {
+  font-family: var(--font-sans);
+  font-size: var(--text-stat-font-size);
+  line-height: var(--text-stat-line-height);
+  font-weight: var(--text-stat-font-weight);
+  letter-spacing: var(--text-stat-letter-spacing);
+}
+
+.text-lead {
+  font-family: var(--font-sans);
+  font-size: var(--text-lead-font-size);
+  line-height: var(--text-lead-line-height);
+  font-weight: var(--text-lead-font-weight);
+}
+
+.text-body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-font-size);
+  line-height: var(--text-body-line-height);
+  font-weight: var(--text-body-font-weight);
+}
+
+.text-body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
+  font-weight: var(--text-body-sm-font-weight);
+}
+
+.text-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-label-font-size);
+  line-height: var(--text-label-line-height);
+  font-weight: var(--text-label-font-weight);
+}
+
+.text-nav {
+  font-family: var(--font-sans);
+  font-size: var(--text-nav-font-size);
+  line-height: var(--text-nav-line-height);
+  font-weight: var(--text-nav-font-weight);
+}
+
+.text-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow-font-size);
+  line-height: var(--text-eyebrow-line-height);
+  font-weight: var(--text-eyebrow-font-weight);
+  letter-spacing: var(--text-eyebrow-letter-spacing);
+  text-transform: var(--text-eyebrow-text-transform);
+}
+
+.text-caption {
+  font-family: var(--font-sans);
+  font-size: var(--text-caption-font-size);
+  line-height: var(--text-caption-line-height);
+  font-weight: var(--text-caption-font-weight);
+}
