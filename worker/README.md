@@ -22,6 +22,31 @@ uv run python scripts/rodar_agentes.py   # roda as histórias da demo no Feather
 Validado em 24/11 (simulado) com `deepseek-ai/DeepSeek-V4.1-Flash-1017`: 9 chamadas, todas com chamada de
 ferramenta nativa, de 1,3 a 5,4 s cada.
 
+## API (`api.py`)
+
+```bash
+uv run uvicorn api:app_do_ambiente --factory --reload   # local, lê worker/.env
+```
+
+| Rota | O que faz | Token |
+|---|---|---|
+| `GET /saude` | Status, data em uso e modelos configurados | não |
+| `GET /pessoas` | Funcionários do seed (`contracts/seed/funcionarios.json`) | não |
+| `GET /pessoas/{id}/matriz` | Situação documental: válido, a vencer, vencido, faltando | não |
+| `POST /pessoas/{id}/documentos?tipo=nr35` | Upload (PNG, JPEG ou WebP, até 10 MB): bucket, leitura, conferência, decisão | sim |
+| `GET /anexos/{id}` | Metadados, extração e decisão do anexo | não |
+| `POST /anexos/{id}/aprovar` | Aprovação humana (`{"aprovador": "..."}`) | sim |
+
+Com `API_TOKEN` definido, as rotas de escrita exigem `Authorization: Bearer <API_TOKEN>`. Variáveis: `DADOS_DIR`
+(bucket e banco), `HOJE` (congela a data da demo), `EMISSORES_AUTONOMOS` (CNPJs aceitos sem aprovação).
+
+## Deploy no Render (hackathon)
+
+O `render.yaml` na raiz (validado contra o schema oficial) sobe o worker com disco persistente em `/var/data`.
+No painel: **New → Blueprint**, escolha o repositório, cole a `FEATHERLESS_API_KEY` quando pedir (o `API_TOKEN`
+é gerado pelo Render) e confirme o plano Starter, necessário para o disco. Só o que está em `/var/data`
+sobrevive a deploy e restart; o serviço fica com uma instância e cada deploy tem uma queda rápida.
+
 ## Módulos (`ia/`)
 
 | Módulo | O que faz | LLM? |

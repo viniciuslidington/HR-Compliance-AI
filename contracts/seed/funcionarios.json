@@ -1,0 +1,9 @@
+{
+  "tenant": "demo",
+  "empresa": "Manutenção Elétrica Exemplo Ltda (fictícia)",
+  "funcionarios": [
+    {"id": "F-12", "nome": "Carlos Alberto Souza", "cpf": "123.456.789-09", "cargo": "eletricista_manutencao"},
+    {"id": "F-31", "nome": "Pedro Henrique Alves", "cpf": "529.982.247-25", "cargo": "eletricista_manutencao"},
+    {"id": "F-40", "nome": "Ana Paula Ribeiro", "cpf": "111.444.777-35", "cargo": "auxiliar_administrativo"}
+  ]
+}

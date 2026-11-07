@@ -1,0 +1,30 @@
+# Blueprint do Render para o hackathon: worker com disco persistente (bucket local + SQLite).
+# No painel: New → Blueprint → este repositório. O Render pede FEATHERLESS_API_KEY (segredo) e gera API_TOKEN.
+services:
+  - type: web
+    name: hr-compliance-worker
+    runtime: python
+    rootDir: worker
+    plan: starter # disco persistente exige instância paga
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run uvicorn api:app_do_ambiente --factory --host 0.0.0.0 --port $PORT
+    healthCheckPath: /saude
+    disk:
+      name: dados
+      mountPath: /var/data # só o que fica aqui sobrevive a deploy e restart
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DADOS_DIR
+        value: /var/data
+      - key: FEATHERLESS_API_KEY
+        sync: false # o valor é colado no painel e não vai para o git
+      - key: FEATHERLESS_MODEL
+        value: deepseek-ai/DeepSeek-V4.1-Flash-1017
+      - key: FEATHERLESS_VISION_MODEL
+        value: Qwen/Qwen3-VL-32B-Instruct
+      - key: API_TOKEN
+        generateValue: true # exigido em Authorization: Bearer para enviar documento e aprovar
+      - key: HOJE
+        value: "2026-11-07" # data congelada da demo; remova para usar a data real
