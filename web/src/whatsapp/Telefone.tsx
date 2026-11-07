@@ -21,12 +21,19 @@ interface Retencao {
   desde: string;
 }
 
+interface EnvioPendente {
+  admissao_id: string;
+  nome: string;
+  url: string | null;
+}
+
 export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps) {
   const executar = useAcao();
   const admissoes = useConsulta((api) => api.listar_admissoes());
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const [texto, setTexto] = useState("");
   const [retencao, setRetencao] = useState<Retencao | null>(null);
+  const [pendente, setPendente] = useState<EnvioPendente | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const existe = (id: string | null | undefined): id is string =>
@@ -50,6 +57,7 @@ export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps)
     [],
   );
 
+  const enviando_aqui = pendente !== null && pendente.admissao_id === id ? pendente : null;
   const retendo = retencao !== null && retencao.admissao_id === id ? retencao : null;
   const mensagens = (detalhe?.mensagens ?? []).filter(
     (m) => !(retendo && m.direcao === "saida" && m.criada_em >= retendo.desde),
@@ -59,7 +67,7 @@ export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps)
   useLayoutEffect(() => {
     const el = area.current;
     if (el && no_fim.current) el.scrollTop = el.scrollHeight;
-  }, [id, mensagens.length, retendo]);
+  }, [id, mensagens.length, retendo, enviando_aqui]);
 
   function ao_rolar() {
     const el = area.current;
@@ -95,9 +103,11 @@ export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps)
     no_fim.current = true;
   }
 
-  async function enviar_arquivo(arquivo: File) {
+  async function enviar_arquivo(arquivo: File, url: string | null) {
     if (!id) return;
     segurar_resposta(id);
+    // Bolha otimista: a entrada real só existe depois de reduzir e salvar a imagem.
+    setPendente({ admissao_id: id, nome: arquivo.name, url });
     no_fim.current = true;
     try {
       await executar((api) => api.enviar_arquivo(id, arquivo));
@@ -105,6 +115,8 @@ export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps)
       if (timer.current) clearTimeout(timer.current);
       setRetencao(null);
       throw erro;
+    } finally {
+      setPendente(null);
     }
     soltar_resposta();
   }
@@ -138,7 +150,18 @@ export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps)
                 resolver_midia={(u) => executar((api) => api.resolver_midia(u))}
               />
             )}
-            {retendo && <Digitando />}
+            {enviando_aqui && (
+              <div className={estilos.propria}>
+                {enviando_aqui.url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className={estilos.miniatura} src={enviando_aqui.url} alt="Documento sendo enviado" />
+                ) : (
+                  <p className={`text-body-sm ${estilos.arquivo}`}>{enviando_aqui.nome}</p>
+                )}
+                <span className={`text-caption ${estilos.legenda}`}>Enviando…</span>
+              </div>
+            )}
+            {retendo && !enviando_aqui && <Digitando />}
           </div>
         )}
 

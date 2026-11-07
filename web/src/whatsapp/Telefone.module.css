@@ -130,3 +130,30 @@
     border-top: 1px solid var(--line-strong);
   }
 }
+
+/* Bolha otimista do envio em andamento (some quando a mensagem real chega) */
+.propria {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  max-width: 82%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-sm);
+  background: var(--surface-sand);
+}
+.miniatura {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+}
+.arquivo {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.legenda {
+  color: var(--ink-subtle);
+}

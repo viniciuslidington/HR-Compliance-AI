@@ -6,7 +6,7 @@ import estilos from "./Anexar.module.css";
 
 export interface AnexarProps {
   /** Enviado ao confirmar a prévia; rejeitar mostra o erro e mantém a prévia. */
-  ao_enviar: (arquivo: File) => Promise<void>;
+  ao_enviar: (arquivo: File, url_previa: string | null) => Promise<void>;
   /** Campo de texto e botão de enviar: ficam no lugar da prévia enquanto não há anexo. */
   children: ReactNode;
 }
@@ -32,7 +32,10 @@ export function Anexar({ ao_enviar, children }: AnexarProps) {
   const [erro, setErro] = useState(false);
   const url_atual = useRef<string | null>(null);
 
-  useEffect(() => () => revogar(url_atual.current), []);
+  useEffect(() => {
+    const ref = url_atual;
+    return () => revogar(ref.current);
+  }, []);
 
   function limpar() {
     revogar(url_atual.current);
@@ -57,7 +60,7 @@ export function Anexar({ ao_enviar, children }: AnexarProps) {
     setEnviando(true);
     setErro(false);
     try {
-      await ao_enviar(previa.arquivo);
+      await ao_enviar(previa.arquivo, previa.url);
       limpar();
     } catch {
       setErro(true);

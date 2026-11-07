@@ -60,8 +60,10 @@ describe("Telefone", () => {
     await u.selectOptions(await screen.findByLabelText("Conversando como"), ana);
     expect(ao_trocar_contato).toHaveBeenCalledWith(ana);
     expect(screen.getByLabelText("Conversando como")).toHaveValue(ana);
-    // a Ana já mandou o RG; o Diego, não
-    expect(await screen.findAllByText("Colaborador")).not.toHaveLength(0);
+    // a Ana já mandou o RG (seu arquivo aparece); o Diego, não
+    expect(await screen.findByText("rg-ok.jpg")).toBeInTheDocument();
+    await u.selectOptions(screen.getByLabelText("Conversando como"), id_de(api, "Diego Rocha"));
+    expect(screen.queryByText("rg-ok.jpg")).not.toBeInTheDocument();
   });
 
   it("texto vazio ou só com espaços não envia; texto válido vira bolha do colaborador", async () => {
@@ -105,6 +107,37 @@ describe("Telefone", () => {
     });
     expect(screen.queryByText("Agente digitando")).not.toBeInTheDocument();
     expect(await screen.findByText(/borrada/i)).toBeInTheDocument();
+  });
+
+  it("enquanto o envio do arquivo está pendente, mostra a bolha própria e ainda não o 'digitando…'", async () => {
+    const { api, u } = montar();
+    let concluir!: () => void;
+    vi.spyOn(api, "enviar_arquivo").mockImplementation(() => new Promise<void>((r) => (concluir = r)));
+    await screen.findByLabelText("Mensagem");
+    await u.upload(
+      screen.getByLabelText("Anexar documento", { selector: "input" }),
+      new File(["x"], "rg-ok.jpg", { type: "image/jpeg" }),
+    );
+    await u.click(screen.getByRole("button", { name: "Enviar" }));
+    expect(screen.getByAltText("Documento sendo enviado")).toBeInTheDocument();
+    expect(screen.queryByText("Agente digitando")).not.toBeInTheDocument();
+    await act(async () => concluir());
+    expect(screen.queryByAltText("Documento sendo enviado")).not.toBeInTheDocument();
+    expect(screen.getByText("Agente digitando")).toBeInTheDocument();
+  });
+
+  it("falha no envio: remove a bolha, mantém a prévia e mostra o erro", async () => {
+    const { api, u } = montar();
+    vi.spyOn(api, "enviar_arquivo").mockRejectedValue(new Error("x"));
+    await screen.findByLabelText("Mensagem");
+    await u.upload(
+      screen.getByLabelText("Anexar documento", { selector: "input" }),
+      new File(["x"], "rg-ok.jpg", { type: "image/jpeg" }),
+    );
+    await u.click(screen.getByRole("button", { name: "Enviar" }));
+    expect(await screen.findByText("Não consegui enviar. Tente de novo.")).toBeInTheDocument();
+    expect(screen.queryByAltText("Documento sendo enviado")).not.toBeInTheDocument();
+    expect(screen.getByText("rg-ok.jpg")).toBeInTheDocument();
   });
 
   it("cancelar a prévia não envia nada", async () => {

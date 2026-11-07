@@ -65,4 +65,11 @@ describe("Conversa", () => {
     render(<Conversa mensagens={[m("foto", { midia_url: "blob:x" })]} resolver_midia={() => "data:image/png;base64,AA=="} />);
     expect(screen.getByRole("img")).toHaveAttribute("src", "data:image/png;base64,AA==");
   });
+
+  it("variante telefone com proprio=entrada marca a lista para alinhar as do colaborador à direita", () => {
+    const { rerender } = render(<Conversa mensagens={msgs} resolver_midia={(u) => u} variante="telefone" proprio="entrada" />);
+    expect(screen.getAllByRole("listitem")[0].parentElement!.className).toMatch(/do_colaborador/);
+    rerender(<Conversa mensagens={msgs} resolver_midia={(u) => u} variante="telefone" />);
+    expect(screen.getAllByRole("listitem")[0].parentElement!.className).not.toMatch(/do_colaborador/);
+  });
 });
