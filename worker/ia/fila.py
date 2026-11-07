@@ -2,7 +2,7 @@
 
 Quem recebe uma tarefa precisa poder perguntar "por que caiu comigo?" e ouvir
 uma regra. Ordem de decisão:
-1. Urgência: P0 se o fechamento vence em até 24h ou o caso mexe em pagamento;
+1. Urgência: P0 se o prazo vence em até 24h ou o caso mexe em pagamento;
    P1 até 72h; P2 no resto.
 2. Elegíveis: presentes, com escopo da empresa e abaixo do limite de tarefas.
 3. Menor carga ponderada (P0 pesa 3, P1 pesa 2, P2 pesa 1).
@@ -64,14 +64,14 @@ def classificar_urgencia(tarefa: Tarefa, agora: datetime) -> tuple[Urgencia, str
     restante = tarefa.prazo - agora
     horas = int(restante.total_seconds() // 3600)
     if restante <= timedelta(0):
-        return Urgencia.P0, "fechamento vencido"
+        return Urgencia.P0, "prazo vencido"
     if restante <= timedelta(hours=24):
-        return Urgencia.P0, f"fechamento em {horas}h"
+        return Urgencia.P0, f"prazo em {horas}h"
     if tarefa.mexe_em_pagamento:
         return Urgencia.P0, "mexe em pagamento"
     if restante <= timedelta(hours=72):
-        return Urgencia.P1, f"fechamento em {horas}h"
-    return Urgencia.P2, f"fechamento em {restante.days} dias"
+        return Urgencia.P1, f"prazo em {horas}h"
+    return Urgencia.P2, f"prazo em {restante.days} dias"
 
 
 def ordenar(tarefas: list[Tarefa], agora: datetime) -> list[Tarefa]:

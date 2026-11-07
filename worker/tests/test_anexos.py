@@ -129,3 +129,29 @@ def test_validades_nao_vazam_entre_tenants(repo):
     )
     repo.registrar_resultado(anexo_id, _resultado(decisao="aceitar_sozinho"))
     assert repo.validades_vigentes("t2", "F-12") == {}
+
+
+# ---------- lembretes e falhas ----------
+
+
+def test_lembrete_e_registrado_uma_vez_por_etapa_e_validade(repo):
+    args = dict(tenant="t1", funcionario_id="F-12", tipo="nr35", validade_ate=date(2026, 12, 3), etapa="aviso_renovacao", enviado_em=RECEBIDO)
+    assert repo.registrar_lembrete(**args) is True
+    assert repo.registrar_lembrete(**args) is False
+    assert repo.lembretes_enviados("t1", "F-12", "nr35", date(2026, 12, 3)) == {"aviso_renovacao"}
+    assert repo.lembretes_enviados("t1", "F-12", "nr35", date(2028, 11, 20)) == set()
+
+
+def test_falhas_seguidas_contam_recusas_desde_o_ultimo_aceite(repo):
+    def enviar(sha, decisao):
+        anexo_id = repo.registrar_recebimento(
+            tenant="t1", funcionario_id="F-12", tipo_esperado="nr35", sha256=sha, mime="image/png",
+            tamanho=10, chave=f"t1/anexos/{sha}", recebido_em=RECEBIDO,
+        )
+        repo.registrar_resultado(anexo_id, _resultado(decisao=decisao))
+
+    enviar("r1", "recusar")
+    enviar("ok", "aceitar_sozinho")
+    enviar("r2", "recusar")
+    enviar("r3", "recusar")
+    assert repo.falhas_seguidas("t1", "F-12", "nr35") == 2

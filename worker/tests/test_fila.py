@@ -29,7 +29,7 @@ CAIO = Analista(id="caio", nome="Caio", escopo_empresas={"E2"})
 def test_fechamento_em_ate_24h_e_p0_com_motivo_legivel():
     urg, motivo = classificar_urgencia(tarefa("1"), AGORA)
     assert urg is Urgencia.P0
-    assert motivo == "fechamento em 18h"
+    assert motivo == "prazo em 18h"
 
 
 def test_mexer_em_pagamento_e_p0_mesmo_com_prazo_longe():

@@ -22,6 +22,19 @@ uv run python scripts/rodar_agentes.py   # roda as histórias da demo no Feather
 Validado em 24/11 (simulado) com `deepseek-ai/DeepSeek-V4.1-Flash-1017`: 9 chamadas, todas com chamada de
 ferramenta nativa, de 1,3 a 5,4 s cada.
 
+## Ver os fluxos rodando (`scripts/fluxos.py`)
+
+Utilitário de terminal que roda os fluxos do agente com inferência real e mostra cada etapa: bucket,
+transcrição, extração, fidelidade, conferência, decisão, tentativas, mensagem ao colaborador, fila,
+card e matriz. O relógio é simulado e cada execução usa um banco novo.
+
+```bash
+uv run python scripts/fluxos.py admissao     # Pedro: NR-35 vencida recusada, ASO + NR-10 + NR-35 aprovados, pronto para iniciar
+uv run python scripts/fluxos.py renovacao    # Carlos: aviso, lembrete; caminho A renova, caminho B fica impedido (card P0)
+uv run python scripts/fluxos.py escalacao    # 3 recusas seguidas da NR-35 viram card na fila do DP
+uv run python scripts/fluxos.py todos --detalhe
+```
+
 ## API (`api.py`)
 
 ```bash
@@ -64,6 +77,8 @@ sobrevive a deploy e restart; o serviço fica com uma instância e cada deploy t
 | `card.py` | Card de decisão: título, linha "o que decidir" e resumo pelo LLM sob guarda de fidelidade; urgência, prazo, evidências e botões pelo código | sim |
 | `matriz.py` | Matriz de exigências por cargo (`contracts/matrizes/`), validade calculada pela periodicidade, situação por pessoa: válido, a vencer, vencido (com data de impedimento) ou faltando | não |
 | `documentos.py` | Leitura em dois passos (visão transcreve, texto extrai, cada campo conferido contra a transcrição), conferência em código (identidade, CPF e CNPJ com dígito, carga, responsável técnico, funções do ASO, validade) e decisão: aceitar sozinho, pedir aprovação, recusar com motivo ou escalar. Transcrição de ASO não é devolvida | sim |
+| `regua.py` | Régua de renovação: aviso ao entrar na janela, lembrete na metade, lembrete firme 2 dias antes, impedimento no vencimento; pula para a etapa mais urgente se rodar atrasado | não |
+| `orquestrador.py` | Agente documental: encadeia as etapas e devolve cada uma com tempo e dados; escala na 3ª recusa seguida; régua gera card P0 no impedimento | indireto |
 | `config.py` | Lê `worker/.env` sem sobrescrever o ambiente | não |
 | `estrategico.py` | Autonomia conquistada: elegibilidade (≥ 30 decisões, ≥ 95% na primeira proposta, 0 reaberturas), v+1 no teto da política e sugestão em que todo número vem do achado | sim |
 

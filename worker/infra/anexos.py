@@ -85,6 +85,15 @@ CREATE TABLE IF NOT EXISTS anexos (
     UNIQUE (tenant, funcionario_id, tipo_esperado, sha256)
 );
 CREATE INDEX IF NOT EXISTS anexos_por_pessoa ON anexos (tenant, funcionario_id, status);
+CREATE TABLE IF NOT EXISTS lembretes (
+    tenant          TEXT NOT NULL,
+    funcionario_id  TEXT NOT NULL,
+    tipo            TEXT NOT NULL,
+    validade_ate    TEXT NOT NULL,
+    etapa           TEXT NOT NULL,
+    enviado_em      TEXT NOT NULL,
+    PRIMARY KEY (tenant, funcionario_id, tipo, validade_ate, etapa)
+);
 """
 
 
@@ -176,3 +185,42 @@ class RepositorioAnexos:
                 (tenant, funcionario_id, *STATUS_ACEITO),
             ).fetchall()
         return {linha["tipo_esperado"]: date.fromisoformat(linha["validade"]) for linha in linhas}
+
+    # ---------- renovação e tentativas ----------
+
+    def registrar_lembrete(
+        self, *, tenant: str, funcionario_id: str, tipo: str, validade_ate: date, etapa: str, enviado_em: datetime
+    ) -> bool:
+        """Idempotente: devolve False se essa etapa já foi enviada para essa validade."""
+        with self._conectar() as conexao:
+            cursor = conexao.execute(
+                "INSERT OR IGNORE INTO lembretes (tenant, funcionario_id, tipo, validade_ate, etapa, enviado_em)"
+                " VALUES (?, ?, ?, ?, ?, ?)",
+                (tenant, funcionario_id, tipo, validade_ate.isoformat(), etapa, enviado_em.isoformat()),
+            )
+            return cursor.rowcount == 1
+
+    def lembretes_enviados(self, tenant: str, funcionario_id: str, tipo: str, validade_ate: date) -> set[str]:
+        with self._conectar() as conexao:
+            linhas = conexao.execute(
+                "SELECT etapa FROM lembretes WHERE tenant=? AND funcionario_id=? AND tipo=? AND validade_ate=?",
+                (tenant, funcionario_id, tipo, validade_ate.isoformat()),
+            ).fetchall()
+        return {linha["etapa"] for linha in linhas}
+
+    def falhas_seguidas(self, tenant: str, funcionario_id: str, tipo: str) -> int:
+        """Recusas consecutivas do mesmo documento desde o último aceite (base da escalada após 3 falhas)."""
+        with self._conectar() as conexao:
+            status = [
+                linha["status"]
+                for linha in conexao.execute(
+                    "SELECT status FROM anexos WHERE tenant=? AND funcionario_id=? AND tipo_esperado=? ORDER BY rowid DESC",
+                    (tenant, funcionario_id, tipo),
+                )
+            ]
+        falhas = 0
+        for s in status:
+            if s in STATUS_ACEITO:
+                break
+            falhas += s == "recusar"
+        return falhas

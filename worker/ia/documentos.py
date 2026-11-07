@@ -266,10 +266,9 @@ def _problemas_de_fidelidade(ext: ExtracaoDocumento, transcricao: str) -> list[s
     return problemas
 
 
-def ler_documento(transcritor: Transcritor, llm: LLM, imagem: bytes, mime: str) -> LeituraDocumento:
-    hash_arquivo = hashlib.sha256(imagem).hexdigest()
-    transcricao = transcritor.transcrever(imagem, mime)
-    extracao = estruturar(
+def extrair_de_transcricao(llm: LLM, transcricao: str) -> ExtracaoDocumento | None:
+    """Segundo passo da leitura: campos em schema a partir do texto transcrito (tratado como não confiável)."""
+    return estruturar(
         llm,
         sistema=SISTEMA_EXTRACAO,
         usuario=f"Documento transcrito:\n{nao_confiavel(transcricao)}",
@@ -277,6 +276,17 @@ def ler_documento(transcritor: Transcritor, llm: LLM, imagem: bytes, mime: str) 
         nome="registrar_documento",
         descricao="Registra os campos extraídos do documento.",
     )
+
+
+def problemas_de_fidelidade(extracao: ExtracaoDocumento, transcricao: str) -> list[str]:
+    """Campos extraídos sem respaldo literal na transcrição."""
+    return _problemas_de_fidelidade(extracao, transcricao)
+
+
+def ler_documento(transcritor: Transcritor, llm: LLM, imagem: bytes, mime: str) -> LeituraDocumento:
+    hash_arquivo = hashlib.sha256(imagem).hexdigest()
+    transcricao = transcritor.transcrever(imagem, mime)
+    extracao = extrair_de_transcricao(llm, transcricao)
     if extracao is None:
         return LeituraDocumento(
             hash_arquivo=hash_arquivo, transcricao=None, extracao=None, problemas_fidelidade=["extracao_indisponivel"]

@@ -41,7 +41,7 @@ class CardDecisao(BaseModel):
 
 
 SISTEMA = """Você escreve cards de decisão para analistas de DP. Seja direto.
-Título: funcionário, assunto e data, em até 90 caracteres.
+Título: funcionário, assunto e data, em até 90 caracteres. Escreva datas no formato dd/mm/aaaa.
 Decisão necessária: uma linha dizendo exatamente o que o analista precisa decidir.
 Resumo: até 2 frases com os fatos. Use só os fatos fornecidos; não acrescente horários, datas ou valores."""
 

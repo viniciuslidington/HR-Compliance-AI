@@ -40,7 +40,7 @@ def test_card_usa_o_texto_do_modelo_quando_fiel():
 def test_urgencia_evidencias_e_acoes_vem_do_codigo():
     card = montar_card(LLMRoteirizado([_texto()]), CASO, TAREFA, AGORA, acoes=ACOES)
     assert card.urgencia is Urgencia.P0
-    assert card.motivo_urgencia == "fechamento em 18h"
+    assert card.motivo_urgencia == "prazo em 18h"
     assert card.evidencias == CASO.evidencias
     assert card.acoes == ACOES
 
