@@ -18,7 +18,7 @@ describe("DetalheAdmissao", () => {
 
     const comp = screen.getByRole("button", { name: /^Comprovante de residência/ });
     // Pelo motor, após a recusa o documento volta a "pendente" com o motivo; o "recusado" vive nos envios.
-    expect(within(comp).getByText(/90 dias/)).toBeInTheDocument();
+    expect(within(comp).getByText(/comprovante é de março/)).toBeInTheDocument();
     expect(within(comp).getByText("3ª tentativa")).toBeInTheDocument();
 
     await userEvent.click(comp);
