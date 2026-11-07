@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { AcaoEscalacao, EscalacaoView } from "../api/api";
-import type { Mensagem } from "../domain/tipos";
 import { useAcao, useConsulta } from "../api/contexto";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -15,26 +14,19 @@ import esqueleto from "./Esqueleto.module.css";
 import estilos from "./Escalacoes.module.css";
 import { data_hora, MOTIVO_ESCALACAO } from "./rotulos";
 
-interface Caso {
-  view: EscalacaoView;
-  ultimas: Mensagem[];
-  ultima_imagem: string | null;
-}
-
 type Aba = "abertas" | "resolvidas";
 
 function CartaoEscalacao({
-  caso,
+  view,
   resolver_midia,
 }: {
-  caso: Caso;
+  view: EscalacaoView;
   resolver_midia: (u: string | null) => string | null;
 }) {
   const executar = useAcao();
   const [falando, setFalando] = useState(false);
   const [texto, setTexto] = useState("");
   const [erro, setErro] = useState<string | undefined>();
-  const { view } = caso;
   const { escalacao, admissao, tipo, documento } = view;
   const aberta = escalacao.status === "aberta";
   const permitidas = view.acoes_permitidas;
@@ -86,17 +78,17 @@ function CartaoEscalacao({
           )}
         </dl>
 
-        {caso.ultima_imagem && (
+        {view.ultimo_envio_url && (
           <div className={estilos.imagem}>
             <p className={`text-caption ${estilos.chave}`}>Último envio</p>
-            <ImagemEnvio src={resolver_midia(caso.ultima_imagem)} alt={`Último envio de ${admissao.nome}`} />
+            <ImagemEnvio src={resolver_midia(view.ultimo_envio_url)} alt={`Último envio de ${admissao.nome}`} />
           </div>
         )}
 
-        {caso.ultimas.length > 0 && (
+        {view.ultimas_mensagens.length > 0 && (
           <div className={estilos.conversa}>
             <p className={`text-caption ${estilos.chave}`}>Últimas mensagens</p>
-            <Conversa mensagens={caso.ultimas} resolver_midia={resolver_midia} variante="painel" />
+            <Conversa mensagens={view.ultimas_mensagens} resolver_midia={resolver_midia} variante="painel" live={false} />
           </div>
         )}
       </div>
@@ -136,22 +128,11 @@ function CartaoEscalacao({
 
 export function Escalacoes() {
   const [aba, setAba] = useState<Aba>("abertas");
-  const dados = useConsulta((api) => {
-    const montar = (v: EscalacaoView): Caso => {
-      const det = api.obter_admissao(v.admissao.id);
-      const envios = det?.documentos.find((d) => d.documento.id === v.documento?.id)?.envios ?? [];
-      return {
-        view: v,
-        ultimas: det ? det.mensagens.slice(-3) : [],
-        ultima_imagem: envios.length ? envios[envios.length - 1].arquivo_url : null,
-      };
-    };
-    return {
-      abertas: api.listar_escalacoes({ status: "aberta" }).map(montar),
-      resolvidas: api.listar_escalacoes({ status: "resolvida" }).map(montar),
-      resolver_midia: (u: string | null) => api.resolver_midia(u),
-    };
-  });
+  const dados = useConsulta((api) => ({
+    abertas: api.listar_escalacoes({ status: "aberta" }),
+    resolvidas: api.listar_escalacoes({ status: "resolvida" }),
+    resolver_midia: (u: string | null) => api.resolver_midia(u),
+  }));
 
   const cabecalho = (
     <header className={estilos.cabecalho}>
@@ -205,8 +186,8 @@ export function Escalacoes() {
             {aba === "abertas" ? "Nenhuma escalação aberta. O agente está dando conta." : "Nenhuma escalação resolvida ainda."}
           </p>
         ) : (
-          casos.map((c) => (
-            <CartaoEscalacao key={c.view.escalacao.id} caso={c} resolver_midia={dados.resolver_midia} />
+          casos.map((v) => (
+            <CartaoEscalacao key={v.escalacao.id} view={v} resolver_midia={dados.resolver_midia} />
           ))
         )}
       </div>

@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from "react";
 import { useAcao, useConsulta } from "../api/contexto";
 import { data_local } from "../domain/datas";
-import { documentos_do_modelo } from "../domain/motor/admissao";
 import { Button } from "../ui/Button";
 import { Eyebrow } from "../ui/Eyebrow";
 import { Field } from "../ui/Field";
@@ -64,6 +63,7 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
   const [lista, setLista] = useState<string[] | null>(null);
   const [erros, setErros] = useState<Erros>({});
   const [criando, setCriando] = useState(false);
+  const [falhou, setFalhou] = useState(false);
 
   if (!dados) {
     return (
@@ -77,7 +77,7 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
 
   const { modelos, catalogo, hoje } = dados;
   const modelo_id = modelo_escolhido ?? modelos[0]?.modelo.id ?? "";
-  const documentos = lista ?? documentos_do_modelo(modelo_id);
+  const documentos = lista ?? (modelos.find((m) => m.modelo.id === modelo_id)?.tipos.map((t) => t.id) ?? []);
   const nome_do = (id: string) => catalogo.find((t) => t.id === id)?.nome ?? id;
   const disponiveis = catalogo.filter((t) => !documentos.includes(t.id));
 
@@ -101,17 +101,26 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
     setErros(novos);
     if (Object.keys(novos).length > 0) return;
     setCriando(true);
+    setFalhou(false);
 
-    const criada = executar((api) =>
-      api.criar_admissao({
-        nome: nome.trim(),
-        whatsapp: whatsapp_final!,
-        cargo: cargo.trim(),
-        data_inicio,
-        modelo_id,
-        documentos: documentos.map((tipo_documento_id) => ({ tipo_documento_id })),
-      }),
-    );
+    let criada: { id: string };
+    try {
+      criada = executar((api) =>
+        api.criar_admissao({
+          nome: nome.trim(),
+          whatsapp: whatsapp_final!,
+          cargo: cargo.trim(),
+          data_inicio,
+          modelo_id,
+          documentos: documentos.map((tipo_documento_id) => ({ tipo_documento_id })),
+        }),
+      );
+    } catch {
+      // Só na falha: no sucesso a página navega, e `criando` segue barrando um segundo envio.
+      setCriando(false);
+      setFalhou(true);
+      return;
+    }
     ao_criar(criada.id);
   }
 
@@ -200,6 +209,11 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
             )}
           </fieldset>
 
+          {falhou && (
+            <p role="alert" className={`text-body-sm ${estilos.erro}`}>
+              Não consegui criar a admissão. Tente de novo.
+            </p>
+          )}
           <div className={estilos.rodape}>
             <Button type="submit" disabled={criando}>
               Criar admissão

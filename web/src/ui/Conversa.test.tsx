@@ -61,6 +61,11 @@ describe("Conversa", () => {
     expect(screen.getByRole("log")).toHaveAttribute("aria-live", "polite");
   });
 
+  it("live={false} desliga o aria-live", () => {
+    render(<Conversa mensagens={[]} resolver_midia={(u) => u} live={false} />);
+    expect(screen.getByRole("log")).toHaveAttribute("aria-live", "off");
+  });
+
   it("renderiza imagem quando há mídia", () => {
     render(<Conversa mensagens={[m("foto", { midia_url: "blob:x" })]} resolver_midia={() => "data:image/png;base64,AA=="} />);
     expect(screen.getByRole("img")).toHaveAttribute("src", "data:image/png;base64,AA==");

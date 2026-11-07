@@ -9,6 +9,8 @@ export interface ConversaProps {
   variante?: "painel" | "telefone";
   /** Variante "telefone": de quem é o aparelho. "entrada" = o colaborador (as suas ficam à direita). */
   proprio?: "entrada" | "saida";
+  /** Anuncia mensagens novas a leitores de tela (aria-live polite). Desligue em trechos estáticos. */
+  live?: boolean;
 }
 
 function hora(iso: string): string {
@@ -16,11 +18,17 @@ function hora(iso: string): string {
   return d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
-export function Conversa({ mensagens, resolver_midia, variante = "painel", proprio = "saida" }: ConversaProps) {
+export function Conversa({
+  mensagens,
+  resolver_midia,
+  variante = "painel",
+  proprio = "saida",
+  live = true,
+}: ConversaProps) {
   const ordenadas = [...mensagens].sort((a, b) => Date.parse(a.criada_em) - Date.parse(b.criada_em));
 
   return (
-    <div role="log" aria-live="polite" aria-label="Conversa">
+    <div role="log" aria-live={live ? "polite" : "off"} aria-label="Conversa">
       <ul className={`${estilos.lista} ${estilos[variante]} ${proprio === "entrada" ? estilos.do_colaborador : ""}`}>
         {ordenadas.map((m, i) => {
           const legenda = m.direcao === "entrada" ? "Colaborador" : m.autor === "rh" ? "RH" : "Agente";

@@ -40,7 +40,7 @@
 }
 .link {
   color: var(--ink-muted);
-  font-size: 14px;
+  font-size: var(--text-body-sm-font-size);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

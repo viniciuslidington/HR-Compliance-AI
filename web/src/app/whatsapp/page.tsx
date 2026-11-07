@@ -12,6 +12,7 @@ export default function WhatsappPage({ searchParams }: { searchParams: Promise<{
     <Telefone
       admissao_inicial={inicial}
       ao_trocar_contato={(id) => roteador.replace(`/whatsapp?admissao=${encodeURIComponent(id)}`)}
+      ao_resetar={() => roteador.replace("/whatsapp")}
     />
   );
 }

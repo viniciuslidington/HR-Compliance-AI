@@ -9,7 +9,26 @@ function id_de(api: ReturnType<typeof criar_api>, nome: string): string {
   return api.listar_admissoes().find((r) => r.admissao.nome === nome)!.admissao.id;
 }
 
-function montar(props: { admissao_inicial?: string; ao_trocar_contato?: (id: string) => void } = {}) {
+async function concluir(api: ReturnType<typeof criar_api>, id: string) {
+  for (const nome of ["rg-ok.jpg", "cpf.jpg", "comprovante-ok.jpg", "matricula.jpg", "banco.jpg"])
+    await api.enviar_arquivo(id, new File(["x"], nome, { type: "image/jpeg" }));
+  expect(api.obter_admissao(id)!.admissao.status).toBe("concluida");
+}
+
+function nova_admissao(api: ReturnType<typeof criar_api>, nome: string) {
+  return api.criar_admissao({
+    nome,
+    whatsapp: "+55 11 91234-5678",
+    cargo: "Estagiária",
+    data_inicio: "2026-11-17",
+    modelo_id: "estagio",
+    documentos: [{ tipo_documento_id: "rg_cnh" }],
+  });
+}
+
+function montar(
+  props: { admissao_inicial?: string; ao_trocar_contato?: (id: string) => void; ao_resetar?: () => void } = {},
+) {
   const api = criar_api();
   const u = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
   render(
@@ -162,5 +181,50 @@ describe("Telefone", () => {
     act(() => api.avancar_tempo("mais_24h", diego));
     expect(within(screen.getByRole("log")).getAllByRole("listitem").length).toBeGreaterThan(antes);
     expect(screen.queryByText("Agente digitando")).not.toBeInTheDocument();
+  });
+
+  it("o contato padrão fica travado quando a admissão dele conclui (não pula para outra pessoa)", async () => {
+    const { api } = montar();
+    const diego = id_de(api, "Diego Rocha");
+    expect(await screen.findByLabelText("Conversando como")).toHaveValue(diego);
+    await act(async () => concluir(api, diego));
+    expect(screen.getByLabelText("Conversando como")).toHaveValue(diego);
+    expect(within(screen.getByRole("log")).getAllByRole("listitem").at(-1)).toHaveTextContent(/COL-\d{6}/);
+  });
+
+  it("uma admissão criada depois vira o novo padrão", async () => {
+    const { api } = montar();
+    await screen.findByLabelText("Conversando como");
+    let nova = "";
+    act(() => {
+      nova = nova_admissao(api, "Júlia Martins").id;
+    });
+    expect(screen.getByLabelText("Conversando como")).toHaveValue(nova);
+  });
+
+  it("a escolha manual ganha de uma admissão nova", async () => {
+    const { api, u } = montar();
+    const ana = id_de(api, "Ana Souza");
+    await u.selectOptions(await screen.findByLabelText("Conversando como"), ana);
+    act(() => void nova_admissao(api, "Júlia Martins"));
+    expect(screen.getByLabelText("Conversando como")).toHaveValue(ana);
+  });
+
+  it("Reiniciar dados (em qualquer janela) volta ao padrão, descarta a escolha e avisa a página", async () => {
+    const ao_resetar = vi.fn();
+    const api = criar_api();
+    const ana = id_de(api, "Ana Souza");
+    const u = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(
+      <Com api={api}>
+        <Telefone admissao_inicial={ana} ao_resetar={ao_resetar} />
+      </Com>,
+    );
+    const seletor = await screen.findByLabelText("Conversando como");
+    await u.selectOptions(seletor, id_de(api, "Bruno Lima"));
+    expect(ao_resetar).not.toHaveBeenCalled();
+    act(() => api.resetar());
+    expect(screen.getByLabelText("Conversando como")).toHaveValue(id_de(api, "Diego Rocha"));
+    expect(ao_resetar).toHaveBeenCalledTimes(1);
   });
 });

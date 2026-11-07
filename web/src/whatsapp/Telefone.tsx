@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
+import type { AdmissaoResumo } from "../api/api";
 import { useAcao, useConsulta } from "../api/contexto";
 import { Conversa } from "../ui/Conversa";
+import { useSelecaoTravada } from "../ui/useSelecaoTravada";
 import { Anexar } from "./Anexar";
 import { Digitando } from "./Digitando";
 import { SeletorContato } from "./SeletorContato";
@@ -14,6 +16,14 @@ const ATRASO_DIGITANDO_MS = 1200;
 export interface TelefoneProps {
   admissao_inicial?: string;
   ao_trocar_contato?: (id: string) => void;
+  /** "Reiniciar dados" (em qualquer janela): a página tira o `?admissao=` da URL. */
+  ao_resetar?: () => void;
+}
+
+/** Padrão do celular: a em_coleta mais recente; senão, a mais recente. */
+function padrao_do_celular(admissoes: AdmissaoResumo[]): string | null {
+  const recentes = [...admissoes].sort((a, b) => b.admissao.criada_em.localeCompare(a.admissao.criada_em));
+  return (recentes.find((r) => r.admissao.status === "em_coleta") ?? recentes[0])?.admissao.id ?? null;
 }
 
 interface Retencao {
@@ -27,23 +37,22 @@ interface EnvioPendente {
   url: string | null;
 }
 
-export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps) {
+export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: TelefoneProps) {
   const executar = useAcao();
   const admissoes = useConsulta((api) => api.listar_admissoes());
-  const [escolhida, setEscolhida] = useState<string | null>(null);
+  const epoca = useConsulta((api) => api.epoca());
   const [texto, setTexto] = useState("");
   const [retencao, setRetencao] = useState<Retencao | null>(null);
   const [pendente, setPendente] = useState<EnvioPendente | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const existe = (id: string | null | undefined): id is string =>
-    !!id && !!admissoes?.some((r) => r.admissao.id === id);
-  const recentes = [...(admissoes ?? [])].sort((a, b) => b.admissao.criada_em.localeCompare(a.admissao.criada_em));
-  const id = existe(escolhida)
-    ? escolhida
-    : existe(admissao_inicial)
-      ? admissao_inicial
-      : (recentes.find((r) => r.admissao.status === "em_coleta") ?? recentes[0])?.admissao.id ?? null;
+  const { id, escolher } = useSelecaoTravada({
+    admissoes,
+    epoca,
+    resolver_padrao: padrao_do_celular,
+    inicial: admissao_inicial,
+    ao_resetar,
+  });
 
   const detalhe = useConsulta((api) => (id ? api.obter_admissao(id) : null), [id]);
 
@@ -78,7 +87,7 @@ export function Telefone({ admissao_inicial, ao_trocar_contato }: TelefoneProps)
     if (timer.current) clearTimeout(timer.current);
     setRetencao(null);
     no_fim.current = true;
-    setEscolhida(novo);
+    escolher(novo);
     ao_trocar_contato?.(novo);
   }
 

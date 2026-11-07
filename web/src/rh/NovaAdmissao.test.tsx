@@ -95,6 +95,22 @@ describe("NovaAdmissao", () => {
     expect(ao_criar).toHaveBeenCalledTimes(1);
   });
 
+  it("se criar_admissao falhar, mostra o erro e libera o botão para tentar de novo", async () => {
+    const { api, ao_criar } = montar();
+    const espiao = vi.spyOn(api, "criar_admissao").mockImplementationOnce(() => {
+      throw new Error("x");
+    });
+    await preencher();
+    const botao = screen.getByRole("button", { name: "Criar admissão" });
+    await userEvent.click(botao);
+    expect(await screen.findByText("Não consegui criar a admissão. Tente de novo.")).toBeInTheDocument();
+    expect(botao).toBeEnabled();
+    expect(ao_criar).not.toHaveBeenCalled();
+    await userEvent.click(botao);
+    expect(espiao).toHaveBeenCalledTimes(2);
+    expect(ao_criar).toHaveBeenCalledTimes(1);
+  });
+
   it("mascara o WhatsApp", () => {
     expect(mascarar_whatsapp("11987654321")).toBe("(11) 98765-4321");
     expect(mascarar_whatsapp("+5511987654321")).toBe("+55 (11) 98765-4321");

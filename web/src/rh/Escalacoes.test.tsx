@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Escalacoes } from "./Escalacoes";
 import { Com, criar_api } from "./teste_util";
 
@@ -24,6 +24,15 @@ describe("Escalacoes", () => {
     await userEvent.click(screen.getByRole("tab", { name: "Resolvidas" }));
     expect(screen.getByText("Documento recusado 3 vezes")).toBeInTheDocument();
     expect(screen.getByText("aprovado manualmente")).toBeInTheDocument();
+  });
+
+  it("o cartão usa só a EscalacaoView (sem obter_admissao) e as últimas mensagens não são aria-live", () => {
+    const api = criar_api();
+    const espiao = vi.spyOn(api, "obter_admissao");
+    render(<Com api={api}><Escalacoes /></Com>);
+    expect(espiao).not.toHaveBeenCalled();
+    expect(screen.getByText("Último envio")).toBeInTheDocument();
+    expect(screen.getByRole("log")).toHaveAttribute("aria-live", "off");
   });
 
   it("Falar com o colaborador bloqueia texto vazio e envia com texto", async () => {

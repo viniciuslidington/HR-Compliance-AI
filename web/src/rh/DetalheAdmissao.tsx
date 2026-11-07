@@ -94,7 +94,7 @@ export function DetalheAdmissao({ id }: { id: string }) {
 
       {aberta && (
         <p className={`text-body-sm ${estilos.faixa}`}>
-          <span>{MOTIVO_ESCALACAO[aberta.motivo] ?? "Precisa de você"}. O agente parou e espera uma decisão do RH.</span>
+          <span>{MOTIVO_ESCALACAO[aberta.motivo] ?? "Precisa de você"}. O agente encaminhou ao RH e segue recebendo os outros documentos.</span>
           <Link href="/rh/escalacoes" className={estilos.link_faixa}>Resolver escalação</Link>
         </p>
       )}
