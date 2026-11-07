@@ -20,6 +20,8 @@ export interface Estado {
   seq: number;
   /** Incrementa a cada mudança. */
   rev: number;
+  /** Incrementa a cada "Reiniciar dados": as telas descartam escolhas feitas sobre os dados antigos. */
+  epoca: number;
 }
 
 export function estado_vazio(): Estado {
@@ -33,6 +35,7 @@ export function estado_vazio(): Estado {
     relogio: { deslocamento_ms: 0 },
     seq: 0,
     rev: 0,
+    epoca: 0,
   };
 }
 

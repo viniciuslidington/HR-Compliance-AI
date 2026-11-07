@@ -49,11 +49,14 @@ export function receber_arquivo(
 
   const tipo = tipo_do_documento(doc);
   const tentativa = doc.tentativas + 1;
+  // O leitor recebe o número deste ENVIO do documento (não `tentativas`, que o "pedir de novo" zera):
+  // a recusa roteirizada do 1º envio não se repete depois que o RH pede o documento de novo.
+  const envio = e.envios.filter((x) => x.documento_admissao_id === doc.id).length + 1;
   const leitura = ler_documento_mock({
     tipo_documento_id: tipo.id,
     nome_arquivo,
     admissao,
-    tentativa,
+    tentativa: envio,
     agora,
   });
   const aprovados = docs.filter((d) => d.status === "aprovado");

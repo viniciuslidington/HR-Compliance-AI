@@ -318,6 +318,26 @@ describe("escalacao_resolvida", () => {
     expect(ultima_do_agente(e).texto).toContain("Mande uma foto");
   });
 
+  it("depois de pedir de novo, o reenvio não repete a recusa roteirizada do 1º envio", () => {
+    const { estado, id } = criar();
+    let e = estado;
+    for (let i = 0; i < 3; i++) e = enviar(e, id, "comprovante-antigo.jpg");
+    expect(e.escalacoes[0].motivo).toBe("tres_falhas");
+    e = resolver(e, "pedir_de_novo");
+    e = enviar(e, id, "comprovante.jpg");
+    expect(doc(e, "comprovante_residencia").status).toBe("aprovado");
+  });
+
+  it("a recusa roteirizada só vale no 1º envio do documento; dica no nome continua mandando", () => {
+    const { estado, id } = criar();
+    let e = enviar(estado, id, "comprovante.jpg");
+    expect(doc(e, "comprovante_residencia").status).toBe("pendente");
+    e = enviar(e, id, "comprovante-antigo.jpg");
+    expect(doc(e, "comprovante_residencia").status).toBe("pendente");
+    e = enviar(e, id, "comprovante.jpg");
+    expect(doc(e, "comprovante_residencia").status).toBe("aprovado");
+  });
+
   it("falar com colaborador grava mensagem com autor rh", () => {
     const { estado } = escalado();
     const e = resolver(estado, "falar_com_colaborador", "Oi Ana, vou te ligar.");
@@ -349,9 +369,27 @@ describe("tempo_avancado (cobrança)", () => {
     expect(alerta_prazo(id, estado)).toBe(false);
     const e = avancar(estado, new Date(2026, 10, 18, 9, 0, 0));
     expect(nivel(e)).toContain("firme");
-    expect(nivel(e)).toContain("prazo");
     expect(alerta_prazo(id, e)).toBe(true);
     expect(e.escalacoes).toHaveLength(0);
+  });
+
+  it("salto grande gera só o firme (uma mensagem); rodar de novo não duplica nem manda os níveis pulados", () => {
+    const { estado } = criar();
+    const d = new Date(2026, 10, 18, 9, 0, 0);
+    const e = avancar(estado, d);
+    expect(nivel(e)).toEqual(["firme"]);
+    expect(e.mensagens.filter((m) => m.direcao === "saida")).toHaveLength(2); // boas-vindas + firme
+    expect(avancar(e, d)).toEqual(e);
+    expect(nivel(avancar(e, new Date(2026, 10, 19, 9, 0, 0)))).toEqual(["firme"]);
+  });
+
+  it("+24h → metade do prazo → 2 dias antes gera leve, prazo e firme nessa ordem", () => {
+    const { estado } = criar();
+    let e = avancar(estado, ate(24));
+    const meio = (AGORA.getTime() + new Date(2026, 10, 20).getTime()) / 2 + 60_000;
+    e = avancar(e, new Date(meio));
+    e = avancar(e, new Date(2026, 10, 18, 9, 0, 0));
+    expect(nivel(e)).toEqual(["leve", "prazo", "firme"]);
   });
 
   it("passar de data_inicio abre prazo_estourado, uma só vez", () => {

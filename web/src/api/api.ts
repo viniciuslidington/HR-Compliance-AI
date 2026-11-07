@@ -50,6 +50,10 @@ export interface EscalacaoView {
   tipo: TipoDocumento | null;
   acao_sugerida: string;
   acoes_permitidas: AcaoEscalacao[];
+  /** As 3 últimas mensagens da admissão, em ordem cronológica. */
+  ultimas_mensagens: Mensagem[];
+  /** `arquivo_url` do último envio do documento da escalação (passe por `resolver_midia`); null sem documento/envio. */
+  ultimo_envio_url: string | null;
 }
 
 export interface ModeloComDocumentos {
@@ -71,7 +75,11 @@ export interface Api {
   /** Resolve a `midia_url` de uma mensagem/envio para algo que um <img> entende. */
   resolver_midia(url: string | null): string | null;
   agora(): Date;
+  /** Para onde o preset levaria o relógio, sem mexer nele; null se a admissão não existe ou o alvo já passou. */
+  alvo_preset(preset: PresetTempo, admissao_id: string): Date | null;
   avancar_tempo(preset: PresetTempo, admissao_id: string): void;
   resetar(): void;
+  /** Sobe a cada `resetar` (0 no seed): as telas usam para descartar escolhas feitas sobre os dados antigos. */
+  epoca(): number;
   assinar(cb: () => void): () => void;
 }

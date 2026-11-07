@@ -37,9 +37,9 @@ describe("MockApi: leitura", () => {
   it("listar_admissoes: escaladas primeiro, depois por data de início; DTO completo", () => {
     const { api } = nova();
     const l = api.listar_admissoes();
-    expect(l.map((r) => r.admissao.nome)).toEqual(["Bruno Lima", "Ana Souza", "Diego Rocha", "Carla Mendes"]);
+    expect(l.map((r) => r.admissao.nome)).toEqual(["Bruno Lima", "Carla Mendes", "Ana Souza", "Diego Rocha"]);
     const ana = l.find((r) => r.admissao.nome === "Ana Souza")!;
-    expect(ana).toMatchObject({ pendentes: 4, total: 5, rotulo_inicio: "em 3 dias", modelo_nome: "Estágio" });
+    expect(ana).toMatchObject({ pendentes: 4, total: 5, rotulo_inicio: "em 20 dias", modelo_nome: "Estágio" });
     const bruno = l[0];
     expect(bruno).toMatchObject({ alerta_prazo: true, escalacoes_abertas: 1, pendentes: 3, total: 4 });
   });
@@ -72,6 +72,15 @@ describe("MockApi: leitura", () => {
     expect(v.documento?.tipo_documento_id).toBe("comprovante_residencia");
     expect(v.acoes_permitidas).toEqual(["aprovar_manualmente", "pedir_de_novo", "falar_com_colaborador"]);
     expect(api.listar_escalacoes({ status: "resolvida" })).toHaveLength(0);
+  });
+
+  it("listar_escalacoes traz as 3 últimas mensagens da admissão e o último envio do documento", () => {
+    const { api } = nova();
+    const [v] = api.listar_escalacoes({ status: "aberta" });
+    const det = api.obter_admissao(v.admissao.id)!;
+    expect(v.ultimas_mensagens).toEqual(det.mensagens.slice(-3));
+    const envios = det.documentos.find((d) => d.documento.id === v.documento!.id)!.envios;
+    expect(v.ultimo_envio_url).toBe(envios[envios.length - 1].arquivo_url);
   });
 
   it("catálogo e modelos são só leitura", () => {
@@ -192,7 +201,7 @@ describe("MockApi: tempo", () => {
     const { api } = nova();
     const a = ana(api);
     api.avancar_tempo("metade_prazo", a.id);
-    const inicio = new Date(2026, 10, 10).getTime();
+    const inicio = new Date(2026, 10, 27).getTime();
     const alvo = (new Date(a.criada_em).getTime() + inicio) / 2 + 60_000;
     expect(api.agora().getTime()).toBe(alvo);
   });
@@ -200,7 +209,7 @@ describe("MockApi: tempo", () => {
   it("dois_dias_antes vai a início − 2 dias, 09:00 locais", () => {
     const { api } = nova();
     api.avancar_tempo("dois_dias_antes", ana(api).id);
-    expect(api.agora().getTime()).toBe(new Date(2026, 10, 8, 9, 0, 0).getTime());
+    expect(api.agora().getTime()).toBe(new Date(2026, 10, 25, 9, 0, 0).getTime());
     expect(api.obter_admissao(ana(api).id)!.lembretes.map((l) => l.nivel)).toContain("firme");
   });
 
@@ -208,8 +217,8 @@ describe("MockApi: tempo", () => {
     const { api } = nova();
     const a = ana(api);
     api.avancar_tempo("prazo_estourado", a.id);
-    expect(api.agora().getTime()).toBe(new Date(2026, 10, 11, 9, 0, 0).getTime());
-    expect(data_local(api.agora())).toBe("2026-11-11");
+    expect(api.agora().getTime()).toBe(new Date(2026, 10, 28, 9, 0, 0).getTime());
+    expect(data_local(api.agora())).toBe("2026-11-28");
     expect(api.obter_admissao(a.id)!.escalacoes.map((e) => e.motivo)).toContain("prazo_estourado");
   });
 
@@ -220,6 +229,26 @@ describe("MockApi: tempo", () => {
     const depois = api.agora().getTime();
     api.avancar_tempo("dois_dias_antes", a.id);
     expect(api.agora().getTime()).toBe(depois);
+  });
+
+  it("alvo_preset calcula o alvo sem mexer no relógio; null se não avançaria", () => {
+    const { api } = nova();
+    const a = ana(api);
+    expect(api.alvo_preset("dois_dias_antes", a.id)).toEqual(new Date(2026, 10, 25, 9, 0, 0));
+    expect(api.agora().getTime()).toBe(BASE);
+    api.avancar_tempo("prazo_estourado", a.id);
+    expect(api.alvo_preset("dois_dias_antes", a.id)).toBeNull();
+    expect(api.alvo_preset("mais_24h", a.id)).toEqual(new Date(api.agora().getTime() + 86_400_000));
+    expect(api.alvo_preset("mais_24h", "nao_existe")).toBeNull();
+  });
+
+  it("epoca começa em 0 e cada resetar soma 1", () => {
+    const { api } = nova();
+    expect(api.epoca()).toBe(0);
+    api.resetar();
+    expect(api.epoca()).toBe(1);
+    api.resetar();
+    expect(api.epoca()).toBe(2);
   });
 
   it("resetar devolve o seed com relógio zerado e apaga arquivos", async () => {

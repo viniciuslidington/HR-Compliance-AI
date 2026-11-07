@@ -30,7 +30,7 @@ const PESSOAS: PessoaSeed[] = [
     cargo: "Estagiária de RH",
     modelo_id: "estagio",
     extras: ["dados_bancarios"],
-    inicio_em: 3,
+    inicio_em: 20,
     criada_antes_ms: DIA,
     envios: [["rg-ok.jpg", "rg", 2 * HORA]],
   },
@@ -55,7 +55,7 @@ const PESSOAS: PessoaSeed[] = [
     cargo: "Estagiário de TI",
     modelo_id: "estagio",
     extras: ["dados_bancarios"],
-    inicio_em: 6,
+    inicio_em: 25,
     criada_antes_ms: 20 * 60_000,
     envios: [],
   },
@@ -108,5 +108,7 @@ export function gerar_seed(agora: Date): Estado {
     }
   }
   // Lembretes que já estariam vencidos (ex.: Bruno, a 2 dias do início, com o alerta de prazo ligado).
+  // Ana e Diego começam longe (20 e 25 dias) para os presets de tempo da demo, aplicados na admissão nova
+  // (início em ~10 dias), não estourarem o prazo deles.
   return executar_cobranca(estado, agora);
 }

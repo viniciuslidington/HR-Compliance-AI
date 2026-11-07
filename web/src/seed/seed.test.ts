@@ -13,18 +13,19 @@ function por_nome(e: ReturnType<typeof gerar_seed>, nome: string) {
 describe("gerar_seed", () => {
   const e = gerar_seed(AGORA);
 
-  it("tem as quatro admissões, com relógio zerado", () => {
+  it("tem as quatro admissões, com relógio zerado e época 0", () => {
     expect(e.admissoes.map((a) => a.nome)).toEqual(["Ana Souza", "Bruno Lima", "Diego Rocha", "Carla Mendes"]);
     expect(e.relogio.deslocamento_ms).toBe(0);
+    expect(e.epoca).toBe(0);
   });
 
-  it("Ana: Estágio, em_coleta, 4 de 5, início em 3 dias", () => {
+  it("Ana: Estágio, em_coleta, 4 de 5, início em 20 dias", () => {
     const { a, docs, pendentes } = por_nome(e, "Ana Souza");
     expect(a.cargo).toBe("Estagiária de RH");
     expect(a.modelo_id).toBe("estagio");
     expect(a.status).toBe("em_coleta");
     expect([pendentes, docs.length]).toEqual([4, 5]);
-    expect(a.data_inicio).toBe("2026-11-10");
+    expect(a.data_inicio).toBe("2026-11-27");
     expect(a.criada_em).toBe(new Date(AGORA.getTime() - 86_400_000).toISOString());
   });
 
@@ -40,13 +41,14 @@ describe("gerar_seed", () => {
     const esc = e.escalacoes.filter((x) => x.admissao_id === a.id && x.status === "aberta");
     expect(esc.map((x) => x.motivo)).toEqual(["tres_falhas"]);
     expect(alerta_prazo(a.id, e)).toBe(true);
+    expect(e.lembretes.filter((l) => l.admissao_id === a.id).map((l) => l.nivel)).toEqual(["firme"]);
   });
 
-  it("Diego: Estágio, 5 de 5, criado hoje, início em 6 dias", () => {
+  it("Diego: Estágio, 5 de 5, criado hoje, início em 25 dias", () => {
     const { a, docs, pendentes } = por_nome(e, "Diego Rocha");
     expect(a.cargo).toBe("Estagiário de TI");
     expect([pendentes, docs.length]).toEqual([5, 5]);
-    expect(a.data_inicio).toBe("2026-11-13");
+    expect(a.data_inicio).toBe("2026-12-02");
     expect(e.envios.filter((x) => docs.some((d) => d.id === x.documento_admissao_id))).toHaveLength(0);
   });
 

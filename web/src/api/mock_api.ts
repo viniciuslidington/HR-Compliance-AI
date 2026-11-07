@@ -34,6 +34,21 @@ function inicio_do_dia(data: string): number {
   return new Date(a, m - 1, d).getTime();
 }
 
+/** Instante para onde o preset leva o relógio (função pura; `agora` em ms). */
+function calcular_alvo(preset: PresetTempo, admissao: Admissao, agora: number): number {
+  const [a, m, d] = admissao.data_inicio.split("-").map(Number);
+  switch (preset) {
+    case "mais_24h":
+      return agora + MS_DIA;
+    case "metade_prazo":
+      return (new Date(admissao.criada_em).getTime() + inicio_do_dia(admissao.data_inicio)) / 2 + 60_000;
+    case "dois_dias_antes":
+      return new Date(a, m - 1, d - 2, 9, 0, 0).getTime();
+    case "prazo_estourado":
+      return new Date(a, m - 1, d + 1, 9, 0, 0).getTime();
+  }
+}
+
 function tipo_de(id: string | null): TipoDocumento | null {
   return CATALOGO.find((t) => t.id === id) ?? null;
 }
@@ -140,6 +155,14 @@ export class MockApi implements Api {
       .sort((a, b) => b.criada_em.localeCompare(a.criada_em))
       .map((escalacao) => {
         const documento = e.documentos.find((d) => d.id === escalacao.documento_admissao_id) ?? null;
+        const envios = documento
+          ? e.envios
+              .filter((x) => x.documento_admissao_id === documento.id)
+              .sort((a, b) => a.criado_em.localeCompare(b.criado_em))
+          : [];
+        const mensagens = e.mensagens
+          .filter((m) => m.admissao_id === escalacao.admissao_id)
+          .sort((a, b) => a.criada_em.localeCompare(b.criada_em));
         return {
           escalacao,
           admissao: e.admissoes.find((a) => a.id === escalacao.admissao_id)!,
@@ -149,6 +172,8 @@ export class MockApi implements Api {
           acoes_permitidas: documento
             ? ["aprovar_manualmente", "pedir_de_novo", "falar_com_colaborador"]
             : ["falar_com_colaborador"],
+          ultimas_mensagens: mensagens.slice(-3),
+          ultimo_envio_url: envios.length ? envios[envios.length - 1].arquivo_url : null,
         };
       });
   }
@@ -213,27 +238,21 @@ export class MockApi implements Api {
 
   // --- tempo ---
 
+  alvo_preset(preset: PresetTempo, admissao_id: string): Date | null {
+    const e = this.ler();
+    const admissao = e.admissoes.find((a) => a.id === admissao_id);
+    if (!admissao) return null;
+    const agora = this.agora_de(e).getTime();
+    const alvo = calcular_alvo(preset, admissao, agora);
+    return alvo > agora ? new Date(alvo) : null;
+  }
+
   avancar_tempo(preset: PresetTempo, admissao_id: string): void {
     const e = this.ler();
     const admissao = e.admissoes.find((a) => a.id === admissao_id);
     if (!admissao) throw new Error(`Admissão não encontrada: ${admissao_id}`);
     const agora = this.agora_de(e).getTime();
-    const [a, m, d] = admissao.data_inicio.split("-").map(Number);
-    let alvo: number;
-    switch (preset) {
-      case "mais_24h":
-        alvo = agora + MS_DIA;
-        break;
-      case "metade_prazo":
-        alvo = (new Date(admissao.criada_em).getTime() + inicio_do_dia(admissao.data_inicio)) / 2 + 60_000;
-        break;
-      case "dois_dias_antes":
-        alvo = new Date(a, m - 1, d - 2, 9, 0, 0).getTime();
-        break;
-      case "prazo_estourado":
-        alvo = new Date(a, m - 1, d + 1, 9, 0, 0).getTime();
-        break;
-    }
+    const alvo = calcular_alvo(preset, admissao, agora);
     if (alvo <= agora) return;
     this.mutar((atual) => {
       const ajustado: Estado = { ...atual, relogio: { deslocamento_ms: alvo - this.relogio_base() } };
@@ -242,9 +261,14 @@ export class MockApi implements Api {
   }
 
   resetar(): void {
+    const anterior = carregar_estado(this.arm)?.epoca ?? 0;
     for (const k of this.arm.chaves()) if (k.startsWith(PREFIXO_ARQUIVO)) this.arm.remover(k);
-    salvar_estado(this.arm, gerar_seed(new Date(this.relogio_base())));
+    salvar_estado(this.arm, { ...gerar_seed(new Date(this.relogio_base())), epoca: anterior + 1 });
     this.notificador.notificar();
+  }
+
+  epoca(): number {
+    return this.ler().epoca ?? 0; // estado gravado antes do campo existir
   }
 
   // --- assinatura ---

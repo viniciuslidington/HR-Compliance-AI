@@ -9,7 +9,7 @@ export interface EntradaLeitura {
   tipo_documento_id: string;
   nome_arquivo: string;
   admissao: Admissao;
-  /** 1-based: número da tentativa deste documento (1 = primeiro envio). */
+  /** 1-based: número deste envio do documento (1 = primeiro envio; conta os envios gravados, não `tentativas`). */
   tentativa: number;
   agora: Date;
 }
