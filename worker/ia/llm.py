@@ -100,6 +100,20 @@ def estruturar(
     return None
 
 
+def novo_cliente_featherless(*, timeout_s: float):
+    """Cliente OpenAI apontado para o Featherless, sem novas tentativas automáticas.
+
+    O SDK repete chamadas por conta própria (2 vezes, por padrão), o que multiplica
+    a espera em caso de lentidão. Quem decide repetir é `estruturar()`.
+    """
+    from openai import OpenAI
+
+    chave = os.environ.get("FEATHERLESS_API_KEY")
+    if not chave:
+        raise ErroLLM("FEATHERLESS_API_KEY não definida")
+    return OpenAI(base_url=FEATHERLESS_BASE_URL, api_key=chave, timeout=timeout_s, max_retries=0)
+
+
 @dataclass
 class RegistroChamada:
     """Trace de uma chamada ao modelo, para reproduzir e auditar o caso."""
@@ -124,12 +138,7 @@ class FeatherlessLLM:
 
     def _obter_cliente(self):
         if self._cliente is None:
-            from openai import OpenAI
-
-            chave = os.environ.get("FEATHERLESS_API_KEY")
-            if not chave:
-                raise ErroLLM("FEATHERLESS_API_KEY não definida")
-            self._cliente = OpenAI(base_url=FEATHERLESS_BASE_URL, api_key=chave, timeout=self.timeout_s)
+            self._cliente = novo_cliente_featherless(timeout_s=self.timeout_s)
         return self._cliente
 
     def chamar(self, *, sistema: str, usuario: str, ferramenta: dict) -> dict:
@@ -171,7 +180,10 @@ class FeatherlessLLM:
             self.trace.append(registro)
 
 
-MODELO_VISAO_PADRAO = "Qwen/Qwen3-VL-32B-Instruct"
+# Medido em 07/11/2026 no Featherless: Qwen3-VL-32B descartava a imagem (59 tokens de entrada) e
+# devolvia lixo; DeepSeek-V4.1-Flash, Qwen3-VL-8B e Qwen2.5-VL-72B leram certo em todas as tentativas.
+MODELO_VISAO_PADRAO = "Qwen/Qwen3-VL-8B-Instruct"
+INSTRUCAO_TRANSCRICAO = "Transcreva este documento."
 
 SISTEMA_TRANSCRICAO = (
     "Transcreva todo o texto visível no documento, na ordem em que aparece, sem resumir, corrigir ou completar. "
@@ -188,7 +200,7 @@ class FeatherlessTranscritor:
     """
 
     modelo: str = field(default_factory=lambda: os.environ.get("FEATHERLESS_VISION_MODEL", MODELO_VISAO_PADRAO))
-    timeout_s: float = 90.0
+    timeout_s: float = 60.0
     trace: list[RegistroChamada] = field(default_factory=list)
     _cliente: object | None = None
 
@@ -199,19 +211,21 @@ class FeatherlessTranscritor:
         registro = RegistroChamada("transcrever", self.modelo, 0, None, None, via_texto=True)
         try:
             if self._cliente is None:
-                from openai import OpenAI
-
-                chave = os.environ.get("FEATHERLESS_API_KEY")
-                if not chave:
-                    raise ErroLLM("FEATHERLESS_API_KEY não definida")
-                self._cliente = OpenAI(base_url=FEATHERLESS_BASE_URL, api_key=chave, timeout=self.timeout_s)
+                self._cliente = novo_cliente_featherless(timeout_s=self.timeout_s)
             url = f"data:{mime};base64,{base64.b64encode(imagem).decode()}"
             resposta = self._cliente.chat.completions.create(
                 model=self.modelo,
                 temperature=0,
                 messages=[
                     {"role": "system", "content": SISTEMA_TRANSCRICAO},
-                    {"role": "user", "content": [{"type": "image_url", "image_url": {"url": url}}]},
+                    # Só a imagem, sem instrução em texto, fez modelos de visão degenerarem nos testes.
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": INSTRUCAO_TRANSCRICAO},
+                            {"type": "image_url", "image_url": {"url": url}},
+                        ],
+                    },
                 ],
             )
             uso = getattr(resposta, "usage", None)

@@ -23,7 +23,7 @@ services:
       - key: FEATHERLESS_MODEL
         value: deepseek-ai/DeepSeek-V4.1-Flash-1017
       - key: FEATHERLESS_VISION_MODEL
-        value: Qwen/Qwen3-VL-32B-Instruct
+        value: deepseek-ai/DeepSeek-V4.1-Flash-1017 # lê imagem; o Qwen3-VL-32B do Featherless descartava a imagem
       - key: API_TOKEN
         generateValue: true # exigido em Authorization: Bearer para enviar documento e aprovar
       - key: HOJE

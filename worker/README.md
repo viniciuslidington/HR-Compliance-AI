@@ -75,7 +75,7 @@ sobrevive a deploy e restart; o serviço fica com uma instância e cada deploy t
   idempotente por hash, resultado da leitura e da conferência, aprovação humana e `validades_vigentes()`, que
   alimenta `situacao_matriz()`. A transcrição de ASO nunca é gravada.
 
-Leitura real de certificados: `uv run pytest tests/test_documentos_vivo.py -s` (visão `Qwen/Qwen3-VL-32B-Instruct`,
+Leitura real de certificados: `uv run pytest tests/test_documentos_vivo.py -s` (visão `deepseek-ai/DeepSeek-V4.1-Flash-1017`,
 configurável em `FEATHERLESS_VISION_MODEL`). Certificados fictícios de teste em `tests/fixtures/`, gerados por
 `scripts/gerar_certificado_ficticio.swift` (macOS).
 
