@@ -11,6 +11,15 @@ documentos à mão.
 
 ---
 
+## Decisões de 07/11 (após o desenho "Agente de Admissão" do Marcelo)
+
+| Tema | Decisão |
+|---|---|
+| Escopo de documentos | Continua setorial: ASO, NR-10, NR-35. Documentos genéricos (RG, CPF, comprovante) ficam fora do MVP |
+| Canal com o colaborador | **WhatsApp Web simulado**: uma tela de chat no próprio app, sem Meta, sem número e sem modelo de mensagem aprovado. O agente fala por uma interface de canal; WhatsApp real é outra implementação depois |
+| Renovação | Entra no MVP: aviso com antecedência, cobrança, documento novo lido e conferido, card P0 de impedimento |
+| Do desenho do Marcelo, entra | Escalar quando o mesmo documento falha 3 vezes; régua de cobrança com intensidade crescente até o prazo; tela de escalações no painel do RH; sistema de destino mock |
+
 ## 1. Por que agora faz mais sentido como agente
 
 | | Pendências de ponto | Documentos em setor regulado |
