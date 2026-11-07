@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ApiProvider } from "../api/contexto";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <ApiProvider>{children}</ApiProvider>
+      </body>
     </html>
   );
 }
