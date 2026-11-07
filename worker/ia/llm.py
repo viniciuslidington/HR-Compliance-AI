@@ -169,3 +169,64 @@ class FeatherlessLLM:
         finally:
             registro.duracao_ms = int((time.monotonic() - inicio) * 1000)
             self.trace.append(registro)
+
+
+MODELO_VISAO_PADRAO = "Qwen/Qwen3-VL-32B-Instruct"
+
+SISTEMA_TRANSCRICAO = (
+    "Transcreva todo o texto visível no documento, na ordem em que aparece, sem resumir, corrigir ou completar. "
+    "Se algo estiver ilegível, escreva [ilegível]."
+)
+
+
+@dataclass
+class FeatherlessTranscritor:
+    """Transcrição de imagem por modelo de visão. Modelo em FEATHERLESS_VISION_MODEL.
+
+    Só devolve texto: modelos de visão testados não respeitam chamada de ferramenta,
+    então a extração estruturada fica com o modelo de texto (ver ia/documentos.py).
+    """
+
+    modelo: str = field(default_factory=lambda: os.environ.get("FEATHERLESS_VISION_MODEL", MODELO_VISAO_PADRAO))
+    timeout_s: float = 90.0
+    trace: list[RegistroChamada] = field(default_factory=list)
+    _cliente: object | None = None
+
+    def transcrever(self, imagem: bytes, mime: str) -> str:
+        import base64
+
+        inicio = time.monotonic()
+        registro = RegistroChamada("transcrever", self.modelo, 0, None, None, via_texto=True)
+        try:
+            if self._cliente is None:
+                from openai import OpenAI
+
+                chave = os.environ.get("FEATHERLESS_API_KEY")
+                if not chave:
+                    raise ErroLLM("FEATHERLESS_API_KEY não definida")
+                self._cliente = OpenAI(base_url=FEATHERLESS_BASE_URL, api_key=chave, timeout=self.timeout_s)
+            url = f"data:{mime};base64,{base64.b64encode(imagem).decode()}"
+            resposta = self._cliente.chat.completions.create(
+                model=self.modelo,
+                temperature=0,
+                messages=[
+                    {"role": "system", "content": SISTEMA_TRANSCRICAO},
+                    {"role": "user", "content": [{"type": "image_url", "image_url": {"url": url}}]},
+                ],
+            )
+            uso = getattr(resposta, "usage", None)
+            registro.tokens_entrada = getattr(uso, "prompt_tokens", None)
+            registro.tokens_saida = getattr(uso, "completion_tokens", None)
+            texto = remover_pensamento(resposta.choices[0].message.content or "")
+            if not texto:
+                raise ErroLLM("transcrição vazia")
+            return texto
+        except ErroLLM as erro:
+            registro.erro = str(erro)
+            raise
+        except Exception as erro:
+            registro.erro = repr(erro)
+            raise ErroLLM(str(erro)) from erro
+        finally:
+            registro.duracao_ms = int((time.monotonic() - inicio) * 1000)
+            self.trace.append(registro)

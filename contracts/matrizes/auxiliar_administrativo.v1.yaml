@@ -1,0 +1,6 @@
+cargo: auxiliar_administrativo
+versao: 1
+exigencias:
+  - tipo: aso
+    validade_meses: 12
+    antecedencia_dias: 30

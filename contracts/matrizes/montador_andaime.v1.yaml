@@ -1,0 +1,12 @@
+cargo: montador_andaime
+versao: 1
+exigencias:
+  - tipo: aso
+    validade_meses: 12
+    antecedencia_dias: 30
+    aso_funcoes_exigidas: [altura]
+  - tipo: nr35
+    validade_meses: 24
+    antecedencia_dias: 45
+    carga_minima_horas: 8
+    exige_responsavel_tecnico: true

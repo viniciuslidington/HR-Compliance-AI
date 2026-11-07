@@ -1,0 +1,19 @@
+# Matriz de exigências por cargo (playbook documental). Periodicidades são referência da demo:
+# validar com o SESMT antes de uso real. A validade é calculada pelo código a partir da data de realização.
+cargo: eletricista_manutencao
+versao: 1
+exigencias:
+  - tipo: aso
+    validade_meses: 12          # conforme PCMSO; 12 meses na demo
+    antecedencia_dias: 30
+    aso_funcoes_exigidas: [eletricidade, altura]
+  - tipo: nr10
+    validade_meses: 24          # reciclagem bienal
+    antecedencia_dias: 45
+    carga_minima_horas: 40
+    exige_responsavel_tecnico: true
+  - tipo: nr35
+    validade_meses: 24          # periódico bienal
+    antecedencia_dias: 45
+    carga_minima_horas: 8
+    exige_responsavel_tecnico: true

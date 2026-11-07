@@ -37,8 +37,22 @@ ferramenta nativa, de 1,3 a 5,4 s cada.
 | `compilador.py` | Português do DP para rascunho de playbook validado; versão e id definidos pelo código. `simular_playbook()` conta o que a versão teria fechado sozinha | sim |
 | `fila.py` | Fila do DP: urgência P0 (fechamento em até 24h ou mexe em pagamento), P1 (até 72h), P2; atribuição à menor carga ponderada entre elegíveis (presença, escopo da empresa, limite), round robin no empate, reatribuição de P0 não aceito em 2h com aviso à liderança | não |
 | `card.py` | Card de decisão: título, linha "o que decidir" e resumo pelo LLM sob guarda de fidelidade; urgência, prazo, evidências e botões pelo código | sim |
+| `matriz.py` | Matriz de exigências por cargo (`contracts/matrizes/`), validade calculada pela periodicidade, situação por pessoa: válido, a vencer, vencido (com data de impedimento) ou faltando | não |
+| `documentos.py` | Leitura em dois passos (visão transcreve, texto extrai, cada campo conferido contra a transcrição), conferência em código (identidade, CPF e CNPJ com dígito, carga, responsável técnico, funções do ASO, validade) e decisão: aceitar sozinho, pedir aprovação, recusar com motivo ou escalar. Transcrição de ASO não é devolvida | sim |
 | `config.py` | Lê `worker/.env` sem sobrescrever o ambiente | não |
 | `estrategico.py` | Autonomia conquistada: elegibilidade (≥ 30 decisões, ≥ 95% na primeira proposta, 0 reaberturas), v+1 no teto da política e sugestão em que todo número vem do achado | sim |
+
+## Anexos (`infra/anexos.py`)
+
+- **Bucket:** arquivos originais imutáveis, chave `<tenant>/anexos/<sha256>` ou `<tenant>/sensivel/<sha256>` para ASO.
+  `BucketLocal` no hackathon; um bucket S3-compatível implementa a mesma interface (`salvar`, `ler`) no deploy.
+- **Banco:** `RepositorioAnexos` (SQLite no hackathon, PostgreSQL com RLS por tenant no piloto). Recebimento
+  idempotente por hash, resultado da leitura e da conferência, aprovação humana e `validades_vigentes()`, que
+  alimenta `situacao_matriz()`. A transcrição de ASO nunca é gravada.
+
+Leitura real de certificados: `uv run pytest tests/test_documentos_vivo.py -s` (visão `Qwen/Qwen3-VL-32B-Instruct`,
+configurável em `FEATHERLESS_VISION_MODEL`). Certificados fictícios de teste em `tests/fixtures/`, gerados por
+`scripts/gerar_certificado_ficticio.swift` (macOS).
 
 ## Contratos usados
 
