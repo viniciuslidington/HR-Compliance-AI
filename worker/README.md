@@ -39,10 +39,15 @@ uv run python scripts/fluxos.py todos --detalhe
 
 ```bash
 uv run uvicorn api:app_do_ambiente --factory --reload   # local, lê worker/.env
+# Abra http://127.0.0.1:8000/ no navegador
 ```
 
 | Rota | O que faz | Token |
 |---|---|---|
+| `GET /` | Interface de teste: colaboradores, anexos, conversa, régua e fila | não |
+| `GET /fila` | Aprovações pendentes e cards do DP | não |
+| `GET /pessoas/{id}/mensagens` | Conversa simulada do colaborador | não |
+| `POST /regua/rodar?dia=AAAA-MM-DD` | Executa a régua na data simulada | sim |
 | `GET /saude` | Status, data em uso e modelos configurados | não |
 | `GET /pessoas` | Funcionários do seed (`contracts/seed/funcionarios.json`) | não |
 | `GET /pessoas/{id}/matriz` | Situação documental: válido, a vencer, vencido, faltando | não |
@@ -103,3 +108,24 @@ configurável em `FEATHERLESS_VISION_MODEL`). Certificados fictícios de teste e
 
 Máquina de estados persistente, agenda de jobs, outbox de eventos (C5), API C2 e clientes do ponto de
 teste (C1). Esta camada expõe funções puras para o runtime do worker chamar.
+
+### Usar a interface
+
+Selecione um colaborador, escolha o documento e envie uma imagem PNG, JPEG ou WebP de até 10 MB.
+A análise exibe as etapas e a mensagem simulada. Quando necessário, aprove na fila do DP; a matriz
+é atualizada após a aprovação. Na régua, escolha uma data para gerar os lembretes e impedimentos
+correspondentes. A data simulada afeta apenas a execução da régua; a análise usa `HOJE` ou a data atual.
+
+Se `API_TOKEN` estiver configurado, informe-o no botão **Chave de acesso**; ele fica na sessão do navegador.
+Mensagens, cards e distribuição são preservados no SQLite. O canal é simulado, não envia WhatsApp.
+A régua roda automaticamente uma vez por dia enquanto o servidor está ativo; `HOJE` também controla
+o dia dessa execução. O destino registra eventos simulados de conclusão documental, não é uma integração
+com o eSocial. O painel sugere autonomia por emissor e tipo a partir de 30 decisões humanas, com pelo
+menos 95% aprovadas; o DP precisa ativá-la. A contagem usa decisões disponíveis no banco e não mede
+reaberturas ou janela de tempo. A API não aceita PDF. Use os documentos fictícios de `tests/fixtures/` para a demonstração.
+
+
+Inicie a admissão na tela para o agente pedir os documentos faltantes. Ao completar a matriz, ele
+registra um evento simulado de conclusão. Respostas no chat são classificadas por IA; mensagens
+ambíguas são encaminhadas ao DP e o texto recebido não é armazenado. Cards podem receber registro
+de contato, pedido de reenvio ou conclusão manual.

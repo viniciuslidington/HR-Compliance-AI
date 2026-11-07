@@ -15,6 +15,7 @@ WhatsApp, portal) só as entrega. Fila e mensagens ficam em memória neste MVP.
 from __future__ import annotations
 
 import time
+import uuid
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -93,7 +94,7 @@ class AgenteDocumental:
         return Etapa(nome="matriz", resumo=resumo, dados={"itens": estados, "completa": completa})
 
     def _escalar_para_fila(self, caso: ResumoCaso, prazo: datetime, agora: datetime, acoes: list[str]) -> list[Etapa]:
-        tarefa = Tarefa(id=f"T-{len(self.tarefas) + 1}", caso_id=caso.caso_id, empresa_id=self.tenant, criada_em=agora, prazo=prazo)
+        tarefa = Tarefa(id=f"T-{uuid.uuid4().hex[:12]}", caso_id=caso.caso_id, empresa_id=self.tenant, criada_em=agora, prazo=prazo)
         atribuicao = atribuir(tarefa, self.analistas, self.tarefas, agora, ponteiro=self.ponteiro)
         self.ponteiro = atribuicao.ponteiro
         tarefa = tarefa.model_copy(update={"atribuida_a": atribuicao.analista_id, "atribuida_em": agora})
@@ -165,6 +166,12 @@ class AgenteDocumental:
         except ErroLLM as erro:
             problemas = ["leitura_indisponivel"]
             etapas.append(Etapa(nome="transcricao", resumo=f"falhou: {str(erro)[:200]}", duracao_ms=int((time.monotonic() - inicio) * 1000)))
+
+        if extracao is not None and extracao.tipo == "aso":
+            for etapa in etapas:
+                if etapa.nome == "transcricao":
+                    etapa.resumo = "Transcrição oculta: dado de saúde"
+                    etapa.dados = {}
 
         if extracao is not None:
             conferencia = conferir_documento(extracao, pessoa, exigencia, hoje)

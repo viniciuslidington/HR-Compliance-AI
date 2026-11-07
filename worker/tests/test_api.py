@@ -21,7 +21,7 @@ def _cliente(tmp_path, *, respostas=None, transcritor=None, token=None):
     app = criar_app(
         dados_dir=tmp_path,
         transcritor=transcritor or TranscritorFixo(TRANSCRICAO_NR35),
-        llm=LLMRoteirizado(list(respostas or [])),
+        llm=LLMRoteirizado(list(respostas or []) + [ErroLLM("card indisponível"), ErroLLM("card indisponível")]),
         hoje=lambda: HOJE,
         api_token=token,
     )
@@ -142,3 +142,109 @@ def test_escrita_com_token_certo_passa(tmp_path):
 
 def test_leitura_nao_exige_token(tmp_path):
     assert _cliente(tmp_path, token="segredo").get("/pessoas/F-12/matriz").status_code == 200
+
+
+def test_fluxo_persiste_mensagens_e_aprovacao_apos_reinicio(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    resultado = cliente.post("/pessoas/F-12/documentos", params={"tipo": "nr35"}, files={"arquivo": PNG}).json()
+    assert {"transcricao", "extracao", "conferencia", "decisao", "mensagem"} <= {e["nome"] for e in resultado["etapas"]}
+    assert len(cliente.get("/fila").json()["aprovacoes"]) == 1
+    reiniciado = _cliente(tmp_path)
+    assert len(reiniciado.get("/pessoas/F-12/mensagens").json()) == 1
+    assert reiniciado.post(f"/anexos/{resultado['anexo_id']}/aprovar", json={"aprovador": "DP"}).status_code == 200
+    assert reiniciado.get("/fila").json()["aprovacoes"] == []
+    duplicado = reiniciado.post("/pessoas/F-12/documentos", params={"tipo": "nr35"}, files={"arquivo": PNG}).json()
+    assert duplicado["duplicado"] and duplicado["decisao"] == "aprovado"
+
+
+def test_regua_persiste_card_e_nao_repete_impedimento(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    anexo = cliente.post("/pessoas/F-12/documentos", params={"tipo": "nr35"}, files={"arquivo": PNG}).json()["anexo_id"]
+    cliente.post(f"/anexos/{anexo}/aprovar", json={"aprovador": "DP"})
+    reiniciado = _cliente(tmp_path)
+    resposta = reiniciado.post("/regua/rodar?dia=2026-12-03").json()
+    assert any(e["nome"] == "card" and e["dados"]["urgencia"] == "P0" for e in resposta["etapas"])
+    outro = _cliente(tmp_path)
+    assert len(outro.get("/fila").json()["cards"]) == 1
+    assert outro.post("/regua/rodar?dia=2026-12-03").json()["etapas"] == []
+
+
+def test_interface_e_acoes_exigem_token(tmp_path):
+    cliente = _cliente(tmp_path, token="segredo")
+    assert cliente.get("/").status_code == 200
+    assert cliente.get("/static/app.js").status_code == 200
+    assert cliente.post("/regua/rodar?dia=2026-12-03").status_code == 401
+
+
+def test_iniciar_admissao_pede_documentos_uma_so_vez_e_conclui_no_destino_mock(tmp_path):
+    cliente = _cliente(tmp_path)
+    primeira = cliente.post('/pessoas/F-40/admissao/iniciar').json()
+    assert primeira['iniciada']
+    assert 'ASO' in cliente.get('/pessoas/F-40/mensagens').json()[0]['texto']
+    assert not cliente.post('/pessoas/F-40/admissao/iniciar').json()['iniciada']
+    # Simula um ASO aprovado antes de testar a conclusão idempotente.
+    import sqlite3
+    with sqlite3.connect(tmp_path / 'anexos.db') as db:
+        db.execute("INSERT INTO anexos (id,tenant,funcionario_id,tipo_esperado,sha256,mime,tamanho,chave,recebido_em,status,validade_ate) VALUES ('aso1','demo','F-40','aso','abc','image/png',1,'demo/sensivel/abc','2026-11-07','pedir_aprovacao','2027-11-07')")
+    assert cliente.post('/anexos/aso1/aprovar', json={'aprovador': 'DP'}).status_code == 200
+    eventos = cliente.get('/destino/eventos').json()
+    assert len(eventos) == 1 and eventos[0]['simulado'] is True
+    assert 'concluída' in cliente.get('/pessoas/F-40/mensagens').json()[-1]['texto']
+    assert len(_cliente(tmp_path).get('/destino/eventos').json()) == 1
+
+
+def test_resposta_documental_e_card_com_acoes(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[{'tipo': 'nao_tem', 'trecho': 'não tenho'}, ErroLLM('fora'), ErroLLM('fora')])
+    resposta = cliente.post('/pessoas/F-12/mensagens', json={'texto': 'não tenho o certificado'}).json()
+    assert resposta['classificacao'] == 'nao_tem'
+    card = cliente.get('/fila').json()['cards'][0]
+    assert 'não tenho o certificado' not in str(cliente.get('/fila').json())
+    tarefa = card['tarefa_id']
+    assert cliente.post(f'/fila/{tarefa}/acao', json={'acao':'registrar_contato','responsavel':'DP'}).json()['status'] == 'em_andamento'
+    assert cliente.post(f'/fila/{tarefa}/acao', json={'acao':'concluir','responsavel':'DP'}).json()['status'] == 'concluida'
+    assert _cliente(tmp_path).get('/fila').json()['cards'][0]['status'] == 'concluida'
+    assert cliente.post(f'/fila/{tarefa}/acao', json={'acao':'concluir','responsavel':'DP'}).status_code == 409
+
+
+def test_autonomia_exige_historico_e_ativacao_humana_por_tipo(tmp_path):
+    import json
+    import sqlite3
+    cliente = _cliente(tmp_path)
+    pedido = {'emissor':'12345678000195', 'tipo':'nr35', 'aprovador':'DP'}
+    assert cliente.post('/autonomia/ativar', json=pedido).status_code == 409
+    with sqlite3.connect(tmp_path / 'anexos.db') as db:
+        for i in range(30):
+            db.execute("INSERT INTO anexos (id,tenant,funcionario_id,tipo_esperado,sha256,mime,tamanho,chave,recebido_em,status,conferencia_json) VALUES (?,?,?,?,?,?,?,?,?,?,?)", (str(i), 'demo','F-12','nr35',str(i),'image/png',1,'x','2026-11-07','aprovado',json.dumps({'emissor_cnpj':'12345678000195'})))
+    assert cliente.get('/autonomia').json()[0]['elegivel']
+    assert cliente.post('/autonomia/ativar', json=pedido).json()['ativa']
+    assert _cliente(tmp_path).get('/autonomia').json()[0]['ativa']
+    assert cliente.post('/autonomia/ativar', json={**pedido, 'tipo':'nr10'}).status_code == 409
+    com_leitura = _cliente(tmp_path, respostas=[_extracao_llm()])
+    resultado = com_leitura.post('/pessoas/F-12/documentos', params={'tipo':'nr35'}, files={'arquivo':PNG}).json()
+    assert resultado['decisao'] == 'aceitar_sozinho'
+
+
+def test_resposta_sem_evidencia_e_escalada_sem_copiar_texto(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[{'tipo':'vai_enviar','trecho':'inventado'}, ErroLLM('fora'), ErroLLM('fora')])
+    resposta = cliente.post('/pessoas/F-12/mensagens', json={'texto':'mensagem particular'}).json()
+    assert resposta['classificacao'] == 'outra'
+    assert len(cliente.get('/fila').json()['cards']) == 1
+    assert 'mensagem particular' not in str(cliente.get('/pessoas/F-12/mensagens').json())
+
+
+def test_agendamento_roda_no_inicio_e_e_idempotente(tmp_path):
+    import sqlite3
+    import time
+    app = criar_app(dados_dir=tmp_path, transcritor=TranscritorFixo(TRANSCRICAO_NR35),
+                    llm=LLMRoteirizado([]), hoje=lambda: HOJE, agendamento_automatico=True)
+    with TestClient(app):
+        limite = time.monotonic() + 2
+        while time.monotonic() < limite:
+            with sqlite3.connect(tmp_path / 'anexos.db') as db:
+                if db.execute('SELECT COUNT(*) FROM execucoes_regua').fetchone()[0]:
+                    break
+            time.sleep(.01)
+        else:
+            pytest.fail('a régua automática não foi executada')
+    with sqlite3.connect(tmp_path / 'anexos.db') as db:
+        assert db.execute('SELECT dia FROM execucoes_regua').fetchall() == [('2026-11-07',)]
