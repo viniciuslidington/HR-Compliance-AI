@@ -66,9 +66,39 @@ describe("NovaAdmissao", () => {
     expect(ao_criar).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["5511987654321", "+5511987654321"],
+    ["11987654321", "+5511987654321"],
+    ["+5511987654321", "+5511987654321"],
+  ])("guarda o WhatsApp %s como %s", async (digitado, guardado) => {
+    const { api, ao_criar } = montar();
+    await preencher({ whatsapp: digitado });
+    await userEvent.click(screen.getByRole("button", { name: "Criar admissão" }));
+    expect(ao_criar).toHaveBeenCalledTimes(1);
+    expect(api.obter_admissao(ao_criar.mock.calls[0][0] as string)!.admissao.whatsapp).toBe(guardado);
+  });
+
+  it("bloqueia +1234567890 (internacional com 10 dígitos)", async () => {
+    const { ao_criar } = montar();
+    await preencher({ whatsapp: "+1234567890" });
+    await userEvent.click(screen.getByRole("button", { name: "Criar admissão" }));
+    expect(screen.getByText(/Informe um WhatsApp com DDD/)).toBeInTheDocument();
+    expect(ao_criar).not.toHaveBeenCalled();
+  });
+
+  it("não aceita um segundo envio enquanto cria", async () => {
+    const { ao_criar } = montar();
+    await preencher();
+    const botao = screen.getByRole("button", { name: "Criar admissão" });
+    await userEvent.click(botao);
+    await userEvent.click(botao);
+    expect(ao_criar).toHaveBeenCalledTimes(1);
+  });
+
   it("mascara o WhatsApp", () => {
     expect(mascarar_whatsapp("11987654321")).toBe("(11) 98765-4321");
     expect(mascarar_whatsapp("+5511987654321")).toBe("+55 (11) 98765-4321");
+    expect(mascarar_whatsapp("5511987654321")).toBe("+55 (11) 98765-4321");
     expect(mascarar_whatsapp("1")).toBe("(1");
   });
 });

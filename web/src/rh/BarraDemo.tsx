@@ -41,7 +41,7 @@ export function BarraDemo() {
   return (
     <footer className={estilos.barra} aria-label="Modo demo">
       <span className={`text-label ${estilos.rotulo}`}>Modo demo</span>
-      <label className={`text-caption ${estilos.campo}`}>
+      <label className={`text-nav ${estilos.campo}`}>
         <span className={estilos.legenda}>Admissão</span>
         <Select
           className={estilos.select}

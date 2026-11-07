@@ -18,10 +18,15 @@ export interface NovaAdmissaoProps {
 
 type Erros = Partial<Record<"nome" | "whatsapp" | "cargo" | "data_inicio" | "documentos", string>>;
 
-/** Máscara leve: "(11) 98765-4321", ou "+55 (11) 98765-4321" quando o RH começa com "+". */
+/** O número já traz o país: com "+", ou 12–13 dígitos começando por 55 (DDD 55 tem só 10–11 no total). */
+function tem_pais(bruto: string, digitos: string): boolean {
+  return bruto.trim().startsWith("+") || (digitos.length >= 12 && digitos.startsWith("55"));
+}
+
+/** Máscara leve: "(11) 98765-4321", ou "+55 (11) 98765-4321" quando o número traz o país. Nunca corta dígitos válidos. */
 export function mascarar_whatsapp(bruto: string): string {
-  const com_pais = bruto.trim().startsWith("+");
-  const digitos = bruto.replace(/\D/g, "").slice(0, com_pais ? 13 : 11);
+  const digitos = bruto.replace(/\D/g, "").slice(0, 13);
+  const com_pais = tem_pais(bruto, digitos);
   const pais = com_pais ? digitos.slice(0, 2) : "";
   const resto = com_pais ? digitos.slice(2) : digitos;
   const ddd = resto.slice(0, 2);
@@ -32,9 +37,14 @@ export function mascarar_whatsapp(bruto: string): string {
   return saida;
 }
 
-function whatsapp_para_guardar(valor: string): string {
+/** Devolve o número no formato "+5511987654321", ou null se não for válido. */
+export function whatsapp_para_guardar(valor: string): string | null {
   const digitos = valor.replace(/\D/g, "");
-  return valor.trim().startsWith("+") ? `+${digitos}` : `+55${digitos}`;
+  const n = digitos.length;
+  if (valor.trim().startsWith("+")) return n >= 12 && n <= 13 ? `+${digitos}` : null;
+  if (n >= 10 && n <= 11) return `+55${digitos}`;
+  if (n >= 12 && n <= 13 && digitos.startsWith("55")) return `+${digitos}`;
+  return null;
 }
 
 export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
@@ -53,6 +63,7 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
   const [modelo_escolhido, setModelo] = useState<string | null>(null);
   const [lista, setLista] = useState<string[] | null>(null);
   const [erros, setErros] = useState<Erros>({});
+  const [criando, setCriando] = useState(false);
 
   if (!dados) {
     return (
@@ -78,21 +89,23 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
 
   function enviar(e: FormEvent) {
     e.preventDefault();
+    if (criando) return;
     const novos: Erros = {};
     if (!nome.trim()) novos.nome = "Informe o nome do colaborador.";
-    const n_digitos = whatsapp.replace(/\D/g, "").length;
-    if (n_digitos < 10 || n_digitos > 13) novos.whatsapp = "Informe um WhatsApp com DDD, por exemplo (11) 98765-4321.";
+    const whatsapp_final = whatsapp_para_guardar(whatsapp);
+    if (!whatsapp_final) novos.whatsapp = "Informe um WhatsApp com DDD, por exemplo (11) 98765-4321.";
     if (!cargo.trim()) novos.cargo = "Informe o cargo.";
     if (!data_inicio) novos.data_inicio = "Escolha a data de início.";
     else if (data_inicio < hoje) novos.data_inicio = "A data de início não pode ser anterior a hoje.";
     if (documentos.length === 0) novos.documentos = "Escolha ao menos um documento para o agente pedir.";
     setErros(novos);
     if (Object.keys(novos).length > 0) return;
+    setCriando(true);
 
     const criada = executar((api) =>
       api.criar_admissao({
         nome: nome.trim(),
-        whatsapp: whatsapp_para_guardar(whatsapp),
+        whatsapp: whatsapp_final!,
         cargo: cargo.trim(),
         data_inicio,
         modelo_id,
@@ -174,7 +187,7 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
                       key={t.id}
                       variante="secundario"
                       tamanho="sm"
-                                      onClick={() => {
+                      onClick={() => {
                         setLista([...documentos, t.id]);
                         setErros((e) => ({ ...e, documentos: undefined }));
                       }}
@@ -188,7 +201,9 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
           </fieldset>
 
           <div className={estilos.rodape}>
-            <Button type="submit">Criar admissão</Button>
+            <Button type="submit" disabled={criando}>
+              Criar admissão
+            </Button>
             <Button variante="secundario" onClick={ao_cancelar}>
               Cancelar
             </Button>

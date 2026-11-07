@@ -92,11 +92,11 @@ export function ListaAdmissoes({ ao_abrir }: ListaAdmissoesProps) {
     <div>
       <Cabecalho />
 
-      <dl className={estilos.resumo}>
+      <dl role="group" className={estilos.resumo} aria-label="Resumo por status">
         {RESUMO.filter((s) => s.status !== "criada" || resumo.criada > 0).map((s) => (
           <div key={s.status} className={estilos.numero}>
-            <dd className={`text-stat ${estilos.valor}`}>{resumo[s.status]}</dd>
             <dt className="text-body-sm">{s.rotulo}</dt>
+            <dd className={`text-stat ${estilos.valor}`}>{resumo[s.status]}</dd>
           </div>
         ))}
       </dl>

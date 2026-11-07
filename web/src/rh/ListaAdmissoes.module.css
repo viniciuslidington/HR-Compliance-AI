@@ -17,7 +17,7 @@
 }
 .numero {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: var(--space-1);
   margin: 0;
 }
@@ -27,6 +27,7 @@
 .valor {
   margin: 0;
   color: var(--orange-text);
+  order: -1;
 }
 .avisos {
   display: flex;

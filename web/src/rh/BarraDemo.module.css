@@ -19,8 +19,10 @@
 .legenda {
   color: var(--ink-subtle);
 }
-.select {
+.campo .select {
   min-height: 40px;
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
 }
 .acoes {
   display: flex;

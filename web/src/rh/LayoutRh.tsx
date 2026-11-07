@@ -20,7 +20,7 @@ const ITENS = [
 
 /** Item ativo: `/rh` só casa exato (ou com uma admissão aberta); os demais casam por prefixo. */
 function ativo(href: string, caminho: string): boolean {
-  if (href === "/rh") return caminho === "/rh" || (caminho.startsWith("/rh/admissoes/") && !caminho.startsWith("/rh/admissoes/nova"));
+  if (href === "/rh") return caminho === "/rh" || (caminho.startsWith("/rh/admissoes/") && caminho !== "/rh/admissoes/nova");
   return caminho === href || caminho.startsWith(`${href}/`);
 }
 
@@ -30,7 +30,7 @@ export function LayoutRh({ caminho_atual, children }: LayoutRhProps) {
   return (
     <div className={estilos.raiz}>
       <nav className={estilos.nav} aria-label="Painel do RH">
-        <p className={`text-display-h3 ${estilos.marca}`}>Admissão</p>
+        <p className={`text-display-h2-sm ${estilos.marca}`}>Admissão</p>
         <ul className={estilos.lista}>
           {ITENS.map((item) => {
             const e_ativo = ativo(item.href, caminho_atual);

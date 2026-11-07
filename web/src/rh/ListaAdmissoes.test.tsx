@@ -9,15 +9,19 @@ describe("ListaAdmissoes", () => {
     const api = criar_api();
     render(<Com api={api}><ListaAdmissoes ao_abrir={() => {}} /></Com>);
     const r = api.resumo_status();
-    for (const [rotulo, n] of [["Em coleta", r.em_coleta], ["Escalada", r.escalada], ["Concluída", r.concluida], ["Criada", r.criada]] as const) {
-      if (rotulo === "Criada" && n === 0) {
-        expect(screen.queryByText("Criada", { selector: "dt" })).toBeNull();
-        continue;
-      }
-      const termo = screen.getAllByText(rotulo, { selector: "dt" })[0];
-      expect(termo.parentElement!).toHaveTextContent(String(n));
-      expect(within(termo.parentElement!).getByText(String(n))).toBeInTheDocument();
+    const resumo = within(screen.getByRole("group", { name: "Resumo por status" }));
+    const esperado = [
+      ["Em coleta", r.em_coleta],
+      ["Escalada", r.escalada],
+      ["Concluída", r.concluida],
+    ] as const;
+    for (const [rotulo, n] of esperado) {
+      const item = resumo.getByText(rotulo).parentElement!;
+      expect(within(item).getByText(String(n))).toBeInTheDocument();
     }
+    // "Criada" só aparece quando há alguma; o seed não tem nenhuma.
+    expect(r.criada).toBe(0);
+    expect(resumo.queryByText("Criada")).toBeNull();
   });
 
   it("o aviso de escalações aponta para /rh/escalacoes", () => {
