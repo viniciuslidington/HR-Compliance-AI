@@ -21,7 +21,8 @@ const LIMITE_TENTATIVAS = 3;
 function escolher_alvo(pendentes: DocumentoAdmissao[], nome_arquivo: string): DocumentoAdmissao | undefined {
   const candidatos = pendentes.map((d) => d.tipo_documento_id).filter((t): t is string => t !== null);
   const id = identificar_tipo(nome_arquivo, candidatos);
-  return pendentes.find((d) => d.tipo_documento_id === id) ?? pendentes[0];
+  const alvo = id ? pendentes.find((d) => d.tipo_documento_id === id) : undefined;
+  return alvo ?? pendentes[0];
 }
 
 export function receber_arquivo(

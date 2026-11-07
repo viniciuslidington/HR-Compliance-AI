@@ -206,6 +206,19 @@ describe("arquivo_recebido", () => {
     expect(e.mensagens.filter((m) => m.direcao === "entrada").pop()?.texto).toBe("outra-coisa.jpg");
   });
 
+  it("arquivo sem dica no nome vai ao primeiro pendente, não ao personalizado", () => {
+    const dados = input();
+    dados.documentos = [
+      { tipo_documento_id: "rg_cnh" },
+      { tipo_documento_id: null, descricao_personalizada: "Carteira de vacinação" },
+    ];
+    let e = aplicar(estado_vazio(), { tipo: "admissao_criada", dados }, AGORA);
+    e = enviar(e, e.admissoes[0].id, "foto.jpg");
+    expect(e.documentos[0].tentativas).toBe(1);
+    expect(e.documentos[1].tentativas).toBe(0);
+    expect(e.documentos[1].status).toBe("pendente");
+  });
+
   it("documento personalizado é aprovado ao receber um arquivo", () => {
     const dados = input();
     dados.documentos = [{ tipo_documento_id: null, descricao_personalizada: "Carteira de vacinação" }];
