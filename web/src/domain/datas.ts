@@ -22,7 +22,7 @@ export function formatar_data(iso: string): string {
   return `${d}/${m}/${a}`;
 }
 
-function data_local(agora: Date): string {
+export function data_local(agora: Date): string {
   const p = (n: number) => String(n).padStart(2, "0");
   return `${agora.getFullYear()}-${p(agora.getMonth() + 1)}-${p(agora.getDate())}`;
 }
