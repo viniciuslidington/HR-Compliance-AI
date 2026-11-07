@@ -6,7 +6,7 @@ function inconsistencia(texto: string): Motivo {
   return {
     codigo: "inconsistencia",
     texto,
-    o_que_fazer: "vou pedir para o time de RH conferir os documentos e te aviso em seguida",
+    o_que_fazer: "confirme se o nome e a data de nascimento estão corretos e mande de novo o documento certo",
     gravidade: "escalada",
   };
 }

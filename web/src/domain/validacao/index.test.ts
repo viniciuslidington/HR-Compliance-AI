@@ -78,6 +78,25 @@ describe("camada 2: regras", () => {
   });
 });
 
+describe("datas ausentes ou inválidas (camada 2)", () => {
+  const comp = (extra: Record<string, string>) =>
+    validar("comprovante_residencia", ok({ titular: "Maria", endereco: "Rua A", ...extra }));
+  const decl = (extra: Record<string, string>) =>
+    validar("declaracao_matricula", ok({ nome: "Maria da Silva", instituicao: "U", curso: "C", ...extra }));
+  it.each([[{}], [{ data_emissao: "31/02/2026" }], [{ data_emissao: "abc" }], [{ data_emissao: "2026-02-31" }]])(
+    "comprovante com data %j é recusado", (extra) => {
+      const r = comp(extra);
+      expect(r.aprovado).toBe(false);
+      expect(r.motivos[0].codigo).toBe("data_ilegivel");
+      expect(r.motivos[0].o_que_fazer).toMatch(/data/i);
+    });
+  it.each([[{}], [{ data: "31/02/2026" }], [{ data: "abc" }]])("declaração com data %j é recusada", (extra) => {
+    const r = decl(extra);
+    expect(r.aprovado).toBe(false);
+    expect(r.motivos[0].codigo).toBe("data_ilegivel");
+  });
+});
+
 describe("camada 3: consistência", () => {
   it("nome do CPF diferente do RG aprovado escala", () => {
     const r = validar("cpf", ok({ nome: "Mariana Souza", numero: "529.982.247-25" }), [rg_aprovado({ nome: "Maria da Silva" })]);
@@ -85,6 +104,8 @@ describe("camada 3: consistência", () => {
     expect(r.motivos).toHaveLength(1);
     expect(r.motivos[0].codigo).toBe("inconsistencia");
     expect(r.motivos[0].gravidade).toBe("escalada");
+    expect(r.motivos[0].o_que_fazer).not.toMatch(/RH/);
+    expect(r.motivos[0].o_que_fazer).toMatch(/confirm/i);
   });
   it("sem RG aprovado compara com o nome da admissão", () => {
     expect(validar("cpf", ok({ nome: "Maria da Silva", numero: "529.982.247-25" })).aprovado).toBe(true);

@@ -13,6 +13,21 @@ function mes_por_extenso(data: string): string {
   return MESES[Number(data.slice(5, 7)) - 1] ?? formatar_data(data);
 }
 
+function data_valida(data: string | undefined): data is string {
+  if (!data || !/^\d{4}-\d{2}-\d{2}$/.test(data)) return false;
+  const [a, m, d] = data.split("-").map(Number);
+  const dt = new Date(Date.UTC(a, m - 1, d));
+  return dt.getUTCFullYear() === a && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+}
+
+function data_ilegivel(): Motivo {
+  return recusa(
+    "data_ilegivel",
+    "não consegui ler a data do documento",
+    "mande uma nova foto em que a data de emissão apareça bem visível",
+  );
+}
+
 function recusa(codigo: string, texto: string, o_que_fazer: string): Motivo {
   return { codigo, texto, o_que_fazer, gravidade: "recusa" };
 }
@@ -53,7 +68,9 @@ export function validar_regras(
         }
         break;
       case "emitido_menos_90_dias":
-        if (d.data_emissao && dias_entre(d.data_emissao, hoje) >= JANELA_DIAS) {
+        if (!data_valida(d.data_emissao)) {
+          motivos.push(data_ilegivel());
+        } else if (dias_entre(d.data_emissao, hoje) >= JANELA_DIAS) {
           motivos.push(
             recusa(
               "comprovante_antigo",
@@ -64,7 +81,9 @@ export function validar_regras(
         }
         break;
       case "data_recente":
-        if (d.data && dias_entre(d.data, hoje) >= JANELA_DIAS) {
+        if (!data_valida(d.data)) {
+          motivos.push(data_ilegivel());
+        } else if (dias_entre(d.data, hoje) >= JANELA_DIAS) {
           motivos.push(
             recusa(
               "declaracao_antiga",
