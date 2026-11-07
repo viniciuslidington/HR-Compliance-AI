@@ -87,3 +87,10 @@ button.linha:focus-visible {
     transition: none;
   }
 }
+
+.item[data-selecionado="true"] .nome {
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
