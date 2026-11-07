@@ -55,6 +55,8 @@ export interface EnvioDocumento {
   arquivo_url: string;
   resultado: ResultadoEnvio;
   motivo: string | null;
+  /** Só no front: código do Motivo da recusa (alinhar com o worker). */
+  motivo_codigo?: string;
   criado_em: string;
 }
 
