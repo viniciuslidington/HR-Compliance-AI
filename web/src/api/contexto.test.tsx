@@ -1,4 +1,5 @@
 import { act, cleanup, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { ArmazenamentoMemoria } from "../store/armazenamento";
 import { ApiProvider, useAcao, useConsulta } from "./contexto";
@@ -75,5 +76,35 @@ describe("renderização no servidor", () => {
       </ApiProvider>,
     );
     expect(html).toContain("carregando");
+  });
+});
+
+describe("useConsulta: estabilidade", () => {
+  it("mantém a referência entre renders e recalcula quando uma dep muda", () => {
+    const api = new MockApi(new ArmazenamentoMemoria(), () => BASE);
+    const vistos: unknown[] = [];
+    function Tela() {
+      const [id, setId] = useState("adm_1");
+      const [, forcar] = useState(0);
+      const d = useConsulta((a) => a.obter_admissao(id), [id]);
+      vistos.push(d);
+      return (
+        <>
+          <button onClick={() => forcar((n) => n + 1)}>render</button>
+          <button onClick={() => setId("adm_2")}>trocar</button>
+        </>
+      );
+    }
+    render(
+      <ApiProvider api={api}>
+        <Tela />
+      </ApiProvider>,
+    );
+    act(() => screen.getByText("render").click());
+    const n = vistos.length;
+    expect(vistos[n - 1]).toBe(vistos[n - 2]);
+    expect(vistos[n - 1]).not.toBeNull();
+    act(() => screen.getByText("trocar").click());
+    expect(vistos[vistos.length - 1]).not.toBe(vistos[n - 1]);
   });
 });

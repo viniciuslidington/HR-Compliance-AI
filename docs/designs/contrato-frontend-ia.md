@@ -8,7 +8,11 @@ Este documento diz o que o front espera. Hoje tudo isso é entregue pela `MockAp
 A UI só fala com a `Api` (`web/src/api/api.ts`), e só por dois hooks de `web/src/api/contexto.tsx`:
 `useConsulta(api => ...)` para ler e `useAcao()` para mutar. Nenhuma tela importa `MockApi`, `domain/` ou
 `localStorage`. Trocar o mock pelo backend real é implementar `HttpApi` e mudar uma linha no `ApiProvider`.
-Como a `HttpApi` será assíncrona, os hooks absorvem isso (`useConsulta` já devolve `null` enquanto carrega).
+Hoje a `Api` é síncrona (`listar_admissoes(): AdmissaoResumo[]`) e `useConsulta` também. A `HttpApi` real vai exigir que
+os retornos da `Api` virem `Promise<...>` e que `useConsulta`/`useAcao` sejam adaptados (por exemplo, um cache alimentado
+por buscas assíncronas, com estados de carregando e erro). As telas não mudam, porque só usam os hooks.
+`useConsulta(fn, deps)`: `fn` pode ser inline; passe em `deps` os valores que ela captura (ex.: um id). O resultado
+mantém a mesma referência enquanto a revisão e as `deps` não mudam.
 
 ## O que será substituído
 

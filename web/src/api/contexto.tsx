@@ -63,16 +63,20 @@ export function useApi(): Api {
   return l.api;
 }
 
-/** Leitura reativa. `null` no servidor, na hidratação e até a Api existir: as telas mostram um esqueleto. */
-export function useConsulta<T>(fn: (api: Api) => T): T | null {
+/**
+ * Leitura reativa. `fn` pode ser inline; passe em `deps` os valores que ela captura (ex.: um id).
+ * O resultado mantém a mesma referência enquanto a revisão e as `deps` não mudam.
+ * `null` no servidor, na hidratação e até a Api existir: as telas mostram um esqueleto. */
+export function useConsulta<T>(fn: (api: Api) => T, deps: unknown[] = []): T | null {
   const l = useContext(ContextoApi);
   const rev = useSyncExternalStore(
     l ? l.subscribe : nunca_assina,
     l ? l.getRev : sem_rev,
     () => null,
   );
-  // `fn` entra nas dependências para que consultas com argumentos (ex.: um id) recalculem quando mudam.
-  return useMemo(() => (l && rev !== null ? fn(l.api) : null), [l, rev, fn]);
+  // `fn` fica de fora de propósito: pode ser inline; o que ela captura entra em `deps`.
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+  return useMemo(() => (l && rev !== null ? fn(l.api) : null), [l, rev, ...deps]);
 }
 
 /** Mutação: `const executar = useAcao(); executar((api) => api.resolver_escalacao(...))`. */
