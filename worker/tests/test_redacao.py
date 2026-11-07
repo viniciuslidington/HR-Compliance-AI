@@ -17,6 +17,11 @@ def test_fidelidade_aponta_horario_que_nao_esta_nos_fatos():
     assert verificar_fidelidade("Você saiu às 17:00 no dia 17/11?", SLOTS) == ["17:00"]
 
 
+def test_fidelidade_aponta_data_iso_inventada():
+    fatos = {"data": date(2026, 11, 19)}
+    assert verificar_fidelidade("Saída de 2026-11-19, prazo 2026-11-30.", fatos) == ["2026-11-30"]
+
+
 def test_fidelidade_proibe_valor_em_reais():
     assert "R$" in verificar_fidelidade("Isso pode custar R$ 50", SLOTS)
 

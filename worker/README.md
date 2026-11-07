@@ -12,8 +12,15 @@ uv sync
 uv run pytest
 ```
 
-Teste de fumaça contra o Featherless real (hora 0): defina `FEATHERLESS_API_KEY` (e, opcionalmente,
-`FEATHERLESS_MODEL`; o padrão é `Qwen/Qwen3-32B`) e rode `uv run pytest tests/test_featherless_vivo.py -s`.
+Inferência real: copie `.env.example` para `.env` (fora do git) e preencha `FEATHERLESS_API_KEY` e,
+se quiser, `FEATHERLESS_MODEL` (padrão `Qwen/Qwen3-32B`). Depois:
+
+```bash
+uv run python scripts/rodar_agentes.py   # roda as histórias da demo no Featherless e confere cada decisão
+```
+
+Validado em 24/11 (simulado) com `deepseek-ai/DeepSeek-V4.1-Flash-1017`: 9 chamadas, todas com chamada de
+ferramenta nativa, de 1,3 a 5,4 s cada.
 
 ## Módulos (`ia/`)
 
@@ -28,6 +35,9 @@ Teste de fumaça contra o Featherless real (hora 0): defina `FEATHERLESS_API_KEY
 | `redacao.py` | Mensagens a partir de modelos fixos; a reescrita do LLM só é usada se todo horário e data citados existirem nos fatos e não houver R$ | sim |
 | `relatorio.py` | Relatório de exceção: estrutura, evidências e responsável vêm do caso; o LLM escreve só o resumo, sob o mesmo guarda | sim |
 | `compilador.py` | Português do DP para rascunho de playbook validado; versão e id definidos pelo código. `simular_playbook()` conta o que a versão teria fechado sozinha | sim |
+| `fila.py` | Fila do DP: urgência P0 (fechamento em até 24h ou mexe em pagamento), P1 (até 72h), P2; atribuição à menor carga ponderada entre elegíveis (presença, escopo da empresa, limite), round robin no empate, reatribuição de P0 não aceito em 2h com aviso à liderança | não |
+| `card.py` | Card de decisão: título, linha "o que decidir" e resumo pelo LLM sob guarda de fidelidade; urgência, prazo, evidências e botões pelo código | sim |
+| `config.py` | Lê `worker/.env` sem sobrescrever o ambiente | não |
 | `estrategico.py` | Autonomia conquistada: elegibilidade (≥ 30 decisões, ≥ 95% na primeira proposta, 0 reaberturas), v+1 no teto da política e sugestão em que todo número vem do achado | sim |
 
 ## Contratos usados

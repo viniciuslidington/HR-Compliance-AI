@@ -9,8 +9,11 @@ from datetime import date
 
 import pytest
 
+from ia.config import carregar_env
 from ia.interpretacao import interpretar_resposta
 from ia.llm import FeatherlessLLM
+
+carregar_env()
 
 pytestmark = pytest.mark.skipif(not os.environ.get("FEATHERLESS_API_KEY"), reason="FEATHERLESS_API_KEY não definida")
 

@@ -41,6 +41,7 @@ MODELOS: dict[str, str] = {
 
 _HORARIO = re.compile(r"\b\d{1,2}[:h]\d{2}\b")
 _DATA = re.compile(r"\b\d{1,2}/\d{1,2}(?:/\d{2,4})?\b")
+_DATA_ISO = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
 
 
 def _achatar(valor: Any) -> list[str]:
@@ -49,7 +50,7 @@ def _achatar(valor: Any) -> list[str]:
     if isinstance(valor, (list, tuple, set)):
         return [s for v in valor for s in _achatar(v)]
     if isinstance(valor, date):
-        return [valor.strftime("%d/%m/%Y"), valor.strftime("%d/%m")]
+        return [valor.strftime("%d/%m/%Y"), valor.strftime("%d/%m"), valor.isoformat()]
     return [str(valor)]
 
 
@@ -64,6 +65,7 @@ def verificar_fidelidade(texto: str, fatos: Any) -> list[str]:
     horarios_base = {_normalizar_horario(h) for h in _HORARIO.findall(base)}
     sem_respaldo = [h for h in _HORARIO.findall(texto) if _normalizar_horario(h) not in horarios_base]
     sem_respaldo += [d for d in _DATA.findall(texto) if d not in base]
+    sem_respaldo += [d for d in _DATA_ISO.findall(texto) if d not in base]
     if "R$" in texto:
         sem_respaldo.append("R$")
     return sem_respaldo
