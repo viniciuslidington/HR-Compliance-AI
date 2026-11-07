@@ -1,0 +1,41 @@
+# worker · camada de IA
+
+Camada de IA dos agentes de DP, conforme o [plano final](../docs/designs/plano-final-agentes-dp.md).
+O LLM aparece só onde há texto livre ou redação. Tudo o que muda registro, decide permissão ou gera
+número é código determinístico.
+
+## Rodar
+
+```bash
+cd worker
+uv sync
+uv run pytest
+```
+
+Teste de fumaça contra o Featherless real (hora 0): defina `FEATHERLESS_API_KEY` (e, opcionalmente,
+`FEATHERLESS_MODEL`; o padrão é `Qwen/Qwen3-32B`) e rode `uv run pytest tests/test_featherless_vivo.py -s`.
+
+## Módulos (`ia/`)
+
+| Módulo | O que faz | LLM? |
+|---|---|---|
+| `llm.py` | Cliente Featherless (API OpenAI), ferramenta forçada, parser de chamada devolvida como texto, remoção de `<think>`, trace por chamada. `estruturar()` só aceita saída que valida no modelo Pydantic | sim |
+| `conteudo.py` | Marca texto de participante como não confiável e neutraliza marcadores forjados | não |
+| `interpretacao.py` | Classifica a resposta do funcionário. O código decide: data errada ou horário incoerente pedem esclarecimento; discordância, tema sensível e trecho sem âncora no texto escalam | sim |
+| `playbook.py` | Schema C4, catálogo fechado de ações, teto de política e validação (ação fora do catálogo, autonomia acima do teto, autoaplicação sem contestação, gatilho sobreposto) | não |
+| `autonomia.py` | Autoaplicação pelo playbook ativo, limitada pelo art. 58 §1º da CLT (até 5 min por marcação e 10 min por dia) | não |
+| `proximo_passo.py` | O LLM propõe a próxima ação; o backend aceita só as permitidas pelo estado e pelo playbook. Duas recusas ou modelo fora do ar escalam | sim |
+| `redacao.py` | Mensagens a partir de modelos fixos; a reescrita do LLM só é usada se todo horário e data citados existirem nos fatos e não houver R$ | sim |
+| `relatorio.py` | Relatório de exceção: estrutura, evidências e responsável vêm do caso; o LLM escreve só o resumo, sob o mesmo guarda | sim |
+| `compilador.py` | Português do DP para rascunho de playbook validado; versão e id definidos pelo código. `simular_playbook()` conta o que a versão teria fechado sozinha | sim |
+| `estrategico.py` | Autonomia conquistada: elegibilidade (≥ 30 decisões, ≥ 95% na primeira proposta, 0 reaberturas), v+1 no teto da política e sugestão em que todo número vem do achado | sim |
+
+## Contratos usados
+
+- `contracts/playbooks/marcacao_impar.v1.yaml` e `.v2.yaml`: os playbooks da demo.
+- `contracts/playbook.schema.json`: o C4, gerado por `scripts/exportar_schema_playbook.py`.
+
+## O que ainda não está aqui
+
+Máquina de estados persistente, agenda de jobs, outbox de eventos (C5), API C2 e clientes do ponto de
+teste (C1). Esta camada expõe funções puras para o runtime do worker chamar.

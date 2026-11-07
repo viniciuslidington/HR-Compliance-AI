@@ -1,0 +1,32 @@
+# C4 · Playbook "marcação ímpar", versão 2: criada pela autonomia conquistada.
+# Autoaplica quando o próprio funcionário informa um horário até 5 min da escala, sem gerar hora extra (CLT art. 58 §1º).
+playbook: marcacao_impar
+versao: 2
+gatilho: { ocorrencia: R1, dia_util: true, feriado: false }
+fatos_necessarios: [escala_do_dia, marcacoes, ajustes_existentes]
+passos:
+  - id: conferir_ajuste_existente
+    acao: get_adjustments
+    se_existir_ajuste_valido: descartar_com_fundamento
+  - id: perguntar_funcionario
+    acao: send_request
+    destinatario: funcionario
+    modelo: pendencia_marcacao
+  - id: montar_proposta
+    acao: create_proposal
+  - id: decidir
+    acao: create_approval_request
+    aprovador: gestor_direto
+  - id: aplicar
+    acao: apply_adjustment
+  - id: verificar
+    acao: get_destination_status
+autonomia:
+  autoaplicar_quando:
+    informado_pelo_proprio_funcionario: true
+    diferenca_max_minutos_vs_escala: 5
+    gera_hora_extra: false
+  apos_autoaplicar: { notificar: gestor_direto, janela_contestacao: 24h }
+regua: { lembrete_apos: 4h_uteis, escalar: D-1_do_corte }
+escalar_quando: [conflito_de_fontes, silencio_apos_regua, tema_saude, competencia_fechada]
+resolvido_quando: espelho_mostra_marcacao_incluida
