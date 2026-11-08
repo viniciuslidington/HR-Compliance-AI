@@ -123,3 +123,10 @@ rodapé e eyebrows redundantes removidos. Não mexo em `Logo.tsx`, na landing do
 - Painel: os cards brancos puros viraram papel quente translúcido (`--surface-raised`) com
   `--shadow-surface` (fio de luz + sombra quente) e blur; linhas em tom quente; grão no fundo; segundo
   glow âmbar no canto oposto. Novo `--surface-solid` para modais.
+
+### Claude — hero em ASCII com foto do Marco Zero (08/11)
+
+Enquanto não há vídeo, o hero usa `web/src/landing/CidadeAscii.tsx`: a foto enviada pela usuária
+(`web/public/landing/recife-marco-zero.jpg`, 900px, 96 KB) redesenhada em caracteres mono. Luzes quentes
+fortes acendem em laranja, o piso molhado escorre, o cursor ondula e a cidade se desfaz ao rolar. Se
+`VIDEO_HERO` for preenchido, o vídeo tem prioridade.

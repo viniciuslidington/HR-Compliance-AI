@@ -139,7 +139,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
-  opacity: 0.8;
+  opacity: 0.45;
   will-change: transform;
 }
 .orbe_laranja {
@@ -161,8 +161,18 @@
 .veu {
   position: absolute;
   inset: 0;
+  /* Topo e base escurecem; uma elipse atrás do título segura a leitura sobre a cidade. */
   background:
-    linear-gradient(180deg, rgba(13, 13, 13, 0.7) 0%, rgba(13, 13, 13, 0.15) 45%, rgba(13, 13, 13, 0.2) 82%, var(--surface) 100%);
+    radial-gradient(ellipse 40% 28% at 50% 44%, rgba(13, 13, 13, 0.5), rgba(13, 13, 13, 0) 72%),
+    linear-gradient(180deg, rgba(13, 13, 13, 0.45) 0%, rgba(13, 13, 13, 0) 26%, rgba(13, 13, 13, 0.1) 70%, var(--surface) 100%);
+}
+.cidade {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-mono);
 }
 .grao {
   position: absolute;

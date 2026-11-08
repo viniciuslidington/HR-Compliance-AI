@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MarcaChegada, SimboloChegada } from "./Chegada";
+import { CidadeAscii } from "./CidadeAscii";
 import { OndaAscii } from "./OndaAscii";
 import estilos from "./Landing.module.css";
 
@@ -12,6 +13,9 @@ import estilos from "./Landing.module.css";
  * Enquanto for null, o hero usa o fundo animado em CSS (luz da marca + horizonte).
  */
 const VIDEO_HERO: { src: string; poster?: string } | null = null;
+
+/** Sem vídeo, o hero é esta foto do Marco Zero (Recife) redesenhada em ASCII. */
+const FOTO_HERO = "/landing/recife-marco-zero.jpg";
 
 const TITULO = ["Admissão", "que", "se", "resolve", "sozinha."];
 
@@ -138,6 +142,7 @@ export function Landing() {
               <div className={estilos.cena}>
                 <span className={`${estilos.orbe} ${estilos.orbe_laranja}`} />
                 <span className={`${estilos.orbe} ${estilos.orbe_ambar}`} />
+                <CidadeAscii src={FOTO_HERO} className={estilos.cidade} />
               </div>
             )}
             <span className={estilos.veu} />
