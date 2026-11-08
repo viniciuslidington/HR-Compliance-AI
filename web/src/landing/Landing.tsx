@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MarcaChegada, SimboloChegada } from "./Chegada";
 import { CidadeAscii } from "./CidadeAscii";
 import { OndaAscii } from "./OndaAscii";
+import { Planos } from "./Planos";
 import estilos from "./Landing.module.css";
 
 /**
@@ -149,6 +150,7 @@ export function Landing() {
           <a href="#produto">Produto</a>
           <a href="#como-funciona">Como funciona</a>
           <a href="#para-quem">Para quem</a>
+          <a href="#planos">Planos</a>
         </nav>
         <Link href="/rh" className={estilos.nav_cta}>
           Ver o painel
@@ -306,6 +308,8 @@ export function Landing() {
           </div>
         </section>
 
+        <Planos />
+
         <section className={estilos.secao} aria-labelledby="titulo-perguntas">
           <div className={estilos.cabeca} data-revelar>
             <h2 id="titulo-perguntas" className={estilos.h2}>Antes de começar.</h2>
@@ -316,7 +320,7 @@ export function Landing() {
               ["O agente toma a decisão de contratar?", "A Vinda acompanha a documentação da admissão. A decisão de contratar continua com a empresa. Casos que exigem revisão são encaminhados ao RH com o histórico disponível."],
               ["Funciona com a minha folha ou ERP?", "A proposta é levar os dados conferidos ao sistema de destino. Na demonstração, esse cadastro é simulado; a integração com a sua folha ou ERP precisa ser avaliada antes de uma implantação."],
               ["Como avaliar o retorno para a minha operação?", "Em um piloto, acompanhe o tempo do convite à conclusão, os reenvios por documento e os casos que exigem intervenção do RH. Compare com o seu processo atual para medir o resultado."],
-              ["Quanto custa?", "O modelo comercial está em validação, com cobrança por admissão concluída como proposta. Preço e condições de implantação ainda não estão definidos."],
+              ["Quanto custa?", "Há um plano Grátis, com 3 admissões por mês, e planos pagos a partir de R$ 149 por mês. Os detalhes de cada um estão em Planos, logo acima."],
             ].map(([pergunta, resposta]) => <details key={pergunta}><summary>{pergunta}<span aria-hidden="true">+</span></summary><p>{resposta}</p></details>)}
           </div>
         </section>

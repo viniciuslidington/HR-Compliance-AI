@@ -1,0 +1,237 @@
+/* Planos da landing. Seção, título e reveal vêm do Landing.module.css; aqui só os cards, com tokens do
+   design-system. Os cards seguem os passos de "Como funciona": borda hairline, luz que segue o ponteiro. */
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Cada card ocupa 5 linhas da grade (nome, preço, descrição, recursos, botão) em subgrid: preços, listas e
+   botões ficam alinhados entre os cards. O topo reserva espaço para o selo em todos, e os nomes alinham. */
+.plano {
+  --px: 50%;
+  --py: 0%;
+  position: relative;
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  row-gap: 0;
+  min-width: 0;
+  padding: var(--space-12) var(--space-6) var(--space-8);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2xl);
+  /* Fundo quase opaco: o ASCII da landing passa por trás sem competir com a lista de recursos. */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ink) 3.5%, transparent), transparent),
+    color-mix(in srgb, var(--surface) 88%, transparent);
+  overflow: hidden;
+  isolation: isolate;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+/* Luz que segue o ponteiro (--px/--py vêm do Landing.tsx via data-destaque). */
+.plano::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    420px circle at var(--px) var(--py),
+    color-mix(in srgb, var(--orange-bright) 13%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+/* O plano recomendado: borda mais forte, fundo em andamento e um fio de marca no topo. */
+.recomendado {
+  border-color: var(--line-strong);
+  background:
+    linear-gradient(180deg, var(--accent-tint), transparent 60%),
+    color-mix(in srgb, var(--surface) 88%, transparent);
+}
+.recomendado::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--gradient-brand);
+}
+
+.nome {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: var(--text-display-h2-sm-font-size);
+  line-height: var(--text-display-h2-sm-line-height);
+  font-weight: var(--text-display-h2-sm-font-weight);
+  letter-spacing: var(--text-display-h2-sm-letter-spacing);
+}
+.selo {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-6);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--accent-tint);
+  color: var(--accent-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow-font-size);
+  line-height: var(--text-eyebrow-line-height);
+  font-weight: var(--text-eyebrow-font-weight);
+  letter-spacing: var(--text-eyebrow-letter-spacing);
+}
+/* Quadradinho de gradiente dos eyebrows (BRAND.md). */
+.selo::before {
+  content: "";
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--gradient-brand);
+}
+
+.preco {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin: 0;
+  color: var(--ink);
+}
+.prefixo,
+.periodo {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
+  color: var(--ink-subtle);
+}
+/* O período existe em todos os cards (vazio no Grátis) para os valores ficarem na mesma altura. */
+.periodo {
+  min-height: var(--text-body-sm-line-height);
+}
+.valor {
+  font-family: var(--font-display);
+  font-size: var(--text-stat-font-size);
+  line-height: var(--text-stat-line-height);
+  font-weight: var(--text-stat-font-weight);
+  letter-spacing: var(--text-stat-letter-spacing);
+  font-variant-numeric: var(--text-stat-font-variant-numeric);
+  white-space: nowrap;
+}
+
+.descricao {
+  margin: var(--space-3) 0 0;
+  color: var(--ink-muted);
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
+}
+
+.recursos {
+  margin: var(--space-6) 0;
+  padding: 0;
+  list-style: none;
+}
+.recursos li {
+  position: relative;
+  padding: var(--space-3) 0 var(--space-3) var(--space-4);
+  border-top: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
+  overflow-wrap: anywhere;
+}
+.recursos li::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--space-3) + var(--space-2));
+  left: 0;
+  width: var(--space-1);
+  height: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--orange-soft);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--space-12);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-label-font-size);
+  line-height: var(--text-label-line-height);
+  font-weight: var(--text-label-font-weight);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+.cta_principal {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--surface);
+}
+.cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: var(--space-1);
+}
+
+.nota {
+  margin: var(--space-6) 0 0;
+  color: var(--ink-subtle);
+  font-size: var(--text-caption-font-size);
+  line-height: var(--text-caption-line-height);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .plano:hover::before {
+    opacity: 1;
+  }
+  .plano:hover {
+    border-color: var(--line-strong);
+  }
+  .cta:hover {
+    background: var(--accent-tint);
+  }
+  .cta_principal:hover {
+    background: var(--ink);
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Elevação: `translate` é independente do `transform` do reveal, então os dois somam. */
+  @media (prefers-reduced-motion: no-preference) {
+    .plano {
+      transition:
+        translate var(--duration-base) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out);
+    }
+    .plano:hover {
+      translate: 0 calc(var(--space-1) * -1);
+    }
+  }
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1100px) {
+  .grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .plano {
+    padding: var(--space-6);
+  }
+}
