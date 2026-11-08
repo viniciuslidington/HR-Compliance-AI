@@ -174,7 +174,7 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
       <section className={estilos.moldura} aria-label="Celular da colaboradora">
         <header className={estilos.cabecalho}>
           <span className={`text-label ${estilos.avatar}`} aria-hidden="true">
-            A
+            <Logo variante="simbolo" tamanho="sm" />
           </span>
           <div>
             <h2 className={`text-label ${estilos.nome}`}>Agente de Admissão</h2>
