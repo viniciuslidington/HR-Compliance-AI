@@ -104,3 +104,12 @@ relacionados: retirar selo do hero, provas repetidas, eyebrows de seção, núme
 manifesto redundante e CTAs concorrentes. Manter logo, paleta atual, vídeo previsto e rótulos
 funcionais dos documentos. Não substituir alterações de cor que estão em andamento.
 Tudo local, sem commit/push.
+
+### Claude — revisão de layout e UX do painel (08/11)
+
+A usuária pediu um painel mais fluido e integrado, com menos espaço perdido. Vou editar
+`web/src/rh/*` (LayoutRh, ListaAdmissoes, Escalacoes, DetalheAdmissao, NovaAdmissao, CatalogoModelos,
+BarraDemo) e `web/src/ui/*` (Table, Card, StatusPill). Mudanças: largura fluida em vez de 1120px fixos,
+glow sem corte, resumo e alertas em um bloco só, tabela com progresso e iniciais, barra demo fixa no
+rodapé e eyebrows redundantes removidos. Não mexo em `Logo.tsx`, na landing do Codex nem no
+`/marca`.

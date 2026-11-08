@@ -4,7 +4,6 @@ import { useState, type FormEvent } from "react";
 import { useAcao, useConsulta } from "../api/contexto";
 import { data_local } from "../domain/datas";
 import { Button } from "../ui/Button";
-import { Eyebrow } from "../ui/Eyebrow";
 import { Field } from "../ui/Field";
 import { Select } from "../ui/Select";
 import esqueleto from "./Esqueleto.module.css";
@@ -68,7 +67,6 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
   if (!dados) {
     return (
       <div aria-busy="true">
-        <Eyebrow>Painel do RH</Eyebrow>
         <h1 className={`text-display-h2 ${estilos.titulo}`}>Nova admissão</h1>
         <div className={`${esqueleto.bloco} ${estilos.esqueleto}`} />
       </div>
@@ -127,7 +125,6 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
   return (
     <div>
       <header className={estilos.cabecalho}>
-        <Eyebrow>Painel do RH</Eyebrow>
         <h1 className={`text-display-h2 ${estilos.titulo}`}>Nova admissão</h1>
       </header>
 

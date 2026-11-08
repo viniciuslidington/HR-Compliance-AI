@@ -2,7 +2,6 @@
 
 import { useConsulta } from "../api/contexto";
 import { Card } from "../ui/Card";
-import { Eyebrow } from "../ui/Eyebrow";
 import esqueleto from "./Esqueleto.module.css";
 import estilos from "./CatalogoModelos.module.css";
 import { rotulo_campo, rotulo_regra } from "./rotulos";
@@ -13,7 +12,6 @@ export function CatalogoModelos() {
   return (
     <div>
       <header className={estilos.cabecalho}>
-        <Eyebrow>Painel do RH</Eyebrow>
         <h1 className={`text-display-h2 ${estilos.titulo}`}>Catálogo e modelos</h1>
         <p className={`text-body ${estilos.nota}`}>Ajustes são feitos por admissão.</p>
       </header>

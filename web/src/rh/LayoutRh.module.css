@@ -1,7 +1,7 @@
 .raiz {
   position: relative;
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: 232px minmax(0, 1fr);
   min-height: 100vh;
   background: var(--surface);
   isolation: isolate;
@@ -10,8 +10,7 @@
 .raiz::before {
   content: "";
   position: fixed;
-  inset: 0 0 auto 0;
-  height: 420px;
+  inset: 0;
   background: var(--gradient-aurora);
   pointer-events: none;
   z-index: -1;
@@ -32,7 +31,7 @@
 .marca {
   display: inline-flex;
   align-self: flex-start;
-  margin: 0 0 var(--space-12);
+  margin: 0 0 var(--space-8);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-lg);
   color: var(--ink);
@@ -41,11 +40,6 @@
 .marca:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
-}
-.secao {
-  margin: 0 0 var(--space-3);
-  padding: 0 var(--space-3);
-  color: var(--ink-subtle);
 }
 .lista {
   display: flex;
@@ -152,11 +146,13 @@
   min-width: 0;
   min-height: 100vh;
 }
+/* Largura fluida: ocupa a área útil até 1440px e centraliza depois disso. */
 .principal {
   flex: 1;
   width: 100%;
-  max-width: var(--container);
-  padding: var(--space-16) var(--space-12) var(--space-12);
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-12) clamp(var(--space-6), 3.2vw, var(--space-12)) var(--space-12);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -214,7 +210,7 @@
 
 @media (max-width: 1024px) {
   .principal {
-    padding: var(--space-12) var(--space-8) var(--space-8);
+    padding: var(--space-8) var(--space-6);
   }
 }
 
@@ -234,7 +230,6 @@
     margin: 0 0 var(--space-3);
     padding: var(--space-1) 0;
   }
-  .secao,
   .rodape {
     display: none;
   }

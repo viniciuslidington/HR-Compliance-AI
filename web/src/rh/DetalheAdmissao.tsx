@@ -8,7 +8,6 @@ import { useConsulta } from "../api/contexto";
 import { ChecklistDocumentos } from "../ui/ChecklistDocumentos";
 import { Conversa } from "../ui/Conversa";
 import { Card } from "../ui/Card";
-import { Eyebrow } from "../ui/Eyebrow";
 import { ImagemEnvio } from "../ui/ImagemEnvio";
 import { LinkBotao } from "../ui/LinkBotao";
 import { StatusPill } from "../ui/StatusPill";
@@ -77,7 +76,6 @@ export function DetalheAdmissao({ id }: { id: string }) {
       </p>
       <header className={estilos.cabecalho}>
         <div>
-          <Eyebrow>Admissão</Eyebrow>
           <h1 className={`text-display-h2 ${estilos.titulo}`}>{admissao.nome}</h1>
           <p className={`text-body ${estilos.meta}`}>
             {admissao.cargo} · {detalhe.modelo_nome}

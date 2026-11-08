@@ -7,7 +7,6 @@ import { useAcao, useConsulta } from "../api/contexto";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
 import { Conversa } from "../ui/Conversa";
-import { Eyebrow } from "../ui/Eyebrow";
 import { Field } from "../ui/Field";
 import { ImagemEnvio } from "../ui/ImagemEnvio";
 import esqueleto from "./Esqueleto.module.css";
@@ -136,7 +135,6 @@ export function Escalacoes() {
 
   const cabecalho = (
     <header className={estilos.cabecalho}>
-      <Eyebrow>Painel do RH</Eyebrow>
       <h1 className={`text-display-h2 ${estilos.titulo}`}>Escalações</h1>
     </header>
   );

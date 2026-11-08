@@ -54,6 +54,33 @@
     transition: background-color var(--duration-fast) var(--ease-out);
   }
 }
+@media (min-width: 769px) {
+  .clicavel .td:last-child {
+    position: relative;
+    padding-right: var(--space-12);
+  }
+  .clicavel .td:last-child::after {
+    content: "→";
+    position: absolute;
+    right: var(--space-6);
+    top: 50%;
+    color: var(--ink-subtle);
+    opacity: 0;
+    transform: translate(-6px, -50%);
+  }
+  .clicavel:hover .td:last-child::after,
+  .clicavel:focus-visible .td:last-child::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .clicavel .td:last-child::after {
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+}
 .clicavel:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: -2px;

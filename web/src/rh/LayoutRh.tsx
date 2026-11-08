@@ -34,7 +34,6 @@ export function LayoutRh({ caminho_atual, children }: LayoutRhProps) {
         <Link href="/rh" className={estilos.marca} aria-label="vinda, início">
           <Logo />
         </Link>
-        <p className={`text-eyebrow ${estilos.secao}`}>Admissão</p>
         <ul className={estilos.lista}>
           {ITENS.map((item) => {
             const e_ativo = ativo(item.href, caminho_atual);
