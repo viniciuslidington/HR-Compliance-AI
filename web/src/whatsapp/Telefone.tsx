@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "re
 import type { AdmissaoResumo } from "../api/api";
 import { useAcao, useConsulta } from "../api/contexto";
 import { Conversa } from "../ui/Conversa";
+import { Logo } from "../ui/Logo";
 import { useSelecaoTravada } from "../ui/useSelecaoTravada";
 import { Anexar } from "./Anexar";
 import { Digitando } from "./Digitando";
@@ -132,9 +133,20 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
 
   return (
     <div className={estilos.raiz}>
-      {admissoes && admissoes.length > 0 && id && (
-        <SeletorContato admissoes={admissoes} valor={id} ao_trocar={trocar} />
-      )}
+      <header className={estilos.topo}>
+        <Logo tamanho="sm" className={estilos.logo} />
+        <div className={estilos.apresentacao}>
+          <h1 className={`text-caption ${estilos.titulo}`}>WhatsApp simulado</h1>
+          <p className={`text-caption ${estilos.dica}`}>
+            Dica: nomes de arquivo com borrado, antigo ou outro-nome forçam uma recusa.
+          </p>
+        </div>
+        {admissoes && admissoes.length > 0 && id && (
+          <div className={estilos.contato}>
+            <SeletorContato admissoes={admissoes} valor={id} ao_trocar={trocar} />
+          </div>
+        )}
+      </header>
       <section className={estilos.moldura} aria-label="Celular da colaboradora">
         <header className={estilos.cabecalho}>
           <span className={`text-label ${estilos.avatar}`} aria-hidden="true">

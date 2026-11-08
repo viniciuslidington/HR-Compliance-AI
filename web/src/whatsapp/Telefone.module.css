@@ -1,17 +1,47 @@
 .raiz {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) 390px;
+  align-items: center;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: calc(710px + var(--space-6));
+  min-height: 0;
+}
+.topo {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
+  align-items: flex-start;
+  gap: var(--space-6);
   width: 100%;
-  max-width: 390px;
-  min-height: 0;
+}
+.logo {
+  flex: none;
+}
+.apresentacao {
+  min-width: 0;
+}
+.titulo,
+.dica {
+  margin: 0;
+}
+.titulo {
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+.dica {
+  margin-top: var(--space-1);
+  color: var(--ink-subtle);
+}
+.contato {
+  width: 100%;
+  min-width: 0;
 }
 .moldura {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: min(780px, calc(100dvh - 180px));
+  max-width: 390px;
+  height: min(780px, calc(100dvh - 48px));
   min-height: 480px;
   overflow: hidden;
   border: 1px solid var(--line-strong);
@@ -111,7 +141,34 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 800px) {
+  .raiz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .topo {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .apresentacao {
+    flex: 1;
+  }
+  .contato {
+    flex-basis: 100%;
+  }
+  .moldura {
+    height: min(780px, calc(100dvh - 180px));
+  }
+}
+
 @media (max-width: 480px) {
+  .logo,
+  .apresentacao {
+    display: none;
+  }
   .raiz {
     flex: 1;
     max-width: none;
@@ -119,6 +176,7 @@
     padding: var(--space-2) var(--space-3) 0;
   }
   .moldura {
+    max-width: none;
     flex: 1;
     height: auto;
     min-height: 0;
