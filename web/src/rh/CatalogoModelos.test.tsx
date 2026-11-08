@@ -4,14 +4,14 @@ import { CatalogoModelos } from "./CatalogoModelos";
 import { Com, criar_api } from "./teste_util";
 
 describe("CatalogoModelos", () => {
-  it("lista os 5 tipos e os 2 modelos com seus documentos", () => {
+  it("lista os 8 tipos e os 3 modelos com seus documentos", () => {
     const api = criar_api();
     render(<Com api={api}><CatalogoModelos /></Com>);
     const tipos = within(screen.getByRole("region", { name: "Tipos de documento" }));
     for (const t of api.listar_catalogo()) {
       expect(tipos.getByRole("heading", { name: t.nome })).toBeInTheDocument();
     }
-    expect(api.listar_catalogo()).toHaveLength(5);
+    expect(api.listar_catalogo()).toHaveLength(8);
     const modelos = within(screen.getByRole("region", { name: "Modelos" }));
     expect(modelos.getByRole("heading", { name: "CLT padrão" })).toBeInTheDocument();
     expect(modelos.getByRole("heading", { name: "Estágio" })).toBeInTheDocument();

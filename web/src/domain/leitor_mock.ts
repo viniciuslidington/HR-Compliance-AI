@@ -99,6 +99,15 @@ function leitura_valida(i: EntradaLeitura, antigo: boolean, outro_nome: boolean)
         data: antigo ? data_de_marco(agora) : dias_antes(agora, 15),
       };
       break;
+    case "aso":
+      dados = { nome, cpf: cpf_do_id(admissao.id), data_realizacao: antigo ? dias_antes(agora, 400) : dias_antes(agora, 20), resultado: "Apto" };
+      break;
+    case "nr10":
+      dados = { nome, data_realizacao: antigo ? dias_antes(agora, 800) : dias_antes(agora, 60), carga_horaria: "40 horas", responsavel_tecnico: "Eng. Paulo Mendes" };
+      break;
+    case "nr35":
+      dados = { nome, data_realizacao: antigo ? dias_antes(agora, 800) : dias_antes(agora, 60), carga_horaria: "8 horas", responsavel_tecnico: "Eng. Paulo Mendes" };
+      break;
     default:
       dados = { nome };
   }
@@ -137,6 +146,9 @@ const PALAVRAS_CHAVE: [string, string[]][] = [
   ["comprovante_residencia", ["comprovante", "residencia", "conta-de-luz", "conta_de_luz"]],
   ["dados_bancarios", ["banco", "bancario", "conta-bancaria"]],
   ["declaracao_matricula", ["matricula", "declaracao"]],
+  ["aso", ["aso", "saude-ocupacional", "atestado"]],
+  ["nr10", ["nr10", "nr-10", "nr_10"]],
+  ["nr35", ["nr35", "nr-35", "nr_35"]],
 ];
 
 /** Primeiro candidato (na ordem de `candidatos`) cujas palavras-chave aparecem no nome. */

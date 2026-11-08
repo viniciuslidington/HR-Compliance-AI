@@ -1,7 +1,7 @@
 # Confiabilidade da IA na leitura e validação de documentos de admissão (Agente de Admissão)
 
 Notas de pesquisa para o pitch. Data de referência: 07/11/2026. Fontes datadas quando possível. "Inferência"
-marca conclusões nossas, não ditas pela fonte. Contexto do produto: `docs/pitch/agente-admissao-desenho-produto.md`
+marca conclusões nossas, não ditas pela fonte. Contexto do produto: `docs/pitch/produto/desenho-admissao.md`
 §5, §7 e §12.4; código atual em `worker/ia/documentos.py` e `worker/ia/llm.py`.
 
 ## 1. O que já está construído no código (como o agente lê um documento hoje)

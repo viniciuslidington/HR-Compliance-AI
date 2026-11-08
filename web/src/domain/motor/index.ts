@@ -6,14 +6,14 @@ import { resolver_escalacao } from "./escalacoes";
 import { receber_arquivo } from "./documentos";
 import type { Evento } from "./eventos";
 
-export type { Evento, NovaAdmissaoInput } from "./eventos";
+export type { Evento, LeituraExterna, NovaAdmissaoInput } from "./eventos";
 
 export function aplicar(estado: Estado, evento: Evento, agora: Date): Estado {
   switch (evento.tipo) {
     case "admissao_criada":
       return criar_admissao(estado, evento.dados, agora);
     case "arquivo_recebido":
-      return receber_arquivo(estado, evento.admissao_id, evento.nome_arquivo, evento.arquivo_url, agora);
+      return receber_arquivo(estado, evento.admissao_id, evento.nome_arquivo, evento.arquivo_url, agora, evento.leitura);
     case "texto_recebido":
       return receber_texto(estado, evento.admissao_id, evento.texto, agora);
     case "tempo_avancado":

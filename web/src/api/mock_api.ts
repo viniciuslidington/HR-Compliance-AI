@@ -90,7 +90,8 @@ export class MockApi implements Api {
     this.notificador.notificar();
   }
 
-  private aplicar_evento(evento: Evento): void {
+  /** Público para o servidor (src/servidor) aplicar a leitura feita pela IA do worker. */
+  aplicar_evento(evento: Evento): void {
     this.mutar((e, agora) => aplicar(e, evento, agora));
   }
 

@@ -413,3 +413,55 @@ describe("tempo_avancado (cobrança)", () => {
     expect(e).toEqual(antes);
   });
 });
+
+describe("arquivo_recebido com leitura da IA", () => {
+  const lido = (estado: Estado, id: string, leitura: Extract<Evento, { tipo: "arquivo_recebido" }>["leitura"]) =>
+    aplicar(estado, { tipo: "arquivo_recebido", admissao_id: id, nome_arquivo: "IMG_0042.jpg", arquivo_url: "/api/midia/x", leitura }, AGORA);
+
+  it("usa o tipo identificado pela IA, mesmo com nome de arquivo genérico", () => {
+    const { estado, id } = criar();
+    const e = lido(estado, id, {
+      tipo_documento_id: "cpf", qualidade: "ok", dados_extraidos: { nome: "Ana Souza", numero: "529.982.247-25" },
+    });
+    expect(doc(e, "cpf").status).toBe("aprovado");
+    expect(doc(e, "cpf").dados_extraidos).toEqual({ nome: "Ana Souza", numero: "529.982.247-25" });
+    expect(doc(e, "rg_cnh").status).toBe("pendente");
+  });
+
+  it("aplica as regras sobre o que a IA leu", () => {
+    const { estado, id } = criar();
+    const e = lido(estado, id, {
+      tipo_documento_id: "comprovante_residencia", qualidade: "ok",
+      dados_extraidos: { titular: "Ana Souza", endereco: "Rua A", data_emissao: "2026-03-10" },
+    });
+    expect(doc(e, "comprovante_residencia").motivo_recusa).toBe("o comprovante é de março");
+  });
+
+  it("reenvio de documento já aprovado: avisa e não conta tentativa em outro", () => {
+    const { estado, id } = criar();
+    const cpf = { tipo_documento_id: "cpf", qualidade: "ok" as const, dados_extraidos: { nome: "Ana Souza", numero: "529.982.247-25" } };
+    const e = lido(lido(estado, id, cpf), id, cpf);
+    expect(e.documentos.every((d) => d.tentativas === 0)).toBe(true);
+    expect(e.envios).toHaveLength(1);
+    expect(ultima_do_agente(e).texto).toMatch(/^Esse é o CPF, que já está aprovado\. Faltam 3/);
+  });
+
+  it("IA fora do ar: registra a entrada, avisa e não conta tentativa", () => {
+    const { estado, id } = criar();
+    const e = lido(estado, id, "indisponivel");
+    expect(e.envios).toHaveLength(0);
+    expect(e.documentos.every((d) => d.tentativas === 0)).toBe(true);
+    expect(ultima_do_agente(e).texto).toContain("não consegui ler o documento agora");
+  });
+
+  it("modelo Eletricista pede ASO, NR-10 e NR-35 e aceita a NR-35 lida", () => {
+    const { estado, id } = criar("eletricista");
+    expect(estado.mensagens[0].texto).toContain("Certificado NR-35");
+    const e = lido(estado, id, {
+      tipo_documento_id: "nr35", qualidade: "ok",
+      dados_extraidos: { nome: "Ana Souza", data_realizacao: "2026-01-10", carga_horaria: "8 horas", responsavel_tecnico: "Eng. Paulo" },
+    });
+    expect(doc(e, "nr35").status).toBe("aprovado");
+    expect(ultima_do_agente(e).texto).toContain("Certificado NR-35 aprovado");
+  });
+});

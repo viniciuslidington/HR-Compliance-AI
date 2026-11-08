@@ -85,7 +85,7 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
     setErros((e) => ({ ...e, documentos: undefined }));
   }
 
-  function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent) {
     e.preventDefault();
     if (criando) return;
     const novos: Erros = {};
@@ -103,7 +103,7 @@ export function NovaAdmissao({ ao_criar, ao_cancelar }: NovaAdmissaoProps) {
 
     let criada: { id: string };
     try {
-      criada = executar((api) =>
+      criada = await executar((api) =>
         api.criar_admissao({
           nome: nome.trim(),
           whatsapp: whatsapp_final!,

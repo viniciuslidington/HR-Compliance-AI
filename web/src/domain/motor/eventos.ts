@@ -1,3 +1,10 @@
+import type { LeituraMock } from "../validacao";
+
+/** Leitura feita fora do motor (IA do worker): qual documento é e o que foi lido. */
+export interface LeituraExterna extends LeituraMock {
+  tipo_documento_id: string | null;
+}
+
 export interface NovaAdmissaoInput {
   nome: string;
   whatsapp: string;
@@ -10,7 +17,14 @@ export interface NovaAdmissaoInput {
 
 export type Evento =
   | { tipo: "admissao_criada"; dados: NovaAdmissaoInput }
-  | { tipo: "arquivo_recebido"; admissao_id: string; nome_arquivo: string; arquivo_url: string }
+  | {
+      tipo: "arquivo_recebido";
+      admissao_id: string;
+      nome_arquivo: string;
+      arquivo_url: string;
+      /** Sem leitura, o motor usa o leitor simulado; "indisponivel" = a IA não respondeu (não conta tentativa). */
+      leitura?: LeituraExterna | "indisponivel";
+    }
   | { tipo: "texto_recebido"; admissao_id: string; texto: string }
   | { tipo: "tempo_avancado"; ate: string }
   | {

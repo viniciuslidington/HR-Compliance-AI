@@ -39,12 +39,12 @@ uv run python scripts/fluxos.py todos --detalhe
 
 ```bash
 uv run uvicorn api:app_do_ambiente --factory --reload   # local, lê worker/.env
-# Abra http://127.0.0.1:8000/ no navegador
+# Swagger em http://127.0.0.1:8000/docs
 ```
 
 | Rota | O que faz | Token |
 |---|---|---|
-| `GET /` | Interface de teste: colaboradores, anexos, conversa, régua e fila | não |
+| `GET /` | Redireciona para o front da vinda (`FRONT_URL`); o worker não tem interface própria | não |
 | `GET /fila` | Aprovações pendentes e cards do DP | não |
 | `GET /pessoas/{id}/mensagens` | Conversa simulada do colaborador | não |
 | `POST /regua/rodar?dia=AAAA-MM-DD` | Executa a régua na data simulada | sim |
@@ -54,6 +54,8 @@ uv run uvicorn api:app_do_ambiente --factory --reload   # local, lê worker/.env
 | `POST /pessoas/{id}/documentos?tipo=nr35` | Upload (PNG, JPEG ou WebP, até 10 MB): bucket, leitura, conferência, decisão | sim |
 | `GET /anexos/{id}` | Metadados, extração e decisão do anexo | não |
 | `POST /anexos/{id}/aprovar` | Aprovação humana (`{"aprovador": "..."}`) | sim |
+| `POST /leitura` | Leitura para o painel de admissão (`web/`): multipart com `arquivo` (PNG, JPEG ou WebP, até 10 MB) e `candidatos` (JSON `[{id, nome, campos}]`). Devolve `tipo_documento_id`, `qualidade`, `dados_extraidos`, `problemas_fidelidade`; `503` se o modelo estiver fora do ar | sim |
+| `GET/PUT /front/kv/{chave}` | Estado e mídia do servidor do Next (tabela `front_kv` no SQLite). Chaves `estado` e `midia:<uuid>`, até 10 MB | sim |
 
 Com `API_TOKEN` definido, as rotas de escrita exigem `Authorization: Bearer <API_TOKEN>`. Variáveis: `DADOS_DIR`
 (bucket e banco), `HOJE` (congela a data da demo), `EMISSORES_AUTONOMOS` (CNPJs aceitos sem aprovação).
@@ -82,6 +84,7 @@ sobrevive a deploy e restart; o serviço fica com uma instância e cada deploy t
 | `card.py` | Card de decisão: título, linha "o que decidir" e resumo pelo LLM sob guarda de fidelidade; urgência, prazo, evidências e botões pelo código | sim |
 | `matriz.py` | Matriz de exigências por cargo (`contracts/matrizes/`), validade calculada pela periodicidade, situação por pessoa: válido, a vencer, vencido (com data de impedimento) ou faltando | não |
 | `documentos.py` | Leitura em dois passos (visão transcreve, texto extrai, cada campo conferido contra a transcrição), conferência em código (identidade, CPF e CNPJ com dígito, carga, responsável técnico, funções do ASO, validade) e decisão: aceitar sozinho, pedir aprovação, recusar com motivo ou escalar. Transcrição de ASO não é devolvida | sim |
+| `leitura_generica.py` | Leitura do painel de admissão: visão transcreve, texto diz qual documento pendente é (`outro` vira `tipo_errado`) e copia os campos; campo sem respaldo literal na transcrição é descartado. Quem decide é o motor de regras do `web/` | sim |
 | `regua.py` | Régua de renovação: aviso ao entrar na janela, lembrete na metade, lembrete firme 2 dias antes, impedimento no vencimento; pula para a etapa mais urgente se rodar atrasado | não |
 | `orquestrador.py` | Agente documental: encadeia as etapas e devolve cada uma com tempo e dados; escala na 3ª recusa seguida; régua gera card P0 no impedimento | indireto |
 | `duvidas.py` | Responde "o que falta?", "por que recusou?" e "quando vence?" a partir da matriz e dos motivos registrados; reconhece por expressão regular e não expõe motivo de escalada. `POST /pessoas/{id}/mensagens` responde antes de chamar o LLM e não abre card | não |
@@ -110,14 +113,11 @@ configurável em `FEATHERLESS_VISION_MODEL`). Certificados fictícios de teste e
 Máquina de estados persistente, agenda de jobs, outbox de eventos (C5), API C2 e clientes do ponto de
 teste (C1). Esta camada expõe funções puras para o runtime do worker chamar.
 
-### Usar a interface
+### Interface
 
-Selecione um colaborador, escolha o documento e envie uma imagem PNG, JPEG ou WebP de até 10 MB.
-A análise exibe as etapas e a mensagem simulada. Quando necessário, aprove na fila do DP; a matriz
-é atualizada após a aprovação. Na régua, escolha uma data para gerar os lembretes e impedimentos
-correspondentes. A data simulada afeta apenas a execução da régua; a análise usa `HOJE` ou a data atual.
+O worker é só API. A interface é o front da vinda (`web/`, serviço `vinda-web` no Render),
+que usa `/leitura` e `/front/kv` com o token no servidor do Next.
 
-Se `API_TOKEN` estiver configurado, informe-o no botão **Chave de acesso**; ele fica na sessão do navegador.
 Mensagens, cards e distribuição são preservados no SQLite. O canal é simulado, não envia WhatsApp.
 A régua roda automaticamente uma vez por dia enquanto o servidor está ativo; `HOJE` também controla
 o dia dessa execução. O destino registra eventos simulados de conclusão documental, não é uma integração

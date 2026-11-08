@@ -28,3 +28,29 @@ services:
         generateValue: true # exigido em Authorization: Bearer para enviar documento e aprovar
       - key: HOJE
         value: "2026-11-07" # data congelada da demo; remova para usar a data real
+      - key: FRONT_URL
+        value: https://vinda-web.onrender.com # a raiz do worker redireciona para o front da vinda
+
+  # Front (vinda): painel do RH em /rh e WhatsApp simulado em /whatsapp. O servidor do Next roda o motor
+  # da admissão, guarda o estado no disco do worker (/front/kv) e manda as fotos para a IA do worker (/leitura).
+  # O token do worker fica só no servidor; o navegador fala apenas com /api/* deste serviço.
+  - type: web
+    name: vinda-web
+    runtime: node
+    rootDir: web
+    plan: free # dorme após 15 min sem acesso: abra o site 1 minuto antes da demo (ou troque para starter)
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/estado
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: TZ
+        value: America/Sao_Paulo # o motor calcula prazos no fuso local
+      - key: WORKER_URL
+        value: https://hr-compliance-worker.onrender.com
+      - key: WORKER_TOKEN
+        fromService:
+          type: web
+          name: hr-compliance-worker
+          envVarKey: API_TOKEN

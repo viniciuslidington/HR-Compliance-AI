@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MarcaChegada, SimboloChegada } from "./Chegada";
 import { CidadeAscii } from "./CidadeAscii";
@@ -28,12 +29,12 @@ const PASSOS = [
   {
     n: "02",
     titulo: "O agente conduz",
-    texto: "Solicita os documentos, confere cada envio e acompanha as pendências.",
+    texto: "Orienta o envio, explica o que precisa ser corrigido e retoma as pendências conforme o prazo.",
   },
   {
     n: "03",
-    titulo: "O RH vê a exceção",
-    texto: "Receba as pendências com o motivo e o próximo passo para decidir.",
+    titulo: "O RH decide a exceção",
+    texto: "Receba o motivo, as tentativas e o histórico. Revise o caso e acompanhe a conclusão no painel.",
   },
 ];
 
@@ -147,7 +148,7 @@ export function Landing() {
         <nav aria-label="Seções" className={estilos.nav_links}>
           <a href="#produto">Produto</a>
           <a href="#como-funciona">Como funciona</a>
-          <a href="#regras">O que confere</a>
+          <a href="#para-quem">Para quem</a>
         </nav>
         <Link href="/rh" className={estilos.nav_cta}>
           Ver o painel
@@ -189,8 +190,8 @@ export function Landing() {
               ))}
             </h1>
             <p className={`text-lead ${estilos.sub}`}>
-              Coleta, conferência e acompanhamento de documentos em uma conversa.
-              Seu RH participa das decisões que precisam de atenção.
+              Um agente que pede, confere e acompanha os documentos até resolver a pendência.
+              Seu RH entra quando uma decisão precisa de atenção.
             </p>
             <div className={estilos.acoes}>
               <Link href="/rh" className={estilos.cta_claro}>Conhecer a demonstração</Link>
@@ -205,65 +206,62 @@ export function Landing() {
         <section id="produto" className={estilos.produto} aria-labelledby="titulo-produto">
           <div className={estilos.cabeca} data-revelar>
             <h2 id="titulo-produto" className={estilos.h2}>
-              Uma conversa de um lado.
-              <br />
-              <span className={estilos.apagado}>Um cadastro pronto do outro.</span>
+              Menos cobrança manual.<br />
+              <span className={estilos.apagado}>Mais clareza para admitir.</span>
             </h2>
+            <p className={estilos.descricao}>
+              Cada documento pendente vira uma tarefa acompanhada pelo agente.
+              Você vê o andamento, identifica os casos em risco e sabe onde precisa agir.
+            </p>
           </div>
-
-          <div className={estilos.janela} data-revelar data-destaque>
-            <div className={estilos.janela_barra} aria-hidden="true">
-              <span />
-              <span />
-              <span />
+          <div className={estilos.vitrine}>
+            <div className={estilos.vitrine_texto} data-revelar>
+              <h3 className={estilos.h3}>Todas as admissões, uma visão.</h3>
+              <p>Documentos recebidos, data de início e status por pessoa.
+                O que está em coleta, o que terminou e o que precisa do RH ficam no mesmo lugar.</p>
+              <ul className={estilos.beneficios}>
+                <li>Acompanhe pendências sem montar uma planilha paralela.</li>
+                <li>Priorize os casos que se aproximam da data de início.</li>
+                <li>Consulte o histórico antes de falar com o colaborador.</li>
+              </ul>
+              <Link href="/rh" className={estilos.link_editorial}>Explorar o painel <span aria-hidden="true">↗</span></Link>
             </div>
-            <div className={estilos.janela_corpo}>
-              <div className={estilos.chat} aria-label="Exemplo de conversa">
-                <p className={`text-body-sm ${estilos.bolha} ${estilos.bolha_agente}`}>
-                  Oi, Ana! Para sua admissão na segunda, preciso de 4 documentos. Pode começar pelo RG, frente e
-                  verso.
-                </p>
-                <p className={`text-body-sm ${estilos.bolha} ${estilos.bolha_pessoa}`}>comprovante_luz.pdf</p>
-                <p className={`text-body-sm ${estilos.bolha} ${estilos.bolha_agente}`}>
-                  Esse comprovante é de junho. Preciso de um dos últimos 90 dias. Tem o de outubro?
-                </p>
-                <p className={`text-body-sm ${estilos.bolha} ${estilos.bolha_pessoa}`}>luz_outubro.pdf</p>
-                <p className={`text-body-sm ${estilos.bolha} ${estilos.bolha_agente}`}>Perfeito, está certo. Falta só a conta bancária.</p>
-              </div>
-              <div className={estilos.painel}>
-                <div className={estilos.painel_topo}>
-                  <div>
-                    <p className="text-label">Ana Souza</p>
-                    <p className={`text-caption ${estilos.apagado}`}>Estagiária de RH · início 09/11</p>
-                  </div>
-                  <span className={`text-caption ${estilos.pill_coleta}`}>Em coleta</span>
-                </div>
-                <div className={estilos.progresso} aria-hidden="true">
-                  <span className={estilos.progresso_barra} />
-                </div>
-                <ul className={estilos.docs}>
-                  {[
-                    ["RG", "Aprovado"],
-                    ["CPF", "Aprovado"],
-                    ["Comprovante", "Aprovado na 2ª tentativa"],
-                    ["Dados bancários", "Aguardando"],
-                  ].map(([d, s], i) => (
-                    <li key={d} className={estilos.doc} style={{ "--i": i } as CSSProperties}>
-                      <span className={`${estilos.doc_marca} ${s === "Aguardando" ? estilos.doc_pendente : ""}`} aria-hidden="true" />
-                      <span className="text-body-sm">{d}</span>
-                      <span className={`text-data ${estilos.apagado}`}>{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <figure className={estilos.captura} data-revelar>
+              <a href="/landing/produto/painel.png" target="_blank" rel="noreferrer" aria-label="Ampliar captura do painel de admissões">
+                <Image src="/landing/produto/painel.png" width={3268} height={1732}
+                  sizes="(max-width: 1200px) 100vw, 1104px"
+                  alt="Painel real da demonstração Vinda, com quatro admissões, progresso dos documentos e um caso que precisa do RH." />
+              </a>
+              <figcaption>Painel de admissões · captura do aplicativo enviada pela equipe</figcaption>
+            </figure>
+          </div>
+          <div className={`${estilos.vitrine} ${estilos.vitrine_inversa}`}>
+            <div className={estilos.vitrine_texto} data-revelar>
+              <h3 className={estilos.h3}>Defina uma vez. O agente conduz.</h3>
+              <p>Escolha o modelo de admissão, informe a data de início e ajuste a lista de documentos.
+                O agente parte desse contexto para orientar cada envio e acompanhar o que falta.</p>
+              <ul className={estilos.beneficios}>
+                <li>Use modelos diferentes para CLT e estágio.</li>
+                <li>Adicione ou remova documentos conforme a admissão.</li>
+                <li>Confira as orientações que o colaborador vai receber.</li>
+              </ul>
+              <Link href="/rh/admissoes/nova" className={estilos.link_editorial}>Criar uma admissão <span aria-hidden="true">↗</span></Link>
             </div>
+            <figure className={estilos.captura} data-revelar>
+              <a href="/landing/produto/nova-admissao.png" target="_blank" rel="noreferrer" aria-label="Ampliar captura da configuração de uma nova admissão">
+                <Image src="/landing/produto/nova-admissao.png" width={3264} height={1732}
+                  sizes="(max-width: 1200px) 100vw, 1104px"
+                  alt="Tela real de nova admissão na Vinda, com cargo, data de início, modelo CLT e lista personalizável de documentos." />
+              </a>
+              <figcaption>Nova admissão · captura do aplicativo enviada pela equipe</figcaption>
+            </figure>
           </div>
         </section>
 
         <section id="como-funciona" className={estilos.secao} aria-labelledby="titulo-como">
           <div className={estilos.cabeca} data-revelar>
             <h2 id="titulo-como" className={estilos.h2}>
-              Do cadastro à conferência.
+              O agente acompanha do início ao fim.
             </h2>
           </div>
           <ol className={estilos.passos}>
@@ -294,14 +292,44 @@ export function Landing() {
           </ul>
         </section>
 
+        <section id="para-quem" className={estilos.secao} aria-labelledby="titulo-publico">
+          <div className={estilos.cabeca} data-revelar>
+            <h2 id="titulo-publico" className={estilos.h2}>Para quem admite sempre.<br /><span className={estilos.apagado}>E não pode perder o fio.</span></h2>
+            <p className={estilos.descricao}>Para equipes de RH e departamento pessoal que lidam com várias admissões ao mesmo tempo e precisam dar atenção às pessoas, além da papelada.</p>
+          </div>
+          <div className={estilos.publicos}>
+            {[
+              ["Varejo e serviços", "Reposições frequentes e várias unidades. Centralize o acompanhamento para que cada pendência tenha um próximo passo."],
+              ["Operações e terceirização", "Datas de início próximas e admissões em lote. Visualize o que falta por pessoa e priorize as exceções."],
+              ["Programas de estágio", "Turmas com documentos específicos. Use um modelo de admissão com matrícula e os requisitos do seu programa."],
+            ].map(([titulo, texto]) => <article key={titulo} data-revelar><h3 className={estilos.h3}>{titulo}</h3><p>{texto}</p></article>)}
+          </div>
+        </section>
+
+        <section className={estilos.secao} aria-labelledby="titulo-perguntas">
+          <div className={estilos.cabeca} data-revelar>
+            <h2 id="titulo-perguntas" className={estilos.h2}>Antes de começar.</h2>
+          </div>
+          <div className={estilos.perguntas}>
+            {[
+              ["O que consigo testar agora?", "Cadastre uma admissão, escolha os documentos, anexe arquivos na conversa e acompanhe recusas, reenvios, lembretes e revisão pelo RH. A demonstração usa dados fictícios, WhatsApp e leitura de documentos simulados."],
+              ["O agente toma a decisão de contratar?", "A Vinda acompanha a documentação da admissão. A decisão de contratar continua com a empresa. Casos que exigem revisão são encaminhados ao RH com o histórico disponível."],
+              ["Funciona com a minha folha ou ERP?", "A proposta é levar os dados conferidos ao sistema de destino. Na demonstração, esse cadastro é simulado; a integração com a sua folha ou ERP precisa ser avaliada antes de uma implantação."],
+              ["Como avaliar o retorno para a minha operação?", "Em um piloto, acompanhe o tempo do convite à conclusão, os reenvios por documento e os casos que exigem intervenção do RH. Compare com o seu processo atual para medir o resultado."],
+              ["Quanto custa?", "O modelo comercial está em validação, com cobrança por admissão concluída como proposta. Preço e condições de implantação ainda não estão definidos."],
+            ].map(([pergunta, resposta]) => <details key={pergunta}><summary>{pergunta}<span aria-hidden="true">+</span></summary><p>{resposta}</p></details>)}
+          </div>
+        </section>
+
         <section className={estilos.final} aria-labelledby="titulo-final" data-revelar="final">
           <SimboloChegada movimento="encaixar" fechado={final_visivel} tom="marca" className={estilos.final_simbolo} />
           <h2 id="titulo-final" className={estilos.final_titulo}>
-            Veja a Vinda em ação.
+            Sua próxima admissão,<br />com menos idas e vindas.
           </h2>
+          <p className={estilos.descricao}>Explore o painel e acompanhe uma pendência até a resolução.</p>
           <div className={estilos.acoes}>
-            <Link href="/whatsapp" className={estilos.cta_claro}>
-              Experimentar a conversa
+            <Link href="/rh" className={estilos.cta_claro}>
+              Testar a demonstração
             </Link>
           </div>
         </section>
@@ -310,7 +338,7 @@ export function Landing() {
 
       <footer className={`text-caption ${estilos.rodape}`}>
         <MarcaChegada movimento="parado" className={estilos.rodape_marca} />
-        <span>Demonstração com WhatsApp simulado.</span>
+        <span>Demonstração com dados fictícios e leitura simulada.</span>
         <Link href="/rh">Acessar painel</Link>
       </footer>
     </div>

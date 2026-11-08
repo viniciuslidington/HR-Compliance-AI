@@ -216,6 +216,8 @@ class FeatherlessTranscritor:
             resposta = self._cliente.chat.completions.create(
                 model=self.modelo,
                 temperature=0,
+                # Foto borrada fazia o modelo repetir "[ilegível]" por milhares de tokens (25 s ou mais).
+                max_tokens=1500,
                 messages=[
                     {"role": "system", "content": SISTEMA_TRANSCRICAO},
                     # Só a imagem, sem instrução em texto, fez modelos de visão degenerarem nos testes.

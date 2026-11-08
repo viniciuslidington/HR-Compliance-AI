@@ -2,13 +2,16 @@ import { describe, expect, it } from "vitest";
 import { CATALOGO, MODELO_DOCUMENTO, MODELOS } from "./catalogo";
 
 describe("catálogo", () => {
-  it("tem os 5 tipos do PDF com ids estáveis", () => {
+  it("tem os 5 tipos do PDF e os 3 especializados, com ids estáveis", () => {
     expect(CATALOGO.map((t) => t.id)).toEqual([
       "rg_cnh",
       "cpf",
       "comprovante_residencia",
       "dados_bancarios",
       "declaracao_matricula",
+      "aso",
+      "nr10",
+      "nr35",
     ]);
     for (const t of CATALOGO) {
       expect(t.campos_extracao.length).toBeGreaterThan(0);
@@ -18,7 +21,10 @@ describe("catálogo", () => {
   });
   it("CLT padrão e Estágio ligam os documentos certos", () => {
     const de = (m: string) => MODELO_DOCUMENTO.filter((l) => l.modelo_id === m).map((l) => l.tipo_documento_id);
-    expect(MODELOS.map((m) => m.nome)).toEqual(["CLT padrão", "Estágio"]);
+    expect(MODELOS.map((m) => m.nome)).toEqual(["CLT padrão", "Estágio", "Eletricista (NR-10 e NR-35)"]);
+    expect(de("eletricista")).toEqual([
+      "rg_cnh", "cpf", "comprovante_residencia", "dados_bancarios", "aso", "nr10", "nr35",
+    ]);
     expect(de("clt_padrao")).toEqual(["rg_cnh", "cpf", "comprovante_residencia", "dados_bancarios"]);
     expect(de("estagio")).toEqual(["rg_cnh", "cpf", "comprovante_residencia", "declaracao_matricula"]);
   });

@@ -1,8 +1,11 @@
 # Agente de Admissão — Desenho do Produto
 
-> Transcrição estruturada do PDF `docs/Agente de Admissão — Desenho do Produto (1).pdf`
-> (07/11/2026, @Marcelo). É a fonte central do pitch. As seções 1 a 11 reproduzem o PDF; a seção 12
-> é nossa e lista o que precisa ser pesquisado para transformar o desenho em pitch.
+> Transcrição estruturada do PDF `docs/Agente de Admissão — Desenho do Produto (1).pdf` (07/11/2026, @Marcelo).
+>
+> **Atualização de 08/11/2026:** o catálogo base continua com os documentos genéricos. Cada empresa monta modelos por
+> cargo e acrescenta os documentos específicos do seu negócio (ex.: numa empresa de energia, "Eletricista" pede também
+> ASO, NR-10 e NR-35). Documentos com validade continuam sendo cobrados durante o
+> vínculo (renovação). A tese completa está em [../tese-de-negocio.md](../tese-de-negocio.md).
 
 ---
 
@@ -258,48 +261,3 @@ O MVP prova o loop completo com poucos documentos; o resto vira slide de evoluç
 - [ ] Dados bancários entram como documento (foto) ou como formulário na conversa?
 - [ ] O colaborador pode tirar dúvidas gerais do processo, ou o agente só coleta?
 - [ ] Qual sistema de destino simular no mock (formato do cadastro)?
-
----
-
-## 12. Pauta da pesquisa para o pitch (nossa, não está no PDF)
-
-O PDF descreve bem **o produto** e **a demo**. Para o pitch diante da banca (organizadores do evento, um
-associate de venture capital e especialistas em IA), faltam evidências sobre **o problema**, **o
-mercado** e **a confiabilidade da IA**. Cada pergunta abaixo indica quem na banca ela atende.
-
-### 12.1 Tamanho da dor (VC, organizadores)
-
-- Quantas admissões formais acontecem por ano no Brasil? (CAGED / Novo CAGED, RAIS)
-- Quantos contratos de estágio ativos existem? (CIEE, ABRES, Lei 11.788/2008) — o modelo "Estágio" é o da demo.
-- Quanto tempo o RH gasta, em média, por admissão na coleta e conferência de documentos?
-- Qual a taxa de documentos que chegam ilegíveis, incompletos ou vencidos? Há benchmark público?
-- Qual o custo de um atraso na admissão (início adiado, retrabalho, multa por envio fora de prazo ao eSocial)?
-
-### 12.2 Regulação e por que agora (VC, especialistas)
-
-- Prazos legais do eSocial para o evento de admissão (S-2200) e consequências do atraso.
-- Exigências da CLT e da Lei do Estágio sobre os documentos de admissão.
-- LGPD: base legal para tratar documentos pessoais, retenção, e cuidados com dados sensíveis (art. 11).
-- Políticas do WhatsApp Business API para mensagens de iniciativa da empresa (templates, janela de 24 h).
-- Penetração do WhatsApp no Brasil, como argumento de canal.
-
-### 12.3 Concorrência (VC)
-
-- Quem já faz admissão digital no Brasil (ex.: Unico People / Admissão Digital, Gupy Admissão, Convenia,
-  Sólides, Caju, Feedz) e se usam WhatsApp e agente, ou apenas formulário/app.
-- Lá fora: Firstwork, Moveworks e similares (já temos análises em `docs/`).
-- O que diferencia "agente que cobra e explica" de "formulário com upload".
-
-### 12.4 Confiabilidade da IA (especialistas em IA)
-
-- Estado da arte em extração de documentos brasileiros (RG, CNH, comprovantes) com LLMs multimodais vs. OCR clássico.
-- Como medir a extração: acurácia por campo, taxa de falso aprovado vs. falso recusado.
-- Detecção de adulteração: o que é viável no MVP e o que depende de API (Serpro Datavalid).
-- Argumento de arquitetura: "o LLM extrai e explica; as regras rodam em código". Referências que sustentam esse padrão.
-- Riscos: alucinação de campos, prompt injection via imagem, viés com documentos de baixa qualidade.
-
-### 12.5 Modelo de negócio (VC)
-
-- Como os concorrentes cobram: por admissão, por colaborador ativo, por assento de RH?
-- Custo unitário estimado por admissão (tokens de visão + mensagens WhatsApp).
-- Cliente inicial: perfil de empresa com alto volume de admissões (varejo, call center, programas de estágio).

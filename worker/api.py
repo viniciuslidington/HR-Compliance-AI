@@ -21,15 +21,15 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Callable
 
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, UploadFile
+from fastapi.responses import RedirectResponse, Response
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, Request, UploadFile
 from pydantic import BaseModel
 
 from ia.config import carregar_env
 from ia.conversa_documental import interpretar, compromisso_explicito
 from ia.documentos import Funcionario, Transcritor
 from ia.duvidas import estado_recente, responder_duvida
+from ia.leitura_generica import Candidato, ErroLeitura, ler_generico
 from ia.llm import LLM, FeatherlessLLM, FeatherlessTranscritor
 from ia.orquestrador import AgenteDocumental, Etapa
 from ia.fila import Tarefa
@@ -41,6 +41,7 @@ RAIZ = Path(__file__).resolve().parent
 CONTRATOS = RAIZ.parent / "contracts"
 MIMES_ACEITOS = {"image/png", "image/jpeg", "image/webp"}
 TAMANHO_MAXIMO = 10 * 1024 * 1024
+CHAVE_KV = re.compile(r"^[A-Za-z0-9_.:-]{1,128}$")
 
 
 class PedidoAprovacao(BaseModel):
@@ -73,6 +74,7 @@ def criar_app(
     emissores_autonomos: set[str] | None = None,
     contratos: Path = CONTRATOS,
     agendamento_automatico: bool = False,
+    front_url: str | None = None,
 ) -> FastAPI:
     seed = json.loads((contratos / "seed" / "funcionarios.json").read_text(encoding="utf-8"))
     tenant = seed["tenant"]
@@ -96,6 +98,7 @@ def criar_app(
             id INTEGER PRIMARY KEY, anexo_id TEXT NOT NULL, em TEXT NOT NULL,
             status_anterior TEXT NOT NULL, problemas_anteriores TEXT, status_final TEXT);
         CREATE TABLE IF NOT EXISTS execucoes_regua (dia TEXT PRIMARY KEY);
+        CREATE TABLE IF NOT EXISTS front_kv (chave TEXT PRIMARY KEY, tipo TEXT NOT NULL, valor BLOB NOT NULL, atualizado_em TEXT NOT NULL);
         """)
         row = db.execute("SELECT dados FROM agente_estado WHERE id=1").fetchone()
     cards = []
@@ -491,12 +494,60 @@ def criar_app(
         def parar_agendamento():
             parada.set()
 
-    @app.get("/", include_in_schema=False)
-    def interface():
-        return FileResponse(RAIZ / "static" / "index.html")
+    # --- painel de admissão (web/): leitura por IA e armazenamento do estado do servidor do Next ---
 
-    app.mount("/static", StaticFiles(directory=RAIZ / "static"), name="static")
-    app.mount("/design-system", StaticFiles(directory=RAIZ.parent / "design-system"), name="design-system")
+    @app.post("/leitura", dependencies=[Depends(exigir_token)])
+    def leitura_admissao(arquivo: UploadFile = File(...), candidatos: str = Form(...)) -> dict:
+        """Lê um documento de admissão do painel: qual dos candidatos é e os campos com respaldo no texto."""
+        try:
+            lista = [Candidato.model_validate(c) for c in json.loads(candidatos)]
+        except (ValueError, TypeError):
+            raise HTTPException(422, "candidatos deve ser uma lista JSON de {id, nome, campos}")
+        if not lista:
+            raise HTTPException(422, "informe ao menos um documento candidato")
+        if arquivo.content_type not in MIMES_ACEITOS:
+            raise HTTPException(415, "envie uma imagem PNG, JPEG ou WebP")
+        conteudo = arquivo.file.read(TAMANHO_MAXIMO + 1)
+        if len(conteudo) > TAMANHO_MAXIMO:
+            raise HTTPException(413, "arquivo acima de 10 MB")
+        inicio = datetime.now()
+        try:
+            resultado = ler_generico(transcritor, llm, conteudo, arquivo.content_type, lista)
+        except ErroLeitura as erro:
+            log.warning("leitura de admissão indisponível: %s", erro)
+            raise HTTPException(503, str(erro))
+        return {**resultado.model_dump(mode="json"), "duracao_ms": int((datetime.now() - inicio).total_seconds() * 1000)}
+
+    def validar_chave(chave: str) -> str:
+        if not CHAVE_KV.match(chave):
+            raise HTTPException(422, "chave inválida")
+        return chave
+
+    @app.get("/front/kv/{chave}", dependencies=[Depends(exigir_token)])
+    def ler_kv(chave: str) -> Response:
+        with repo._conectar() as db:
+            row = db.execute("SELECT tipo, valor FROM front_kv WHERE chave=?", (validar_chave(chave),)).fetchone()
+        if row is None:
+            raise HTTPException(404, "chave não encontrada")
+        return Response(content=bytes(row["valor"]), media_type=row["tipo"])
+
+    @app.put("/front/kv/{chave}", dependencies=[Depends(exigir_token)])
+    async def gravar_kv(chave: str, request: Request) -> dict:
+        validar_chave(chave)
+        corpo = await request.body()
+        if len(corpo) > TAMANHO_MAXIMO:
+            raise HTTPException(413, "valor acima de 10 MB")
+        tipo = request.headers.get("content-type", "application/octet-stream")
+        with repo._conectar() as db:
+            db.execute("INSERT OR REPLACE INTO front_kv VALUES (?, ?, ?, ?)", (chave, tipo, corpo, datetime.now().isoformat()))
+        return {"chave": chave, "bytes": len(corpo)}
+
+    @app.get("/", include_in_schema=False)
+    def raiz():
+        # O worker é só API: a interface é o front da vinda (web/). A antiga tela de teste saiu.
+        if front_url:
+            return RedirectResponse(front_url, status_code=307)
+        return {"servico": "worker da vinda (API)", "interface": None, "docs": "/docs", "saude": "/saude"}
 
     return app
 
@@ -512,5 +563,6 @@ def app_do_ambiente() -> FastAPI:
         hoje=(lambda: date.fromisoformat(hoje_fixo)) if hoje_fixo else date.today,
         api_token=os.environ.get("API_TOKEN") or None,
         agendamento_automatico=True,
+        front_url=os.environ.get("FRONT_URL") or None,
         emissores_autonomos={c.strip() for c in os.environ.get("EMISSORES_AUTONOMOS", "").split(",") if c.strip()},
     )

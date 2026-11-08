@@ -7,12 +7,15 @@ export interface ItemChecklist {
   instrucao: string | null;
 }
 
-const ROTULOS: Record<string, { curto: string; feminino: boolean }> = {
+const ROTULOS: Record<string, { curto: string; feminino: boolean; plural?: boolean }> = {
   rg_cnh: { curto: "RG/CNH", feminino: false },
   cpf: { curto: "CPF", feminino: false },
   comprovante_residencia: { curto: "comprovante de residência", feminino: false },
-  dados_bancarios: { curto: "dados bancários", feminino: false },
+  dados_bancarios: { curto: "dados bancários", feminino: false, plural: true },
   declaracao_matricula: { curto: "declaração de matrícula", feminino: true },
+  aso: { curto: "ASO", feminino: false },
+  nr10: { curto: "certificado NR-10", feminino: false },
+  nr35: { curto: "certificado NR-35", feminino: false },
 };
 
 export function rotulo_curto(tipo_documento_id: string | null, personalizado?: string | null): string {
@@ -58,9 +61,24 @@ export function aprovado(
   personalizado: string | null,
   rotulos_faltantes: string[],
 ): string {
-  const feminino = tipo_documento_id ? ROTULOS[tipo_documento_id]?.feminino : false;
+  const rotulo = tipo_documento_id ? ROTULOS[tipo_documento_id] : undefined;
   const nome = maiuscula(rotulo_curto(tipo_documento_id, personalizado));
-  return `${nome} ${feminino ? "aprovada" : "aprovado"}. ${faltam(rotulos_faltantes)}`;
+  const sufixo = rotulo?.plural ? "s" : "";
+  return `${nome} ${rotulo?.feminino ? "aprovada" : "aprovado"}${sufixo}. ${faltam(rotulos_faltantes)}`;
+}
+
+export function ja_aprovado(
+  tipo_documento_id: string | null,
+  personalizado: string | null,
+  rotulos_faltantes: string[],
+): string {
+  const feminino = tipo_documento_id ? ROTULOS[tipo_documento_id]?.feminino : false;
+  const nome = rotulo_curto(tipo_documento_id, personalizado);
+  return `Esse é ${feminino ? "a" : "o"} ${nome}, que já está ${feminino ? "aprovada" : "aprovado"}. ${faltam(rotulos_faltantes)}`;
+}
+
+export function leitura_indisponivel(): string {
+  return "Recebi seu arquivo, mas não consegui ler o documento agora. Pode mandar de novo daqui a pouquinho?";
 }
 
 export function recusado(motivo_texto: string, o_que_fazer: string): string {
