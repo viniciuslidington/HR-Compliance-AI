@@ -7,13 +7,13 @@ import estilos from "./marca.module.css";
 export const metadata: Metadata = { title: "Guia da marca" };
 
 const CORES = [
-  { token: "--surface", nome: "Papel", hex: "#F6F6F3", claro: true },
-  { token: "--ink", nome: "Tinta", hex: "#10120F" },
-  { token: "--lime", nome: "Lima", hex: "#D4F75B", claro: true },
-  { token: "--mint", nome: "Menta", hex: "#5BE3A0", claro: true },
-  { token: "--aqua", nome: "Água", hex: "#3CC3E6", claro: true },
-  { token: "--accent", nome: "Sinal", hex: "#0E9F5B" },
-  { token: "--alert", nome: "Atenção", hex: "#F2683A" },
+  { token: "--surface", nome: "Creme", hex: "#EEEBE7", claro: true },
+  { token: "--ink", nome: "Grafite", hex: "#0D0D0D" },
+  { token: "--orange-soft", nome: "Âmbar", hex: "#FFB066", claro: true },
+  { token: "--orange", nome: "Laranja", hex: "#FF4802" },
+  { token: "--orange-bright", nome: "Brilho", hex: "#FF5E00" },
+  { token: "--orange-deep", nome: "Laranja texto", hex: "#B33100" },
+  { token: "--success", nome: "Concluído", hex: "#1FAE6E" },
 ];
 
 const ESCALA = [
@@ -38,7 +38,7 @@ export default function MarcaPage() {
         <Link href="/rh" className={estilos.home} aria-label="Voltar ao painel">
           <Logo tamanho="sm" />
         </Link>
-        <span className="text-eyebrow">Guia da marca · v1</span>
+        <span className="text-eyebrow">Guia da marca · v2</span>
       </header>
 
       <section className={estilos.hero}>
@@ -57,10 +57,10 @@ export default function MarcaPage() {
       <section className={estilos.secao}>
         <div className={estilos.intro}>
           <Eyebrow>01 · Símbolo</Eyebrow>
-          <h2 className="text-display-h2">Um v que também é um check.</h2>
+          <h2 className="text-display-h2">Duas faixas. Uma passagem.</h2>
           <p className="text-body">
-            Dois traços que convergem num ponto. Lê-se a <em>vinda</em> de quem chega e o documento aprovado.
-            O tile carrega o gradiente; o traço é sempre tinta.
+            Duas faixas desenham um v com uma dobra aberta. O intervalo entre elas representa a passagem
+            de uma etapa para a próxima. A silhueta identifica a marca mesmo sem cor, efeito ou contorno.
           </p>
         </div>
         <div className={estilos.grade_logo}>
@@ -69,12 +69,12 @@ export default function MarcaPage() {
             <figcaption className="text-caption">Sobre papel</figcaption>
           </figure>
           <figure className={`section-dark ${estilos.placa} ${estilos.placa_escura}`}>
-            <Logo tamanho="lg" />
+            <Logo tamanho="lg" tom="marca" />
             <figcaption className="text-caption">Sobre grafite</figcaption>
           </figure>
           <figure className={`${estilos.placa} ${estilos.placa_gradiente}`}>
-            <span className={estilos.wordmark}>vinda</span>
-            <figcaption className="text-caption">Wordmark sobre o gradiente</figcaption>
+            <Logo tamanho="lg" />
+            <figcaption className="text-caption">Silhueta em uma cor</figcaption>
           </figure>
           <figure className={estilos.placa}>
             <div className={estilos.tamanhos}>
@@ -82,7 +82,7 @@ export default function MarcaPage() {
               <Logo variante="simbolo" tamanho="md" />
               <Logo variante="simbolo" tamanho="sm" />
             </div>
-            <figcaption className="text-caption">Ícone · 44 / 28 / 22 px · raio 30%</figcaption>
+            <figcaption className="text-caption">Símbolo · 48 / 32 / 24 px · sem moldura</figcaption>
           </figure>
         </div>
       </section>
@@ -90,11 +90,11 @@ export default function MarcaPage() {
       <section className={estilos.secao}>
         <div className={estilos.intro}>
           <Eyebrow>02 · Cor</Eyebrow>
-          <h2 className="text-display-h2">Papel, tinta e um gradiente.</h2>
+          <h2 className="text-display-h2">Creme, grafite e um laranja.</h2>
           <p className="text-body">
-            A interface é quase monocromática. O gradiente lima → menta → água aparece em poucos lugares: o
-            símbolo, o progresso e a luz no topo da página. O verde-sinal marca o que está resolvido; o laranja,
-            o que precisa de alguém.
+            A paleta é a do pitch: creme, grafite e laranja. O gradiente âmbar → laranja aparece em poucos lugares: o
+            símbolo, o progresso e o glow no canto da página, como nos slides. O laranja também é o sinal do que
+            está em andamento ou precisa de alguém; o verde fica só para o que foi concluído.
           </p>
         </div>
         <div className={estilos.gradiente} aria-hidden="true" />
@@ -176,7 +176,7 @@ export default function MarcaPage() {
             <span className={estilos.demo_check} aria-hidden="true">
               <Simbolo />
             </span>
-            <figcaption className="text-caption">Aprovado · traço do check</figcaption>
+            <figcaption className="text-caption">Passagem · duas faixas em equilíbrio</figcaption>
           </figure>
         </div>
       </section>

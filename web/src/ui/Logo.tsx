@@ -1,38 +1,43 @@
+"use client";
+
+import { useId } from "react";
 import estilos from "./Logo.module.css";
 
-/** Nome da marca num lugar só: trocar aqui troca o wordmark e os textos de marca. */
 export const MARCA = "vinda";
 
 export interface LogoProps {
-  /** `completo` = símbolo + nome; `simbolo` = só o tile. */
   variante?: "completo" | "simbolo";
   tamanho?: "sm" | "md" | "lg" | "xl";
+  tom?: "tinta" | "marca";
   className?: string;
 }
 
-/**
- * O símbolo é um "v" que também é um check: dois traços que convergem num ponto.
- * Lê-se "vinda" (a chegada do colaborador) e "aprovado" (o documento resolvido).
- */
-export function Simbolo({ className = "" }: { className?: string }) {
+/** Duas faixas, uma passagem: o intervalo diagonal permanece visível em uma cor. */
+export function Simbolo({ className = "", tom = "tinta" }: { className?: string; tom?: LogoProps["tom"] }) {
+  const id = useId();
   return (
-    <span className={`${estilos.tile} ${className}`} aria-hidden="true">
-      <svg viewBox="0 0 32 32" className={estilos.check} fill="none">
-        <path d="M9.5 15.5 14.5 22 23 9.5" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+    <span className={`${estilos.simbolo} ${className}`} aria-hidden="true">
+      <svg viewBox="0 0 64 64" className={estilos.desenho} fill="none" focusable="false">
+        <defs>
+          <linearGradient id={id} x1="8" y1="8" x2="54" y2="52" gradientUnits="userSpaceOnUse">
+            <stop stopColor="var(--orange-soft)" />
+            <stop offset="1" stopColor="var(--orange)" />
+          </linearGradient>
+        </defs>
+        <g fill={tom === "marca" ? `url(#${id})` : "currentColor"}>
+          <path className={estilos.faixa_entrada} d="M8 9H18L32 33L23 48L4 16C2 12 4 9 8 9Z" />
+          <path className={estilos.faixa_continua} d="M46 9H56C59 9 60 12 58 15L37 51C34 56 30 56 27 51L26 49L35 33L46 9Z" />
+        </g>
       </svg>
     </span>
   );
 }
 
-export function Logo({ variante = "completo", tamanho = "md", className = "" }: LogoProps) {
+export function Logo({ variante = "completo", tamanho = "md", tom = "tinta", className = "" }: LogoProps) {
   return (
     <span className={`${estilos.logo} ${estilos[tamanho]} ${className}`} role="img" aria-label={MARCA}>
-      <Simbolo />
-      {variante === "completo" && (
-        <span className={estilos.nome} aria-hidden="true">
-          {MARCA}
-        </span>
-      )}
+      <Simbolo tom={tom} />
+      {variante === "completo" && <span className={estilos.nome} aria-hidden="true">{MARCA}</span>}
     </span>
   );
 }

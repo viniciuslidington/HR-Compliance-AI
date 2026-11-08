@@ -318,9 +318,7 @@
   .demo_barra {
     animation: encher 2.8s var(--ease-out) infinite;
   }
-  .demo_check svg path {
-    animation: tracar-loop 2.8s var(--ease-out) infinite;
-  }
+
   @media (hover: hover) and (pointer: fine) {
     .placa,
     .especime {

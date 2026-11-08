@@ -1,0 +1,61 @@
+.simbolo {
+  display: block;
+  width: 1em;
+  height: 1em;
+  overflow: visible;
+}
+/* Repouso: a faixa de cima ainda chegando. */
+.chegando {
+  transform: translate(-3.5px, -3.5px);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .entrar .chegando {
+    animation: chegar 900ms var(--ease-out) 200ms both;
+  }
+  .entrar .meio {
+    animation: assentar 900ms var(--ease-out) 80ms both;
+  }
+  .encaixar .chegando {
+    transition: transform 900ms var(--ease-spring);
+  }
+}
+/* Concluído: o disco se fecha. A classe vai junto com o pai que recebe .visivel. */
+.encaixar.fechado .chegando {
+  transform: none;
+}
+
+@keyframes chegar {
+  from {
+    opacity: 0;
+    transform: translate(-16px, -16px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-3.5px, -3.5px);
+  }
+}
+@keyframes assentar {
+  from {
+    transform: translate(-6px, -6px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34em;
+  font-size: 26px;
+  color: inherit;
+  line-height: 1;
+}
+.nome {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.92em;
+  letter-spacing: -0.055em;
+  transform: translateY(-0.03em);
+}

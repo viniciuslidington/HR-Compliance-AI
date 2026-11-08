@@ -27,7 +27,7 @@ body {
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--lime) 70%, transparent);
+  background: color-mix(in srgb, var(--orange-soft) 60%, transparent);
   color: var(--surface-deep);
 }
 

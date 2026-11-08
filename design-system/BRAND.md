@@ -12,33 +12,38 @@ da Tako. O guia vivo, com logo, cores, tipos e motion renderizados, está em `/m
 
 ## Símbolo
 
-Um "v" que também é um check: dois traços que convergem num ponto. Ele se lê como a *vinda* do colaborador e
-como o documento aprovado.
+Um **v em duas faixas dobradas**, separado por um intervalo diagonal. O conceito é passagem:
+a responsabilidade segue de uma etapa para a próxima, com continuidade e acompanhamento.
+A assimetria entre as faixas cria uma silhueta própria, sem usar um check de aprovação.
 
-- O tile é um quadrado com raio de 30% preenchido com `--gradient-brand`. O traço é sempre `--surface-deep`,
-  com espessura de 3.4/32 e pontas redondas.
-- Tamanhos: 22px (inline), 28px (navegação), 44px e acima (vitrine). Abaixo de 16px, use só o favicon
-  (`web/src/app/icon.svg`).
-- Wordmark: Funnel Display 600, tracking −0.05em, à direita do tile, com gap de 36% do tile.
-- Não faça: mudar a cor do traço, girar o símbolo, pôr o tile sobre outro gradiente ou usar o wordmark em
-  maiúsculas.
+- Símbolo sem moldura na interface; cor `--ink`, adaptada ao fundo.
+- Sobre grafite, variante de marca em âmbar → laranja. A cor não é necessária para reconhecer a forma.
+- Tamanhos: 24px (inline), 32px (navegação), 48px e 96px (vitrine).
+- Favicon: silhueta simplificada dentro de fundo grafite, com margem óptica.
+- Wordmark: Funnel Display 600, tracking −0.055em, gap de 26% do símbolo.
+- Movimento: elevação de uma faixa em 1 unidade somente no hover; sem loops, pulso ou brilho do logo.
+- Arquivo vetorial independente: `web/public/brand/vinda-simbolo.svg`.
+- Não girar as faixas, fechar o intervalo, trocar as proporções ou confundir o símbolo com status de aceite.
 
 ## Cor
 
-A interface é quase monocromática (papel e tinta). A cor tem dois papéis:
+A paleta segue o pitch do Hackathon Tako: **creme** `#eeebe7`, **grafite** `#0d0d0d` e **laranja**.
+O laranja é um sinal, não um fundo.
 
 | Papel | Tokens | Onde |
 | --- | --- | --- |
-| Marca | `--gradient-brand` (lima `#d4f75b` → menta `#5be3a0` → água `#3cc3e6`) | Tile do logo, barras de progresso, `.text-gradient` em títulos grandes, luz `--gradient-aurora` no topo das páginas |
-| Resolvido | `--accent` (gráfico), `--accent-ink` (texto), `--accent-tint` (fundo) | Ponto do item ativo, "em coleta", "concluída", eyebrows, foco de inputs |
-| Precisa de alguém | `--alert`, `--alert-ink`, `--alert-tint` | Escalações, recusas, erros de campo |
+| Marca | `--orange` `#ff4802`, `--orange-bright` `#ff5e00`, `--gradient-brand` (âmbar `#ffb066` → `#ff5e00` → `#e13e00`) | Símbolo sobre grafite, progresso, `.text-gradient` em títulos grandes, glow `--gradient-aurora` no canto superior (o mesmo radial dos slides) |
+| Em andamento | `--accent` (gráfico), `--accent-ink` (texto), `--accent-tint` (fundo) | Item ativo, "em coleta", eyebrows, foco de inputs |
+| Precisa de alguém | `--alert`, `--alert-ink`, `--alert-tint` | Escalações, recusas, erros de campo. Diferencia-se do "em coleta" pelo fundo preenchido |
+| Concluído | `--success`, `--success-ink`, `--success-tint` | Concluída, aprovado. O único verde da interface |
 
 Regras:
+- Em texto pequeno sobre creme, use `--orange-deep` (`#b33100`, 5.6:1); `--orange` e `--orange-bright`
+  dão ~3:1 e servem só para gráficos e texto ≥24px. Sobre grafite, `--orange-bright` passa como texto (6.4:1).
 - O gradiente nunca vira fundo de texto pequeno nem aparece em mais de dois lugares por tela.
-- `--accent` e `--alert` são para gráficos (≥3:1). Para texto, use as versões `-ink` (≈6:1).
 - `--ink-subtle` é o mínimo para texto legível; `--ink-faint` serve só para placeholders.
-- O tema `dark` (`.section-dark`) é um tipo de seção, como o WhatsApp simulado, e não um modo escuro do
-  sistema operacional.
+- O tema `dark` (`.section-dark`) é um tipo de seção, como o WhatsApp simulado e a landing, e não um modo
+  escuro do sistema operacional.
 
 ## Tipografia
 
@@ -62,7 +67,7 @@ do `tokens.css`.
 - Container de 1120px, texto até 560px, grid de 4px. O topo da página tem 64px; entre blocos, 48px.
 - Raios: inputs com 12, cards com 16, janelas com 24, botões e badges em pill.
 - Bordas hairline (`--line`) mais `--shadow-xs`; `--shadow-card` só no hover de algo clicável, e
-  `--shadow-glow` só sob o botão primário e o logo.
+  `--shadow-glow` só sob o botão primário.
 
 ## Movimento
 
@@ -70,7 +75,7 @@ do `tokens.css`.
 - Durações: 140ms para cor, 260ms para transforms, 560ms para entradas.
 - Anime só `transform` e `opacity`, tudo dentro de `@media (prefers-reduced-motion: no-preference)`.
 - O que existe hoje: entrada em cascata dos blocos da página, linhas de tabela em stagger, pulso do
-  "Agente ativo", respiração do ponto "em coleta", traço do check do logo, brilho no hover do logo, fio de
+  "Agente ativo", respiração do ponto "em coleta", deslocamento pontual da faixa no hover do logo, fio de
   gradiente e glow no botão primário, e a barra de progresso com o gradiente.
 - O movimento confirma algo (chegou, está vivo, foi aprovado). Ele não decora.
 

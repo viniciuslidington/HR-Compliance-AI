@@ -1,31 +1,34 @@
 /* Vinda — gerado de tokens.json por build-tokens.mjs. Não edite à mão. */
-/* Fonte: Marca própria Vinda (08/11/2026). Ver BRAND.md. */
+/* Fonte: Marca vinda (08/11/2026). Paleta alinhada ao pitch do Hackathon Tako: creme, grafite e laranja. Ver BRAND.md. */
 
 @import url("https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400..700&family=Funnel+Sans:ital,wght@0,300..700;1,400&family=Geist+Mono:wght@400..600&display=swap");
 
 /* Tema "light" (padrão) + tokens independentes de tema */
 :root {
-  --surface: #f6f6f3;
-  --surface-sunken: #ededea;
+  --surface: #eeebe7;
+  --surface-sunken: #e9e3db;
   --surface-raised: #ffffff;
-  --surface-deep: #0b0c0a;
-  --ink: #10120f;
-  --ink-muted: rgba(16,18,15,0.68);
-  --ink-subtle: rgba(16,18,15,0.58);
-  --ink-faint: rgba(16,18,15,0.30);
-  --line: rgba(16,18,15,0.08);
-  --line-strong: rgba(16,18,15,0.16);
-  --lime: #d4f75b;
-  --mint: #5be3a0;
-  --aqua: #3cc3e6;
-  --accent: #0e9f5b;
-  --accent-ink: #0a6b3f;
-  --accent-tint: rgba(14,159,91,0.10);
-  --alert: #f2683a;
-  --alert-ink: #a63a12;
-  --alert-tint: rgba(242,104,58,0.11);
-  --success: #0e9f5b;
-  --success-tint: rgba(14,159,91,0.10);
+  --surface-deep: #080808;
+  --ink: #0d0d0d;
+  --ink-muted: rgba(13,13,13,0.70);
+  --ink-subtle: rgba(13,13,13,0.55);
+  --ink-faint: rgba(13,13,13,0.30);
+  --line: rgba(10,10,10,0.10);
+  --line-strong: rgba(10,10,10,0.20);
+  --orange-soft: #ffb066;
+  --orange: #ff4802;
+  --orange-bright: #ff5e00;
+  --orange-dark: #e13e00;
+  --orange-deep: #b33100;
+  --accent: #ff4802;
+  --accent-ink: #b33100;
+  --accent-tint: rgba(255,98,0,0.10);
+  --alert: #e13e00;
+  --alert-ink: #b33100;
+  --alert-tint: rgba(255,72,2,0.10);
+  --success: #1fae6e;
+  --success-ink: #0f6e43;
+  --success-tint: rgba(49,216,157,0.14);
   --danger: #e5484d;
   --whatsapp: #25d366;
 
@@ -101,14 +104,14 @@
   --radius-2xl: 24px;
   --radius-pill: 9999px;
 
-  --shadow-xs: 0 1px 2px 0 rgba(16,18,15,0.05);
-  --shadow-card: 0 1px 0 rgba(16,18,15,0.03), 0 12px 32px -14px rgba(16,18,15,0.16);
-  --shadow-window: 0 40px 80px -28px rgba(16,18,15,0.32), 0 0 0 1px rgba(16,18,15,0.04);
-  --shadow-glow: 0 10px 30px -10px rgba(14,159,91,0.45);
+  --shadow-xs: 0 1px 2px 0 rgba(13,13,13,0.05);
+  --shadow-card: 0 1px 0 rgba(13,13,13,0.03), 0 12px 32px -14px rgba(13,13,13,0.16);
+  --shadow-window: 0 40px 80px -28px rgba(13,13,13,0.32), 0 0 0 1px rgba(13,13,13,0.04);
+  --shadow-glow: 0 10px 30px -10px rgba(255,72,2,0.40);
 
-  --gradient-brand: linear-gradient(120deg, #d4f75b 0%, #5be3a0 50%, #3cc3e6 100%);
-  --gradient-aurora: radial-gradient(42% 60% at 12% 0%, rgba(212,247,91,0.30), transparent 70%), radial-gradient(38% 55% at 88% 0%, rgba(60,195,230,0.18), transparent 70%);
-  --gradient-ink: linear-gradient(180deg, #1a1c18 0%, #0b0c0a 100%);
+  --gradient-brand: linear-gradient(120deg, #ffb066 0%, #ff5e00 55%, #e13e00 100%);
+  --gradient-aurora: radial-gradient(circle at 88% 18%, rgba(255,94,0,0.24) 0%, rgba(255,72,2,0.08) 28%, rgba(238,235,231,0) 55%);
+  --gradient-ink: linear-gradient(180deg, #1c1c1c 0%, #0d0d0d 100%);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -120,24 +123,25 @@
 /* Tema "dark": aplique em uma seção, não como modo escuro do sistema operacional. */
 [data-theme="dark"],
 .section-dark {
-  --surface: #0b0c0a;
-  --surface-sunken: #131512;
-  --surface-raised: #1a1c18;
-  --surface-deep: #050605;
-  --ink: #f2f3ee;
-  --ink-muted: rgba(242,243,238,0.70);
-  --ink-subtle: rgba(242,243,238,0.56);
-  --ink-faint: rgba(242,243,238,0.30);
-  --line: rgba(242,243,238,0.09);
-  --line-strong: rgba(242,243,238,0.18);
-  --accent: #3ee08f;
-  --accent-ink: #8af2bb;
-  --accent-tint: rgba(62,224,143,0.14);
-  --alert: #ff8a5c;
-  --alert-ink: #ffb294;
-  --alert-tint: rgba(255,138,92,0.14);
-  --success: #3ee08f;
-  --success-tint: rgba(62,224,143,0.14);
+  --surface: #0d0d0d;
+  --surface-sunken: #141414;
+  --surface-raised: #18181b;
+  --surface-deep: #080808;
+  --ink: #eeebe7;
+  --ink-muted: rgba(238,235,231,0.70);
+  --ink-subtle: rgba(238,235,231,0.55);
+  --ink-faint: rgba(238,235,231,0.30);
+  --line: rgba(235,235,235,0.10);
+  --line-strong: rgba(240,235,230,0.20);
+  --accent: #ff5e00;
+  --accent-ink: #ff5e00;
+  --accent-tint: rgba(255,94,0,0.14);
+  --alert: #ff5e00;
+  --alert-ink: #ff8a5c;
+  --alert-tint: rgba(255,94,0,0.14);
+  --success: #34d399;
+  --success-ink: #6ee7b7;
+  --success-tint: rgba(52,211,153,0.14);
 }
 
 /* Estilos de texto */

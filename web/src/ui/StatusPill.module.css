@@ -56,7 +56,7 @@
 .concluida,
 .aprovado {
   background: var(--success-tint);
-  color: var(--accent-ink);
+  color: var(--success-ink);
 }
 .concluida::before,
 .aprovado::before {
