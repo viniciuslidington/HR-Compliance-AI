@@ -78,6 +78,39 @@ describe("camada 2: regras", () => {
   });
 });
 
+describe("especializados: ASO, NR-10 e NR-35 (camada 2)", () => {
+  const nr = (dados: Record<string, string>) =>
+    ok({ nome: "Maria da Silva", responsavel_tecnico: "Eng. Paulo", carga_horaria: "8 horas", ...dados });
+  it("NR-35 dentro de 24 meses e com 8h aprova", () => {
+    expect(validar("nr35", nr({ data_realizacao: dia(300) })).aprovado).toBe(true);
+  });
+  it("NR-35 com mais de 24 meses recusa dizendo quando venceu", () => {
+    const r = validar("nr35", nr({ data_realizacao: "2024-06-10" }));
+    expect(r.motivos.map((m) => m.codigo)).toEqual(["certificado_vencido"]);
+    expect(r.motivos[0].texto).toContain("10/06/2026");
+  });
+  it("NR-10 com menos de 40h recusa citando a carga", () => {
+    const r = validar("nr10", nr({ data_realizacao: dia(30), carga_horaria: "16h" }));
+    expect(r.motivos.map((m) => m.codigo)).toEqual(["carga_insuficiente"]);
+    expect(r.motivos[0].texto).toBe("o curso tem 16h e o certificado NR-10 exige pelo menos 40h");
+  });
+  it("sem data ou sem carga pede foto nova", () => {
+    const r = validar("nr35", ok({ nome: "Maria da Silva" }));
+    expect(r.motivos.map((m) => m.codigo)).toEqual(["carga_ilegivel", "data_ilegivel"]);
+  });
+  it("ASO apto e recente aprova; inapto ou vencido recusa", () => {
+    const aso = (resultado: string, data_realizacao: string) =>
+      validar("aso", ok({ nome: "Maria da Silva", cpf: "529.982.247-25", resultado, data_realizacao }));
+    expect(aso("APTO", dia(10)).aprovado).toBe(true);
+    expect(aso("Inapto", dia(10)).motivos.map((m) => m.codigo)).toEqual(["aso_nao_apto"]);
+    expect(aso("Apto", dia(400)).motivos.map((m) => m.codigo)).toEqual(["certificado_vencido"]);
+  });
+  it("nome do certificado diferente do RG escala", () => {
+    const r = validar("nr35", nr({ nome: "João Pereira", data_realizacao: dia(30) }));
+    expect(r.motivos.map((m) => m.codigo)).toEqual(["inconsistencia"]);
+  });
+});
+
 describe("datas ausentes ou inválidas (camada 2)", () => {
   const comp = (extra: Record<string, string>) =>
     validar("comprovante_residencia", ok({ titular: "Maria", endereco: "Rua A", ...extra }));

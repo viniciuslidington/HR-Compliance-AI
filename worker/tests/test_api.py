@@ -169,10 +169,10 @@ def test_regua_persiste_card_e_nao_repete_impedimento(tmp_path):
     assert outro.post("/regua/rodar?dia=2026-12-03").json()["etapas"] == []
 
 
-def test_interface_e_acoes_exigem_token(tmp_path):
+def test_raiz_nao_serve_interface_propria_e_acoes_exigem_token(tmp_path):
     cliente = _cliente(tmp_path, token="segredo")
-    assert cliente.get("/").status_code == 200
-    assert cliente.get("/static/app.js").status_code == 200
+    assert cliente.get("/").json()["interface"] is None
+    assert cliente.get("/static/app.js").status_code == 404
     assert cliente.post("/regua/rodar?dia=2026-12-03").status_code == 401
 
 
@@ -348,3 +348,61 @@ def test_duvida_de_documento_que_o_cargo_nao_exige(tmp_path):
     resposta = _cliente(tmp_path).post('/pessoas/F-40/mensagens', json={'texto': 'quando vence a nr35?'}).json()
     assert resposta['classificacao'] == 'duvida'
     assert 'não exige' in resposta['etapas'][0]['dados']['texto']
+
+
+# --- painel de admissão (web/) ---
+
+CANDIDATOS = '[{"id": "cpf", "nome": "CPF", "campos": ["nome", "numero"]}]'
+TRANSCRICAO_CPF = "CADASTRO DE PESSOAS FÍSICAS\nNome: MARIANA SOUZA LIMA\nNº 529.982.247-25"
+
+
+def _cliente_leitura(tmp_path, respostas, transcritor=None, token=None):
+    app = criar_app(dados_dir=tmp_path, transcritor=transcritor or TranscritorFixo(TRANSCRICAO_CPF),
+                    llm=LLMRoteirizado(list(respostas)), hoje=lambda: HOJE, api_token=token)
+    return TestClient(app)
+
+
+def test_leitura_de_admissao_identifica_e_extrai(tmp_path):
+    cliente = _cliente_leitura(tmp_path, [{"tipo": "cpf", "legivel": True, "problema_legibilidade": None,
+                                           "nome": "MARIANA SOUZA LIMA", "numero": "529.982.247-25"}])
+    corpo = cliente.post("/leitura", data={"candidatos": CANDIDATOS},
+                         files={"arquivo": ("cpf.jpg", b"jpeg", "image/jpeg")}).json()
+    assert corpo["tipo_documento_id"] == "cpf"
+    assert corpo["qualidade"] == "ok"
+    assert corpo["dados_extraidos"] == {"nome": "MARIANA SOUZA LIMA", "numero": "529.982.247-25"}
+
+
+def test_leitura_de_admissao_exige_token_e_imagem(tmp_path):
+    cliente = _cliente_leitura(tmp_path, [], token="t")
+    arquivo = {"arquivo": ("cpf.jpg", b"jpeg", "image/jpeg")}
+    assert cliente.post("/leitura", data={"candidatos": CANDIDATOS}, files=arquivo).status_code == 401
+    pdf = {"arquivo": ("cpf.pdf", b"%PDF", "application/pdf")}
+    assert cliente.post("/leitura", data={"candidatos": CANDIDATOS}, files=pdf,
+                        headers={"Authorization": "Bearer t"}).status_code == 415
+
+
+def test_leitura_de_admissao_com_modelo_fora_do_ar_da_503(tmp_path):
+    cliente = _cliente_leitura(tmp_path, [], transcritor=TranscritorQuebrado())
+    resposta = cliente.post("/leitura", data={"candidatos": CANDIDATOS},
+                            files={"arquivo": ("cpf.jpg", b"jpeg", "image/jpeg")})
+    assert resposta.status_code == 503
+
+
+def test_kv_do_painel_guarda_e_devolve_com_o_tipo(tmp_path):
+    cliente = _cliente_leitura(tmp_path, [], token="t")
+    auth = {"Authorization": "Bearer t"}
+    assert cliente.get("/front/kv/estado", headers=auth).status_code == 404
+    assert cliente.put("/front/kv/estado", content=b'{"rev": 1}', headers={**auth, "Content-Type": "application/json"}).status_code == 200
+    resposta = cliente.get("/front/kv/estado", headers=auth)
+    assert resposta.content == b'{"rev": 1}'
+    assert resposta.headers["content-type"].startswith("application/json")
+    assert cliente.get("/front/kv/estado").status_code == 401
+    assert cliente.put("/front/kv/..%2Fx", content=b"x", headers=auth).status_code in (404, 422)
+
+
+def test_raiz_redireciona_para_o_front_quando_configurado(tmp_path):
+    app = criar_app(dados_dir=tmp_path, transcritor=TranscritorFixo(TRANSCRICAO_NR35), llm=LLMRoteirizado([]),
+                    hoje=lambda: HOJE, front_url="https://vinda-web.onrender.com")
+    resposta = TestClient(app).get("/", follow_redirects=False)
+    assert resposta.status_code == 307
+    assert resposta.headers["location"] == "https://vinda-web.onrender.com"

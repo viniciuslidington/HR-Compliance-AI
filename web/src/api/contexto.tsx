@@ -2,10 +2,14 @@
 
 // Único caminho das telas até a Api: useConsulta (leitura) e useAcao (mutação).
 // Assim a troca por uma HttpApi assíncrona fica concentrada aqui.
-import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { ArmazenamentoLocal } from "../store/armazenamento";
 import type { Api } from "./api";
+import { HttpApi } from "./http_api";
 import { MockApi } from "./mock_api";
+
+/** `mock` = tudo no localStorage do navegador; padrão = servidor do Next + IA do worker. */
+const MODO = process.env.NEXT_PUBLIC_API_MODO === "mock" ? "mock" : "http";
 
 interface Ligacao {
   api: Api;
@@ -50,11 +54,40 @@ const no_servidor = () => false;
 export function ApiProvider({ children, api }: { children: ReactNode; api?: Api }) {
   // O servidor (e a hidratação) não têm localStorage: sem `api` injetada, a MockApi só nasce no cliente, já montado.
   const montado = useSyncExternalStore(nunca_assina, no_cliente, no_servidor);
+  const http = useHttpApi(!api && MODO === "http" && montado);
   const ligacao = useMemo(() => {
     if (api) return ligar(api);
-    return montado ? ligar(new MockApi(new ArmazenamentoLocal())) : null;
-  }, [api, montado]);
+    if (!montado) return null;
+    if (MODO === "http") return http ? ligar(http) : null;
+    return ligar(new MockApi(new ArmazenamentoLocal()));
+  }, [api, montado, http]);
   return <ContextoApi.Provider value={ligacao}>{children}</ContextoApi.Provider>;
+}
+
+/** Cria a HttpApi e só a entrega depois da primeira carga do estado (tenta de novo a cada 2 s). */
+function useHttpApi(ativo: boolean): HttpApi | null {
+  const [pronta, setPronta] = useState<HttpApi | null>(null);
+  useEffect(() => {
+    if (!ativo) return;
+    const h = new HttpApi();
+    let vivo = true;
+    let espera: ReturnType<typeof setTimeout> | undefined;
+    const tentar = () =>
+      h.carregar().then(
+        () => vivo && setPronta(h),
+        (erro) => {
+          console.error("[ApiProvider] servidor indisponível", erro);
+          if (vivo) espera = setTimeout(tentar, 2000);
+        },
+      );
+    tentar();
+    return () => {
+      vivo = false;
+      clearTimeout(espera);
+      h.encerrar();
+    };
+  }, [ativo]);
+  return pronta;
 }
 
 export function useApi(): Api {

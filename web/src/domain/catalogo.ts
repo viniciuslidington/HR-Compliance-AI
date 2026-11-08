@@ -42,11 +42,37 @@ export const CATALOGO: TipoDocumento[] = [
     instrucao_colaborador:
       "A declaração de matrícula da sua faculdade ou escola, emitida recentemente, com seu nome, a instituição e o curso. Foto ou PDF.",
   },
+  // Especializados (construção e energia): a validade sai da data de realização, calculada pelo código.
+  {
+    id: "aso",
+    nome: "ASO (atestado de saúde ocupacional)",
+    campos_extracao: ["nome", "cpf", "data_realizacao", "resultado"],
+    regras_validacao: ["legivel", "nome_igual_rg", "aso_apto", "valido_12_meses"],
+    instrucao_colaborador:
+      "Seu ASO admissional ou periódico, com o resultado \"apto\", a data do exame e a assinatura do médico. Foto da folha inteira.",
+  },
+  {
+    id: "nr10",
+    nome: "Certificado NR-10",
+    campos_extracao: ["nome", "data_realizacao", "carga_horaria", "responsavel_tecnico"],
+    regras_validacao: ["legivel", "nome_igual_rg", "carga_minima_40h", "valido_24_meses"],
+    instrucao_colaborador:
+      "O certificado do curso NR-10 (segurança em eletricidade), com a carga horária, a data de conclusão e o responsável técnico. Foto do certificado inteiro.",
+  },
+  {
+    id: "nr35",
+    nome: "Certificado NR-35",
+    campos_extracao: ["nome", "data_realizacao", "carga_horaria", "responsavel_tecnico"],
+    regras_validacao: ["legivel", "nome_igual_rg", "carga_minima_8h", "valido_24_meses"],
+    instrucao_colaborador:
+      "O certificado do curso NR-35 (trabalho em altura), com a carga horária, a data de conclusão e o responsável técnico. Foto do certificado inteiro.",
+  },
 ];
 
 export const MODELOS: Modelo[] = [
   { id: "clt_padrao", nome: "CLT padrão" },
   { id: "estagio", nome: "Estágio" },
+  { id: "eletricista", nome: "Eletricista (NR-10 e NR-35)" },
 ];
 
 export const MODELO_DOCUMENTO: ModeloDocumento[] = [
@@ -58,4 +84,11 @@ export const MODELO_DOCUMENTO: ModeloDocumento[] = [
   { modelo_id: "estagio", tipo_documento_id: "cpf" },
   { modelo_id: "estagio", tipo_documento_id: "comprovante_residencia" },
   { modelo_id: "estagio", tipo_documento_id: "declaracao_matricula" },
+  { modelo_id: "eletricista", tipo_documento_id: "rg_cnh" },
+  { modelo_id: "eletricista", tipo_documento_id: "cpf" },
+  { modelo_id: "eletricista", tipo_documento_id: "comprovante_residencia" },
+  { modelo_id: "eletricista", tipo_documento_id: "dados_bancarios" },
+  { modelo_id: "eletricista", tipo_documento_id: "aso" },
+  { modelo_id: "eletricista", tipo_documento_id: "nr10" },
+  { modelo_id: "eletricista", tipo_documento_id: "nr35" },
 ];

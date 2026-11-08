@@ -1,27 +1,40 @@
 # Pendências da UI (painel do RH + WhatsApp simulado)
 
 Estado em 08/11/2026: as cinco telas do RH, o WhatsApp simulado e o roteiro da demo estão prontos e testados
-com dados simulados (`web/`). Esta lista é o que falta para a UI ficar completa. Ver também
+(`web/`), já sobre o servidor do Next e a leitura real do worker. Esta lista é o que falta para a UI ficar completa. Ver também
 `docs/designs/admissao-ui.md` (decisões e roteiro) e `docs/designs/contrato-frontend-ia.md` (contrato com a IA).
 
-## 1. Integração com o backend de IA (adiada)
+## 1. Integração com o backend de IA
 
-- [ ] **Api assíncrona.** Todos os métodos da `Api` que leem ou gravam viram `Promise`. Os únicos que continuam
-      síncronos são `resolver_midia` e `assinar`. `useConsulta` passa a devolver `{ dados, carregando, erro, tentar_de_novo }`
-      e `useAcao` passa a devolver `{ executar, pendente, erro }`.
-- [ ] **Rede simulada.** A `MockApi` atual vira `ServidorMock`, o "servidor" síncrono. Por cima dele fica uma
-      `MockApi` com atraso e falhas configuráveis (`?rede=lenta|instavel|fora`), para desenhar e testar os estados de rede.
-- [ ] **Estados de carregamento e erro.** Cada tela precisa de três estados:
+Feito em 08/11/2026 (detalhes em `contrato-frontend-ia.md`):
+
+- [x] **`HttpApi`** implementando a `Api` e escolhida por padrão no `ApiProvider` (`NEXT_PUBLIC_API_MODO=mock` volta
+      ao `localStorage`). O estado vive no servidor do Next e é gravado no disco do worker.
+- [x] **Mutações assíncronas.** As mutações da `Api` podem devolver `Promise`. As consultas seguem síncronas, sobre a
+      cópia local do estado, então `useConsulta` não mudou.
+- [x] **Atualização ao vivo.** Polling de `/api/estado` a cada 1,5 s, com ETag (304 quando nada mudou). Painel e
+      WhatsApp em aparelhos diferentes veem o mesmo estado.
+- [x] **Upload real.** A foto vai para `/api/arquivo`; a IA do worker lê (`POST /leitura`) e as regras do front decidem.
+      Com o modelo fora do ar, o agente diz "não consegui ler agora" e a tentativa não conta.
+
+Falta:
+
+- [ ] **Estados de carregamento e erro detalhados.** Hoje só existe o esqueleto da primeira carga (com nova tentativa
+      a cada 2 s). Cada tela ainda precisa de:
       - erro na primeira carga, com "Tentar de novo";
-      - aviso de "dados desatualizados" quando uma atualização falha;
-      - botões em espera ("Aprovando…") e erro inline nas ações (escalações, nova admissão, barra demo).
+      - aviso de "dados desatualizados" quando o polling falha;
+      - botões em espera ("Aprovando…") e erro inline nas ações (escalações, nova admissão, barra demo). Hoje a falha
+        de uma mutação só vai para o console.
+
+      Para desenhar e testar esses estados: atraso e falhas configuráveis na `HttpApi` (`?rede=lenta|instavel|fora`).
 - [ ] **WhatsApp com rede real.** Bolha "Enviando…" também para texto. Se o envio falhar, o texto volta ao campo
       com a mensagem de erro. O "digitando…" passa a identificar as mensagens novas pelo id, não pelo relógio.
-- [ ] **Upload real.** Barra de progresso e falha de envio. O contrato com a IA precisa definir como o progresso é informado.
-- [ ] **Atualização ao vivo.** Hoje as janelas se avisam pelo evento `storage`. Com o servidor real, o painel precisa
-      ser avisado das mudanças, por polling ou por uma conexão aberta (SSE/WebSocket). Isso precisa ser alinhado
-      no `contrato-frontend-ia.md`.
-- [ ] **`HttpApi`** implementando a `Api` e trocada no `ApiProvider`.
+- [ ] **Barra de progresso do upload.** A leitura leva de 10 a 30 s (a primeira, fria, até ~30 s) e a tela não mostra
+      progresso nem falha de envio.
+- [ ] **Texto do colaborador pelo LLM.** O texto livre ainda é interpretado pelo motor do front (`domain/motor`), não
+      pelo LLM do worker.
+- [ ] **Rate limit nas rotas públicas do Next** (`/api/acao`, `/api/arquivo`). Qualquer um com a URL pode criar
+      admissões e mandar fotos para a IA.
 
 ## 2. Decisões em aberto do produto (PDF, p. 9) que mudam a UI
 

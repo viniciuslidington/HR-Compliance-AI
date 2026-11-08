@@ -1,26 +1,99 @@
 # Contrato entre o front (painel do RH + WhatsApp simulado) e o backend real
 
-Escopo: o front é UX e dados de mentira. A IA, o motor de regras e a persistência são de outra frente.
-Este documento diz o que o front espera. Hoje tudo isso é entregue pela `MockApi` (`web/src/api/mock_api.ts`).
+Escopo: o que o front espera e como ele chega na IA. Estado em 08/11/2026: o painel já roda sobre um servidor
+de verdade (o do Next) e lê as fotos com a IA do worker. Com `NEXT_PUBLIC_API_MODO=mock`, volta o modo antigo, com
+tudo no `localStorage` do navegador (`MockApi`, `web/src/api/mock_api.ts`).
 
 ## Regra de ouro
 
 A UI só fala com a `Api` (`web/src/api/api.ts`), e só por dois hooks de `web/src/api/contexto.tsx`:
-`useConsulta(api => ...)` para ler e `useAcao()` para mutar. Nenhuma tela importa `MockApi`, o motor
-(`domain/motor`, `domain/validacao`, `domain/leitor_mock`), `store/` ou `localStorage`. De `domain/` as telas importam
-apenas tipos (`domain/tipos`) e formatadores puros de data (`domain/datas`). Trocar o mock pelo backend real é implementar `HttpApi` e mudar uma linha no `ApiProvider`.
-Hoje a `Api` é síncrona (`listar_admissoes(): AdmissaoResumo[]`) e `useConsulta` também. A `HttpApi` real vai exigir que
-os retornos da `Api` virem `Promise<...>` e que `useConsulta`/`useAcao` sejam adaptados (por exemplo, um cache alimentado
-por buscas assíncronas, com estados de carregando e erro). As telas não mudam, porque só usam os hooks.
+`useConsulta(api => ...)` para ler e `useAcao()` para mutar. Nenhuma tela importa `MockApi`, `HttpApi`, o motor
+(`domain/motor`, `domain/validacao`, `domain/leitor_mock`), `store/`, `servidor/` ou `localStorage`. De `domain/` as
+telas importam apenas tipos (`domain/tipos`) e formatadores puros de data (`domain/datas`).
+As consultas da `Api` continuam síncronas (`listar_admissoes(): AdmissaoResumo[]`), porque leem uma cópia local do
+estado. As mutações podem devolver `Promise` (`criar_admissao`, `resolver_escalacao`, `enviar_texto`,
+`avancar_tempo`, `resetar`; `enviar_arquivo` sempre devolve).
 `useConsulta(fn, deps)`: `fn` pode ser inline; passe em `deps` os valores que ela captura (ex.: um id). O resultado
 mantém a mesma referência enquanto a revisão e as `deps` não mudam.
 
-## O que será substituído
+## Arquitetura atual
 
-`web/src/domain/motor`, `web/src/domain/validacao` e `web/src/domain/leitor_mock.ts` são o dublê da IA e das
-regras: leitura de documentos, validação (90 dias, dígito do CPF, validade da CNH, nome igual), textos do agente,
-cobrança por lembretes e escalações. Serão trocados pelo worker. `domain/tipos.ts` (as 9 tabelas do PDF) e
-`domain/catalogo.ts` são o vocabulário comum e devem ser mantidos em sincronia com `worker/ia/documentos.py`.
+```
+navegador (HttpApi) ──/api/*──► servidor do Next (Servico + MockApi) ──token──► worker (FastAPI)
+                                                                               ├─ /front/kv/{chave}  estado e mídia
+                                                                               └─ /leitura           IA lê a foto
+```
+
+| Peça | Arquivo | O que faz |
+|---|---|---|
+| `HttpApi` | `web/src/api/http_api.ts` | Guarda a última cópia do estado e responde as consultas com uma `MockApi` interna. Mutações vão por POST e trazem o estado novo. Polling de `/api/estado` a cada 1,5 s com ETag |
+| `ApiProvider` | `web/src/api/contexto.tsx` | Usa a `HttpApi` por padrão; `NEXT_PUBLIC_API_MODO=mock` volta ao `localStorage` |
+| `Servico` | `web/src/servidor/servico.ts` | Roda a `MockApi` (motor puro de `web/src/domain`) no servidor, sobre um estado único que o RH e o WhatsApp compartilham. Uma mutação por vez; cada uma grava no worker e ganha uma nova versão |
+| Cliente do worker | `web/src/servidor/worker.ts` | `PersistenciaWorker` (`/front/kv`) e `LeitorWorker` (`/leitura`). O token nunca vai para o navegador |
+
+Rotas do Next (o navegador só fala com elas):
+
+| Rota | Entrada | Saída |
+|---|---|---|
+| `GET /api/estado` | `If-None-Match` opcional | estado (JSON) com `ETag`; `304` se não mudou |
+| `POST /api/acao` | `{ metodo, args }`, com `metodo` em `criar_admissao`, `resolver_escalacao`, `enviar_texto`, `avancar_tempo`, `resetar` | `{ versao, estado, retorno }` |
+| `POST /api/arquivo` | multipart: `admissao_id`, `nome_arquivo`, `previa` (JPEG de até 1000 px, para exibir) e `imagem` (até 2000 px, para a IA) | `{ versao, estado }` |
+| `GET /api/midia/{id}` | uuid | a prévia gravada |
+
+Variáveis do servidor do Next:
+
+| Variável | Efeito |
+|---|---|
+| `WORKER_URL` | URL base do worker. Sem ela: estado em memória e leitor simulado (dev local) |
+| `WORKER_TOKEN` | O `API_TOKEN` do worker. Fica só no servidor |
+| `LEITOR=mock` | Opcional: mantém o leitor simulado, mas continua gravando no worker |
+
+Rotas novas do worker (todas com `Authorization: Bearer <API_TOKEN>`):
+
+- `GET/PUT /front/kv/{chave}`: tabela `front_kv` no SQLite do disco do worker. Chaves `estado` (o JSON inteiro) e
+  `midia:<uuid>` (cada prévia).
+- `POST /leitura`: multipart com `arquivo` (PNG, JPEG ou WebP, até 10 MB) e `candidatos`, lista JSON
+  `[{ id, nome, campos }]` com os documentos ainda pendentes ou recusados. `ia/leitura_generica.py`: a visão
+  transcreve, o modelo de texto diz qual candidato é (`outro` vira `tipo_errado`), se está legível e copia os campos.
+  Todo campo precisa de respaldo literal na transcrição (data AAAA-MM-DD presente no texto, dígitos dos campos
+  numéricos presentes); o que não tiver é descartado e listado em `problemas_fidelidade`. `503` quando o modelo
+  está fora do ar.
+
+Resposta de `/leitura`, que o servidor do Next converte em `LeituraExterna` (`web/src/domain/motor/eventos.ts`):
+
+```ts
+interface LeituraExterna {
+  tipo_documento_id: string | null; // qual candidato é; null se não for nenhum
+  qualidade: "ok" | "ilegivel" | "tipo_errado";
+  detalhe_qualidade?: string; // ex.: "a foto cortou a data de nascimento"
+  dados_extraidos: Record<string, string>; // chaves = campos_extracao do tipo; datas AAAA-MM-DD
+}
+// o worker manda também problemas_fidelidade e duracao_ms, que o front ignora
+```
+
+Quem aprova ou recusa continua sendo o motor do front (`web/src/domain/validacao`), com as regras do catálogo.
+Se o worker responder `503` (ou não responder em 110 s), o agente diz "não consegui ler o documento agora" e a
+tentativa não conta. Arquivo que não é foto (ex.: PDF) volta como `ilegivel`. Sem documento pendente, o worker
+não é chamado.
+
+`domain/tipos.ts` (as 9 tabelas do PDF) e `domain/catalogo.ts` são o vocabulário comum. `domain/motor` ainda decide
+os textos do agente, a cobrança por lembretes, as escalações e interpreta o texto livre do colaborador.
+
+## Catálogo
+
+| Id | Campos lidos | Regras (`web/src/domain/validacao/regras.ts`) |
+|---|---|---|
+| `rg_cnh` | nome, numero, data_nascimento, filiacao, validade_cnh | legivel, frente_e_verso, cnh_dentro_validade |
+| `cpf` | nome, numero | cpf_digito_valido, nome_igual_rg |
+| `comprovante_residencia` | titular, endereco, data_emissao | emitido_menos_90_dias |
+| `dados_bancarios` | banco, agencia, conta, titular | titular_igual_colaborador |
+| `declaracao_matricula` | nome, instituicao, curso, data | nome_igual_rg, data_recente |
+| `aso` | nome, cpf, data_realizacao, resultado | legivel, nome_igual_rg, aso_apto, valido_12_meses |
+| `nr10` | nome, data_realizacao, carga_horaria, responsavel_tecnico | legivel, nome_igual_rg, carga_minima_40h, valido_24_meses |
+| `nr35` | nome, data_realizacao, carga_horaria, responsavel_tecnico | legivel, nome_igual_rg, carga_minima_8h, valido_24_meses |
+
+Modelos: `clt_padrao` (RG/CNH, CPF, comprovante, dados bancários), `estagio` (RG/CNH, CPF, comprovante, matrícula)
+e `eletricista`, "Eletricista (NR-10 e NR-35)" (os quatro do CLT mais ASO, NR-10 e NR-35).
 
 ## Enums (snake_case, sem acento)
 
@@ -67,11 +140,11 @@ comprovante com menos de 90 dias; após recusa o documento volta a `pendente` co
 | `enviar_arquivo(admissao_id, arquivo)` | `File` (foto/PDF) | `Promise<void>` (o agente lê, valida e responde) |
 | `resolver_midia(url)` | `midia_url` | URL que um `<img>` entende (no real: URL assinada ou a própria) |
 | `agora()` | - | `Date` do sistema |
-| `alvo_preset(preset, admissao_id)` | preset | `Date \| null`: para onde o preset levaria o relógio, sem mexer nele; `null` se a admissão não existe ou o alvo já passou (a barra Demo desabilita o botão com "Já passou"). Só no mock |
-| `avancar_tempo(preset, admissao_id)` | preset | só no mock (barra Demo); a `HttpApi` pode não implementar |
-| `resetar()` | - | só no mock; grava o seed com `epoca` = anterior + 1 |
-| `epoca()` | - | `number`: 0 no seed, sobe a cada `resetar`. As telas guardam a última vista e, quando muda (reset em qualquer janela), descartam a escolha de contato/admissão. A `HttpApi` pode devolver sempre 0 |
-| `assinar(cb)` | callback | função de cancelar; deve disparar quando QUALQUER janela mudar o estado (no real: polling, SSE ou WebSocket) |
+| `alvo_preset(preset, admissao_id)` | preset | `Date \| null`: para onde o preset levaria o relógio, sem mexer nele; `null` se a admissão não existe ou o alvo já passou (a barra Demo desabilita o botão com "Já passou"). Na `HttpApi`, calculado na cópia local |
+| `avancar_tempo(preset, admissao_id)` | preset | barra Demo; na `HttpApi` roda no servidor e vale para todas as janelas |
+| `resetar()` | - | barra Demo; grava o seed com `epoca` = anterior + 1 (na `HttpApi`, no servidor) |
+| `epoca()` | - | `number`: 0 no seed, sobe a cada `resetar`. As telas guardam a última vista e, quando muda (reset em qualquer janela), descartam a escolha de contato/admissão. Na `HttpApi` vem do estado do servidor |
+| `assinar(cb)` | callback | função de cancelar; dispara quando QUALQUER janela mudar o estado (na `HttpApi`: polling de `/api/estado` a cada 1,5 s) |
 
 Efeitos esperados de cada mutação (o backend faz, o front só reflete): registrar mensagem de entrada, ler e validar o
 arquivo, aprovar ou recusar com motivo + o que fazer, escalar na 3ª falha, concluir quando faltar zero
@@ -89,6 +162,6 @@ os níveis pulados contam como enviados (um salto grande de relógio gera só o 
 
 ## Mídia
 
-O mock guarda imagens reduzidas (JPEG, até 1000 px) no navegador e as referencia como `local:<id>`; exemplos do seed
-ficam em `/seed/*.svg`. No real, `Mensagem.midia_url` e `EnvioDocumento.arquivo_url` podem ser URLs de verdade;
-a UI sempre passa por `resolver_midia`.
+No modo `mock`, as imagens reduzidas (JPEG, até 1000 px) ficam no navegador como `local:<id>`. Na `HttpApi`, a
+prévia é gravada no worker (`midia:<uuid>`) e servida em `/api/midia/<uuid>`; a imagem maior vai só para a leitura
+e não é guardada. Exemplos do seed ficam em `/seed/*.svg`. A UI sempre passa por `resolver_midia`.

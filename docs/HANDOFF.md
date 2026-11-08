@@ -3,6 +3,58 @@
 Estado em 07/11/2026. Para quem continuar: leia este arquivo, depois [mvp-documental.md](designs/mvp-documental.md)
 (o plano vigente) e [worker/README.md](../worker/README.md).
 
+## Estado atual (08/11/2026): fluxo de ponta a ponta
+
+O painel do RH (`/rh`) e o WhatsApp simulado (`/whatsapp`) rodam no serviço `vinda-web` do Render (Next, `web/`).
+URL prevista: https://vinda-web.onrender.com (confirmar no painel do Render). O servidor do Next roda o motor da
+admissão, grava o estado no disco do worker (`/front/kv`) e manda cada foto para a leitura real (`POST /leitura`).
+As regras de aprovação e recusa continuam no front (`web/src/domain/validacao`). Contrato e arquitetura:
+[contrato-frontend-ia.md](designs/contrato-frontend-ia.md).
+
+| Peça | Onde |
+|---|---|
+| Servidor do Next (estado único, uma mutação por vez) | `web/src/servidor/servico.ts`, `web/src/app/api/*` |
+| Navegador (cópia do estado, polling de 1,5 s) | `web/src/api/http_api.ts` |
+| Leitura de admissão no worker | `worker/ia/leitura_generica.py` |
+| Deploy | `render.yaml`: `vinda-web` com `WORKER_URL` e `WORKER_TOKEN` (vem do `API_TOKEN` do worker), `TZ=America/Sao_Paulo` |
+
+Rodar local:
+
+```bash
+cd web && WORKER_URL=https://hr-compliance-worker.onrender.com WORKER_TOKEN=<API_TOKEN> npm run dev   # leitura real
+cd web && npm run dev                                   # sem variáveis: estado em memória e leitor simulado
+```
+
+`LEITOR=mock` mantém o leitor simulado e continua gravando no worker. `NEXT_PUBLIC_API_MODO=mock` volta ao modo
+antigo, tudo no `localStorage`.
+
+### Roteiro E2E da demo
+
+Imagens fictícias em `web/public/demo/` (no ar em `/demo/*.png`), todas em nome de **Rafael Costa Mendes**.
+
+1. Um minuto antes: abra o site (o plano free do Render dorme após 15 min sem acesso) e mande uma foto qualquer
+   para aquecer o modelo (a primeira leitura leva ~30 s; depois, 10 s ou menos). Na barra Demo, **Reiniciar dados**.
+2. `/rh` → Nova admissão: Rafael Costa Mendes, modelo **Eletricista (NR-10 e NR-35)**. O agente manda as boas-vindas.
+3. Em `/whatsapp` (outra aba ou o celular), envie na ordem:
+
+| Arquivo | Esperado |
+|---|---|
+| `rg-borrado.png` | Recusa: ilegível, pede outra foto |
+| `rg.png` | Aprovado |
+| `cpf.png` | Aprovado |
+| `comprovante-antigo.png` | Recusa: emitido há mais de 90 dias |
+| `comprovante.png` | Aprovado |
+| `banco.png` | Aprovado |
+| `aso.png` | Aprovado |
+| `nr35-vencido.png` | Recusa: vencido (mais de 24 meses) |
+| `nr35.png` | Aprovado |
+| `nr10.png` | Aprovado; admissão **concluída** |
+
+4. O painel atualiza sozinho. Variações: `banco-outro-titular.png` (titular diferente) e `nr10-carga-baixa.png`
+   (menos de 40 h). Três recusas do mesmo documento abrem escalação em `/rh/escalacoes`.
+
+Se o modelo cair, o agente responde "não consegui ler o documento agora" e a tentativa não conta; mande de novo.
+
 ## O produto, em uma frase
 
 Em construção e energia, um documento vencido tira a pessoa de campo (sem NR-35 em dia, ninguém sobe em altura).

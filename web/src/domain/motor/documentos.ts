@@ -15,10 +15,17 @@ import {
   tipo_do_documento,
 } from "./comum";
 import * as conversa from "./conversa";
+import type { LeituraExterna } from "./eventos";
 
 const LIMITE_TENTATIVAS = 3;
 
-function escolher_alvo(pendentes: DocumentoAdmissao[], nome_arquivo: string): DocumentoAdmissao | undefined {
+function escolher_alvo(
+  pendentes: DocumentoAdmissao[],
+  nome_arquivo: string,
+  tipo_lido: string | null = null,
+): DocumentoAdmissao | undefined {
+  const lido = tipo_lido ? pendentes.find((d) => d.tipo_documento_id === tipo_lido) : undefined;
+  if (lido) return lido;
   const candidatos = pendentes.map((d) => d.tipo_documento_id).filter((t): t is string => t !== null);
   const id = identificar_tipo(nome_arquivo, candidatos);
   const alvo = id ? pendentes.find((d) => d.tipo_documento_id === id) : undefined;
@@ -31,15 +38,35 @@ export function receber_arquivo(
   nome_arquivo: string,
   arquivo_url: string,
   agora: Date,
+  externa?: LeituraExterna | "indisponivel",
 ): Estado {
   const e = copiar(estado);
   const admissao = achar_admissao(e, admissao_id);
   mensagem_entrada(e, admissao_id, nome_arquivo, arquivo_url, agora);
+  if (externa === "indisponivel") {
+    mensagem_agente(e, admissao_id, conversa.leitura_indisponivel(), agora);
+    e.rev += 1;
+    return e;
+  }
 
   const docs = documentos_da(e, admissao_id);
+  const ja_aprovado = externa?.tipo_documento_id
+    ? docs.find((d) => d.tipo_documento_id === externa.tipo_documento_id && d.status === "aprovado")
+    : undefined;
+  if (ja_aprovado && docs.some((d) => d.status !== "aprovado")) {
+    mensagem_agente(
+      e,
+      admissao_id,
+      conversa.ja_aprovado(ja_aprovado.tipo_documento_id, ja_aprovado.descricao_personalizada, rotulos_faltantes(e, admissao_id)),
+      agora,
+    );
+    e.rev += 1;
+    return e;
+  }
   const doc = escolher_alvo(
     docs.filter((d) => d.status === "pendente" || d.status === "recusado"),
     nome_arquivo,
+    externa?.tipo_documento_id ?? null,
   );
   if (!doc) {
     mensagem_agente(e, admissao_id, conversa.nada_pendente(), agora);
@@ -52,7 +79,7 @@ export function receber_arquivo(
   // O leitor recebe o número deste ENVIO do documento (não `tentativas`, que o "pedir de novo" zera):
   // a recusa roteirizada do 1º envio não se repete depois que o RH pede o documento de novo.
   const envio = e.envios.filter((x) => x.documento_admissao_id === doc.id).length + 1;
-  const leitura = ler_documento_mock({
+  const leitura = externa ?? ler_documento_mock({
     tipo_documento_id: tipo.id,
     nome_arquivo,
     admissao,
