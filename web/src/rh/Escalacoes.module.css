@@ -1,0 +1,116 @@
+.cabecalho {
+  margin-bottom: var(--space-6);
+}
+.titulo {
+  margin: var(--space-2) 0 0;
+}
+.abas {
+  display: flex;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
+}
+.aba {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ink-subtle);
+  cursor: pointer;
+}
+.aba[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--orange);
+}
+.aba:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 880px;
+}
+.vazio {
+  margin: 0;
+  color: var(--ink-muted);
+}
+.link {
+  color: var(--ink-muted);
+  font-size: var(--text-body-sm-font-size);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+}
+.fatos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+.fatos div {
+  margin: 0;
+}
+.fatos dd {
+  margin: 0;
+}
+.sugestao dd {
+  color: var(--ink);
+}
+.chave {
+  margin: 0;
+  color: var(--ink-subtle);
+}
+.imagem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+.conversa {
+  grid-column: 1 / -1;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+.conversa > p {
+  margin: 0 0 var(--space-2);
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.falar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+.falar_botoes {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.resolucao {
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+.esqueleto {
+  height: 280px;
+  max-width: 880px;
+}
+@media (max-width: 768px) {
+  .corpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

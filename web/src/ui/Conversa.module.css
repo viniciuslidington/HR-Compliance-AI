@@ -1,0 +1,92 @@
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  animation: revelar 240ms ease both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+.meta {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  color: var(--ink-subtle);
+}
+.autor {
+  color: var(--ink-subtle);
+}
+.texto {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.midia {
+  margin-top: var(--space-1);
+}
+
+/* Painel: linha do tempo compacta */
+.painel .msg {
+  padding-left: var(--space-4);
+  border-left: 1px solid var(--line-strong);
+}
+.painel .msg[data-direcao="entrada"] {
+  border-left-color: var(--ink);
+}
+.painel .msg[data-autor="rh"] .texto {
+  font-weight: 500;
+}
+
+/* Telefone: balões */
+.telefone .msg {
+  max-width: 82%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--surface-raised);
+}
+.telefone .msg[data-direcao="saida"] {
+  align-self: flex-end;
+  background: var(--surface-sand);
+  border-bottom-right-radius: var(--radius-sm);
+}
+.telefone .msg[data-direcao="entrada"] {
+  align-self: flex-start;
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+@keyframes revelar {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .msg {
+    animation: none;
+  }
+}
+
+/* Telefone da colaboradora: as mensagens dela (entrada) ficam à direita, as do agente/RH à esquerda. */
+.telefone.do_colaborador .msg[data-direcao="entrada"] {
+  align-self: flex-end;
+  background: var(--surface-sand);
+  border-bottom-left-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-sm);
+}
+.telefone.do_colaborador .msg[data-direcao="saida"] {
+  align-self: flex-start;
+  background: var(--surface-raised);
+  border-bottom-right-radius: var(--radius-xl);
+  border-bottom-left-radius: var(--radius-sm);
+}

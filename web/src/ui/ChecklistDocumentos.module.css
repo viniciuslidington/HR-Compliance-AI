@@ -1,0 +1,96 @@
+.raiz {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.progresso {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.resumo {
+  color: var(--ink-muted);
+}
+.trilho {
+  height: 2px;
+  background: var(--line);
+}
+.barra {
+  height: 100%;
+  background: var(--orange);
+  transition: width 300ms ease;
+}
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.item {
+  border-top: 1px solid var(--line);
+  animation: revelar 240ms ease both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+.linha {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-1) var(--space-4);
+  align-items: center;
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-3) 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+button.linha {
+  cursor: pointer;
+}
+button.linha:hover .nome {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+button.linha:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.nome {
+  color: var(--ink);
+}
+.tentativa {
+  color: var(--ink-subtle);
+  margin-left: var(--space-2);
+}
+.motivo {
+  display: block;
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--orange-deep);
+}
+
+@keyframes revelar {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    animation: none;
+  }
+  .barra {
+    transition: none;
+  }
+}
+
+.item[data-selecionado="true"] .nome {
+  text-decoration: underline;
+  text-decoration-color: var(--orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}

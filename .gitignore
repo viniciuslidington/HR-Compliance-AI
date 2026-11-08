@@ -221,3 +221,7 @@ __marimo__/
 
 # Dados locais do worker (bucket e banco do hackathon)
 worker/dados/
+
+# Web (Next.js) e anotações locais de agentes
+node_modules/
+.superpowers/
