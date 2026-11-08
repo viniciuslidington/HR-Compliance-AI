@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { MarcaChegada, SimboloChegada } from "./Chegada";
+import { OndaAscii } from "./OndaAscii";
 import estilos from "./Landing.module.css";
 
 /**
@@ -162,6 +163,9 @@ export function Landing() {
 
         </section>
 
+        {/* Tudo depois do hero corre sobre o fundo ASCII, que sobe do rodapé na transição. */}
+        <div className={estilos.depois}>
+          <OndaAscii className={estilos.onda} />
         <section id="produto" className={estilos.produto} aria-labelledby="titulo-produto">
           <div className={estilos.cabeca} data-revelar>
             <h2 id="titulo-produto" className={estilos.h2}>
@@ -265,6 +269,7 @@ export function Landing() {
             </Link>
           </div>
         </section>
+        </div>
       </main>
 
       <footer className={`text-caption ${estilos.rodape}`}>

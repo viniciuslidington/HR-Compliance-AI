@@ -113,3 +113,13 @@ BarraDemo) e `web/src/ui/*` (Table, Card, StatusPill). Mudanças: largura fluida
 glow sem corte, resumo e alertas em um bloco só, tabela com progresso e iniciais, barra demo fixa no
 rodapé e eyebrows redundantes removidos. Não mexo em `Logo.tsx`, na landing do Codex nem no
 `/marca`.
+
+### Claude — fundo ASCII da landing e superfícies do painel (08/11)
+
+- Landing: `web/src/landing/OndaAscii.tsx`, um canvas com linhas de onda em caracteres mono atrás de tudo
+  o que vem depois do hero. A frente sobe do rodapé na transição do vídeo, a crista é laranja e há
+  ondulação no cursor. Pausa fora da tela e desenha um quadro só com movimento reduzido. O hero
+  ganhou uma costura em gradiente para o parallax não terminar num corte reto.
+- Painel: os cards brancos puros viraram papel quente translúcido (`--surface-raised`) com
+  `--shadow-surface` (fio de luz + sombra quente) e blur; linhas em tom quente; grão no fundo; segundo
+  glow âmbar no canto oposto. Novo `--surface-solid` para modais.
