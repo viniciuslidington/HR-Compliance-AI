@@ -109,6 +109,12 @@ def test_documento_com_um_trecho_ilegivel_mas_com_dados_vai_ao_modelo():
     assert leitura.qualidade == "ok" and len(llm.chamadas) == 1
 
 
+def test_motivo_tecnico_do_modelo_nao_chega_ao_colaborador():
+    leitura, _ = _ler(TRANSCRICAO_RG, {"tipo": "rg_cnh", "legivel": False,
+                                       "problema_legibilidade": "Texto repetitivo, sem dados do documento."})
+    assert leitura.detalhe_qualidade == "a foto está borrada ou cortada"
+
+
 def test_ilegivel_vence_outro():
     leitura, _ = _ler("???", {"tipo": "outro", "legivel": False, "problema_legibilidade": "a foto está borrada"})
     assert leitura.qualidade == "ilegivel" and leitura.tipo_documento_id is None

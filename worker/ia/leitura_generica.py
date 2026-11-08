@@ -58,6 +58,18 @@ def _quase_tudo_ilegivel(transcricao: str) -> bool:
     return marcas >= 1 and (sem_numeros or (marcas >= 3 and len(resto) < 40 * marcas))
 
 
+_MOTIVO_PADRAO = "a foto está borrada ou cortada"
+_MOTIVO_TECNICO = re.compile(r"transcri|texto|repet|marca d|fict[ií]cio|campo", re.IGNORECASE)
+
+
+def _motivo_para_colaborador(motivo: str | None) -> str:
+    """O motivo vai para o colaborador: curto e sem falar da transcrição (o LLM às vezes descreve o texto lido)."""
+    motivo = (motivo or "").strip().rstrip(".")
+    if not motivo or len(motivo) > 80 or _MOTIVO_TECNICO.search(motivo):
+        return _MOTIVO_PADRAO
+    return motivo[0].lower() + motivo[1:]
+
+
 def _eh_data(campo: str) -> bool:
     return campo.startswith("data") or campo.startswith("validade")
 
@@ -67,7 +79,7 @@ def _modelo_resposta(candidatos: list[Candidato]) -> type[BaseModel]:
     campos: dict = {
         "tipo": (Literal[ids], Field(description="id do documento pedido que esta imagem é, ou 'outro'")),
         "legivel": (bool, Field(description="os dados do documento podem ser lidos com segurança")),
-        "problema_legibilidade": (Optional[str], Field(None, description="se ilegível, o motivo em poucas palavras, ex.: 'a foto cortou a data de nascimento'")),
+        "problema_legibilidade": (Optional[str], Field(None, description="se ilegível, o motivo para o colaborador em até 8 palavras, sem citar a transcrição, ex.: 'a foto está borrada' ou 'a foto cortou a data de nascimento'")),
     }
     for nome in dict.fromkeys(c for cand in candidatos for c in cand.campos):
         descricao = "data no formato AAAA-MM-DD" if _eh_data(nome) else "copiado exatamente como no documento"
@@ -115,7 +127,7 @@ def ler_generico(transcritor: Transcritor, llm: LLM, imagem: bytes, mime: str,
 
     if not resposta.legivel:
         return LeituraGenerica(tipo_documento_id=None if resposta.tipo == "outro" else resposta.tipo, qualidade="ilegivel",
-                               detalhe_qualidade=resposta.problema_legibilidade, dados_extraidos={},
+                               detalhe_qualidade=_motivo_para_colaborador(resposta.problema_legibilidade), dados_extraidos={},
                                problemas_fidelidade=[])
     if resposta.tipo == "outro":
         return LeituraGenerica(tipo_documento_id=None, qualidade="tipo_errado", dados_extraidos={},

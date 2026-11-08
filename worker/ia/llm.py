@@ -216,8 +216,13 @@ class FeatherlessTranscritor:
             resposta = self._cliente.chat.completions.create(
                 model=self.modelo,
                 temperature=0,
-                # Sem max_tokens: o DeepSeek-V4.1-Flash raciocina antes de responder e, com teto de 1500,
-                # gastava tudo no raciocínio e devolvia texto vazio. Foto borrada é tratada em leitura_generica.
+                # Transcrever não precisa de raciocínio. Com ele ligado, o DeepSeek-V4.1-Flash gastava 1.400 a
+                # 2.500 tokens pensando e, no Render, devolvia texto vazio em metade das chamadas; desligado,
+                # transcreve em ~2 s. Modelos sem o parâmetro ignoram chat_template_kwargs.
+                extra_body={"chat_template_kwargs": {"thinking": False, "enable_thinking": False}},
+                # Sem raciocínio, o teto só corta a repetição de foto borrada (chegava a 32 mil tokens, 50 s).
+                # Um documento real cabe em 200 a 500 tokens.
+                max_tokens=2000,
                 messages=[
                     {"role": "system", "content": SISTEMA_TRANSCRICAO},
                     # Só a imagem, sem instrução em texto, fez modelos de visão degenerarem nos testes.
