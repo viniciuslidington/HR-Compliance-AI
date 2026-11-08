@@ -27,10 +27,11 @@ from fastapi import Depends, FastAPI, File, Header, HTTPException, Query, Upload
 from pydantic import BaseModel
 
 from ia.config import carregar_env
-from ia.conversa_documental import interpretar
+from ia.conversa_documental import interpretar, compromisso_explicito
 from ia.documentos import Funcionario, Transcritor
+from ia.duvidas import estado_recente, responder_duvida
 from ia.llm import LLM, FeatherlessLLM, FeatherlessTranscritor
-from ia.orquestrador import AgenteDocumental
+from ia.orquestrador import AgenteDocumental, Etapa
 from ia.fila import Tarefa
 from ia.matriz import carregar_matriz, situacao_matriz
 from infra.anexos import BucketLocal, RepositorioAnexos
@@ -91,21 +92,26 @@ def criar_app(
         CREATE TABLE IF NOT EXISTS admissoes (pessoa_id TEXT PRIMARY KEY, iniciada_em TEXT NOT NULL, concluida_em TEXT);
         CREATE TABLE IF NOT EXISTS eventos_mock (id TEXT PRIMARY KEY, pessoa_id TEXT NOT NULL UNIQUE, evento_json TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS autonomia_documental (emissor TEXT NOT NULL, tipo TEXT NOT NULL, aprovador TEXT NOT NULL, ativada_em TEXT NOT NULL, PRIMARY KEY (emissor,tipo));
+        CREATE TABLE IF NOT EXISTS reprocessamentos (
+            id INTEGER PRIMARY KEY, anexo_id TEXT NOT NULL, em TEXT NOT NULL,
+            status_anterior TEXT NOT NULL, problemas_anteriores TEXT, status_final TEXT);
         CREATE TABLE IF NOT EXISTS execucoes_regua (dia TEXT PRIMARY KEY);
         """)
         row = db.execute("SELECT dados FROM agente_estado WHERE id=1").fetchone()
     cards = []
+    compromissos = []
     if row:
         estado = json.loads(row["dados"])
         agente.tarefas = [Tarefa.model_validate(t) for t in estado.get("tarefas", [])]
         agente.mensagens = estado.get("mensagens", [])
         agente.ponteiro = estado.get("ponteiro")
         cards = estado.get("cards", [])
+        compromissos = estado.get("compromissos", [])
 
     def salvar_estado(etapas):
         cards.extend(e.dados for e in etapas if e.nome == "card")
         estado = {"tarefas": [t.model_dump(mode="json") for t in agente.tarefas],
-                  "mensagens": agente.mensagens, "ponteiro": agente.ponteiro, "cards": cards}
+                  "mensagens": agente.mensagens, "ponteiro": agente.ponteiro, "cards": cards, "compromissos": compromissos}
         with repo._conectar() as db:
             db.execute("INSERT OR REPLACE INTO agente_estado (id, dados) VALUES (1, ?)",
                        (json.dumps(estado, ensure_ascii=False),))
@@ -135,6 +141,77 @@ def criar_app(
                       "nome": pessoa.nome, "cargo": pessoa.cargo, "documentos": [i.model_dump(mode="json") for i in itens]}
             db.execute("INSERT OR IGNORE INTO eventos_mock VALUES (?, ?, ?)", (uuid.uuid4().hex, pessoa.id, json.dumps(evento, ensure_ascii=False)))
         return [agente._mensagem(pessoa.nome, "Sua documentação obrigatória foi conferida. A etapa documental da admissão está concluída.", instante)]
+
+    def reconciliar_documento(anexo_id: str, instante: datetime) -> list:
+        anexo = repo.obter(anexo_id)
+        pessoa_id, tipo = anexo['funcionario_id'], anexo['tipo_esperado']
+        validade = date.fromisoformat(anexo['validade_ate']) if anexo['validade_ate'] else None
+        aceito = anexo['status'] in ('aprovado', 'aceitar_sozinho')
+        if not validade or validade <= instante.date() or not (aceito or anexo['status'] == 'pedir_aprovacao'):
+            return []
+        for c in compromissos:
+            if c['pessoa_id'] == pessoa_id and c['tipo'] == tipo and c['status'] in ('pendente', 'cobrado', 'em_analise'):
+                c['status'] = 'concluido' if aceito else 'em_analise'
+                c['anexo_id'] = anexo_id
+        if not aceito:
+            return []
+        fechadas = []
+        for tarefa in agente.tarefas:
+            if tarefa.status == 'concluida' or validade <= max(instante.date(), tarefa.criada_em.date()):
+                continue
+            vinculado = tarefa.caso_id == f'IMP-{pessoa_id}-{tipo}'
+            try:
+                anterior = repo.obter(tarefa.caso_id)
+                vinculado |= anterior['funcionario_id'] == pessoa_id and anterior['tipo_esperado'] == tipo
+            except KeyError:
+                pass
+            if not vinculado:
+                continue
+            tarefa.status = 'concluida'
+            fechadas.append(tarefa.id)
+            for card in cards:
+                if card['tarefa_id'] == tarefa.id:
+                    card['status'] = 'concluida'
+                    card.setdefault('historico', []).append({'acao': 'documento_regularizado', 'responsavel': 'agente',
+                        'em': instante.isoformat(), 'anexo_id': anexo_id})
+        if not fechadas:
+            return []
+        return [Etapa(nome='resolucao', resumo=f"{len(fechadas)} pendência(s) encerrada(s) com documento aceito.",
+                      dados={'tarefas': fechadas, 'anexo_id': anexo_id}),
+                agente._mensagem(funcionarios[pessoa_id].nome, f"Seu {tipo.upper()} foi regularizado. A pendência documental foi resolvida.", instante)]
+
+    def cobrar_compromissos(dia: date) -> list:
+        etapas = []
+        for c in compromissos:
+            if c['status'] != 'pendente' or c['dia'] > dia.isoformat():
+                continue
+            c['status'] = 'cobrado'
+            etapas.append(agente._mensagem(funcionarios[c['pessoa_id']].nome,
+                f"Você combinou enviar o {c['tipo'].upper()} até {date.fromisoformat(c['dia']).strftime('%d/%m/%Y')}. Pode enviar por aqui?",
+                datetime.combine(dia, agora().time())))
+        return etapas
+
+    def pode_reprocessar(anexo: dict) -> bool:
+        problemas = set(json.loads(anexo['problemas_fidelidade'] or '[]'))
+        with repo._conectar() as db:
+            tentativas = db.execute('SELECT COUNT(*) FROM reprocessamentos WHERE anexo_id=?', (anexo['id'],)).fetchone()[0]
+        return anexo['status'] == 'escalar' and bool(problemas & {'leitura_indisponivel', 'extracao_indisponivel'}) and tentativas < 3
+
+    def analisar(pessoa_id, tipo, conteudo, mime):
+        instante = datetime.combine(hoje(), agora().time())
+        with repo._conectar() as db:
+            agente.emissores_autonomos = autonomos | {r['emissor'] for r in db.execute('SELECT emissor FROM autonomia_documental WHERE tipo=?', (tipo,))}
+        etapas = agente.receber_documento(pessoa_id, tipo, conteudo, mime, agora=instante)
+        anexo_id = next(e.dados['anexo_id'] for e in etapas if e.nome == 'recebimento')
+        etapas += reconciliar_documento(anexo_id, instante)
+        etapas += concluir_admissao(funcionarios[pessoa_id], instante)
+        salvar_estado(etapas)
+        anexo = repo.obter(anexo_id)
+        erro = next((e.resumo.removeprefix('falhou: ') for e in etapas if e.nome == 'transcricao' and e.resumo.startswith('falhou: ')), None)
+        return {'anexo_id': anexo_id, 'decisao': anexo['status'], 'mensagem': anexo['decisao_mensagem'],
+                'validade_ate': anexo['validade_ate'], 'motivos': json.loads(anexo['conferencia_json'] or '{}').get('motivos', []),
+                'problemas_fidelidade': json.loads(anexo['problemas_fidelidade'] or '[]'), 'erro_tecnico': erro,
+                'etapas': [e.model_dump(mode='json') for e in etapas]}
 
     def calcular_autonomia() -> list[dict]:
         with repo._conectar() as db:
@@ -202,12 +279,33 @@ def criar_app(
         if not texto or len(texto) > 2000:
             raise HTTPException(422, "a resposta deve ter entre 1 e 2000 caracteres")
         with lock:
-            tipo = interpretar(llm, texto)
             instante = datetime.combine(hoje(), agora().time())
+            duvida = responder_duvida(
+                texto, pessoa=pessoa, matriz=matrizes[pessoa.cargo],
+                validades=repo.validades_vigentes(tenant, pessoa.id),
+                estado=estado_recente(repo, tenant, pessoa.id), hoje=hoje())
+            if duvida is not None:  # dúvida sobre a própria pendência: responde por código, sem DP
+                etapas = [agente._mensagem(pessoa.nome, duvida.texto, instante)]
+                salvar_estado(etapas)
+                return {"classificacao": "duvida", "duvida": duvida.model_dump(mode='json'), "compromisso": None,
+                        "etapas": [e.model_dump(mode='json') for e in etapas]}
+            tipo = interpretar(llm, texto)
             resposta = {"vai_enviar": "Obrigado! Fico no aguardo do documento por aqui.",
                         "nao_tem": "Entendi. Vou pedir ao DP para ajudar você com esse documento.",
                         "sensivel": "Obrigado por avisar. Por favor, fale diretamente com o DP para um atendimento reservado.",
                         "outra": "Obrigado pela resposta. Vou pedir ao DP para acompanhar com você."}[tipo]
+            compromisso = None
+            if tipo == 'vai_enviar':
+                itens = situacao_matriz(matrizes[pessoa.cargo], repo.validades_vigentes(tenant, pessoa.id), hoje())
+                compromisso = compromisso_explicito(texto, hoje(), [i.tipo for i in itens if i.status != 'valido'])
+                if compromisso:
+                    for anterior in compromissos:
+                        if anterior['pessoa_id'] == pessoa_id and anterior['tipo'] == compromisso['tipo'] and anterior['status'] in ('pendente', 'cobrado'):
+                            anterior['status'] = 'substituido'
+                    compromissos.append({**compromisso, 'pessoa_id': pessoa_id, 'status': 'pendente', 'criado_em': instante.isoformat()})
+                    resposta = f"Combinado: aguardo seu {compromisso['tipo'].upper()} até {date.fromisoformat(compromisso['dia']).strftime('%d/%m/%Y')}. Vou lembrar você se não receber."
+                else:
+                    resposta = 'Qual documento você vai enviar e em qual data? Pode informar amanhã ou uma data como 10/11/2026.'
             etapas = [agente._mensagem(pessoa.nome, resposta, instante)]
             if tipo != 'vai_enviar':
                 from ia.relatorio import ResumoCaso
@@ -217,7 +315,7 @@ def criar_app(
                     proxima_acao="conversar com o colaborador", responsavel="DP", prazo=instante.date()+timedelta(days=2), evidencias=[])
                 etapas += agente._escalar_para_fila(caso, instante + timedelta(days=2), instante, ['falar_com_colaborador'])
             salvar_estado(etapas)
-            return {"classificacao": tipo, "etapas": [e.model_dump(mode='json') for e in etapas]}
+            return {"classificacao": tipo, "compromisso": compromisso, "etapas": [e.model_dump(mode='json') for e in etapas]}
 
     @app.post("/fila/{tarefa_id}/acao", dependencies=[Depends(exigir_token)])
     def acao_fila(tarefa_id: str, pedido: PedidoAcao) -> dict:
@@ -288,20 +386,28 @@ def criar_app(
             if existente and repo.obter(existente["id"])["status"] != "recebido":
                 anexo = repo.obter(existente["id"])
                 return {"anexo_id": anexo["id"], "decisao": anexo["status"], "mensagem": anexo["decisao_mensagem"], "validade_ate": anexo["validade_ate"], "etapas": [], "duplicado": True}
-            instante = datetime.combine(hoje(), agora().time())
-            # Autonomia é específica do emissor e do tipo de documento.
+            return analisar(pessoa_id, tipo, conteudo, arquivo.content_type)
+
+    @app.post('/anexos/{anexo_id}/reprocessar', dependencies=[Depends(exigir_token)])
+    def reprocessar(anexo_id: str):
+        with lock:
+            anexo = obter_anexo(anexo_id)
+            if not pode_reprocessar(anexo):
+                raise HTTPException(409, 'apenas falhas técnicas podem ser reprocessadas, até 3 vezes')
             with repo._conectar() as db:
-                agente.emissores_autonomos = autonomos | {r['emissor'] for r in db.execute('SELECT emissor FROM autonomia_documental WHERE tipo=?', (tipo,))}
-            etapas = agente.receber_documento(pessoa_id, tipo, conteudo, arquivo.content_type, agora=instante)
-            etapas += concluir_admissao(pessoa, instante)
-            salvar_estado(etapas)
-            anexo_id = next(e.dados["anexo_id"] for e in etapas if e.nome == "recebimento")
-            anexo = repo.obter(anexo_id)
-            erro = next((e.resumo.removeprefix("falhou: ") for e in etapas if e.nome == "transcricao" and e.resumo.startswith("falhou: ")), None)
-            return {"anexo_id": anexo_id, "decisao": anexo["status"], "mensagem": anexo["decisao_mensagem"],
-                    "validade_ate": anexo["validade_ate"], "motivos": json.loads(anexo["conferencia_json"] or "{}").get("motivos", []),
-                    "problemas_fidelidade": json.loads(anexo["problemas_fidelidade"] or "[]"), "erro_tecnico": erro,
-                    "etapas": [e.model_dump(mode="json") for e in etapas]}
+                tentativa = db.execute('INSERT INTO reprocessamentos (anexo_id, em, status_anterior, problemas_anteriores) VALUES (?, ?, ?, ?)',
+                    (anexo_id, agora().isoformat(), anexo['status'], anexo['problemas_fidelidade'])).lastrowid
+            try:
+                return analisar(anexo['funcionario_id'], anexo['tipo_esperado'], bucket.ler(anexo['chave']), anexo['mime'])
+            finally:
+                with repo._conectar() as db:
+                    db.execute('UPDATE reprocessamentos SET status_final=? WHERE id=?', (repo.obter(anexo_id)['status'], tentativa))
+
+    @app.get('/anexos/{anexo_id}/tentativas')
+    def tentativas(anexo_id: str):
+        obter_anexo(anexo_id)
+        with repo._conectar() as db:
+            return [dict(r) for r in db.execute('SELECT * FROM reprocessamentos WHERE anexo_id=? ORDER BY id', (anexo_id,))]
 
     @app.get("/anexos/{anexo_id}")
     def obter_anexo(anexo_id: str) -> dict:
@@ -320,6 +426,7 @@ def criar_app(
                 etapas = agente.aprovar(anexo_id, aprovador=pedido.aprovador.strip(), agora=datetime.combine(hoje(), agora().time()))
             except ValueError as erro:
                 raise HTTPException(status_code=409, detail=str(erro))
+            etapas += reconciliar_documento(anexo_id, datetime.combine(hoje(), agora().time()))
             etapas += concluir_admissao(funcionarios[repo.obter(anexo_id)["funcionario_id"]], datetime.combine(hoje(), agora().time()))
             salvar_estado(etapas)
             return {**repo.obter(anexo_id), "etapas": [e.model_dump(mode="json") for e in etapas]}
@@ -329,16 +436,25 @@ def criar_app(
         pessoa = buscar_pessoa(pessoa_id)
         return [m for m in agente.mensagens if m["para"] == pessoa.nome]
 
+    @app.get('/pessoas/{pessoa_id}/compromissos')
+    def listar_compromissos(pessoa_id: str):
+        buscar_pessoa(pessoa_id)
+        return [c for c in compromissos if c['pessoa_id'] == pessoa_id]
+
     @app.get("/fila")
     def fila() -> dict:
         with repo._conectar() as db:
             pendentes = [dict(r) for r in db.execute("SELECT id, funcionario_id, tipo_esperado, validade_ate, decisao_mensagem FROM anexos WHERE tenant=? AND status='pedir_aprovacao' ORDER BY recebido_em DESC", (tenant,))]
-        return {"aprovacoes": pendentes, "cards": cards}
+        with repo._conectar() as db:
+            falhas = [dict(r) for r in db.execute("SELECT * FROM anexos WHERE tenant=? AND status='escalar'", (tenant,))]
+        reprocessaveis = [{'id': a['id'], 'funcionario_id': a['funcionario_id'], 'tipo': a['tipo_esperado']} for a in falhas if pode_reprocessar(a)]
+        return {"aprovacoes": pendentes, "cards": cards, "reprocessaveis": reprocessaveis}
 
     @app.post("/regua/rodar", dependencies=[Depends(exigir_token)])
     def rodar_regua(dia: date) -> dict:
         with lock:
             etapas = agente.rodar_regua(hoje=dia, agora=datetime.combine(dia, agora().time()))
+            etapas += cobrar_compromissos(dia)
             salvar_estado(etapas)
             return {"dia": dia.isoformat(), "etapas": [e.model_dump(mode="json") for e in etapas]}
 
@@ -353,9 +469,14 @@ def criar_app(
                         feita = db.execute("SELECT 1 FROM execucoes_regua WHERE dia=?", (dia.isoformat(),)).fetchone()
                     if not feita:
                         etapas = agente.rodar_regua(hoje=dia, agora=datetime.combine(dia, agora().time()))
+                        etapas += cobrar_compromissos(dia)
                         salvar_estado(etapas)
                         with repo._conectar() as db:
                             db.execute("INSERT OR IGNORE INTO execucoes_regua VALUES (?)", (dia.isoformat(),))
+                    else:
+                        etapas = cobrar_compromissos(dia)
+                        if etapas:
+                            salvar_estado(etapas)
             except Exception:
                 log.exception("Falha na régua automática; nova tentativa em um minuto")
             parada.wait(60)

@@ -248,3 +248,103 @@ def test_agendamento_roda_no_inicio_e_e_idempotente(tmp_path):
             pytest.fail('a régua automática não foi executada')
     with sqlite3.connect(tmp_path / 'anexos.db') as db:
         assert db.execute('SELECT dia FROM execucoes_regua').fetchall() == [('2026-11-07',)]
+
+
+def test_reprocessa_falha_sem_duplicar_anexo_e_fecha_card_so_apos_aprovacao(tmp_path):
+    falhou = _cliente(tmp_path, transcritor=TranscritorQuebrado())
+    anexo = falhou.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo': PNG}).json()['anexo_id']
+    assert len(falhou.get('/fila').json()['cards']) == 1
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    resultado = cliente.post(f'/anexos/{anexo}/reprocessar').json()
+    assert resultado['anexo_id'] == anexo
+    assert resultado['decisao'] == 'pedir_aprovacao'
+    assert cliente.get('/fila').json()['cards'][0].get('status') != 'concluida'
+    cliente.post(f'/anexos/{anexo}/aprovar', json={'aprovador': 'DP'})
+    card = cliente.get('/fila').json()['cards'][0]
+    assert card['status'] == 'concluida'
+    assert card['historico'][-1]['anexo_id'] == anexo
+    assert cliente.post(f'/anexos/{anexo}/reprocessar').status_code == 409
+    assert len(cliente.get(f'/anexos/{anexo}/tentativas').json()) == 1
+    assert _cliente(tmp_path).get('/fila').json()['cards'][0]['status'] == 'concluida'
+
+
+def test_limita_reprocessamento_sem_duplicar_card_apos_reinicio(tmp_path):
+    cliente = _cliente(tmp_path, transcritor=TranscritorQuebrado())
+    anexo = cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo': PNG}).json()['anexo_id']
+    for _ in range(3):
+        cliente = _cliente(tmp_path, transcritor=TranscritorQuebrado())
+        assert cliente.post(f'/anexos/{anexo}/reprocessar').json()['decisao'] == 'escalar'
+    assert cliente.post(f'/anexos/{anexo}/reprocessar').status_code == 409
+    assert len(cliente.get('/fila').json()['cards']) == 1
+    assert cliente.get('/fila').json()['reprocessaveis'] == []
+    assert len(cliente.get(f'/anexos/{anexo}/tentativas').json()) == 3
+    assert _cliente(tmp_path, token='segredo').post(f'/anexos/{anexo}/reprocessar').status_code == 401
+
+
+def test_compromisso_persistido_cobra_uma_vez_e_pausa_ao_receber(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[{'tipo':'vai_enviar', 'trecho':'vou enviar'}])
+    r = cliente.post('/pessoas/F-12/mensagens', json={'texto':'vou enviar NR-35 amanhã'}).json()
+    assert r['compromisso'] == {'tipo':'nr35', 'dia':'2026-11-08'}
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    assert cliente.post('/regua/rodar?dia=2026-11-07').json()['etapas'] == []
+    assert len(cliente.post('/regua/rodar?dia=2026-11-08').json()['etapas']) == 1
+    assert cliente.post('/regua/rodar?dia=2026-11-08').json()['etapas'] == []
+    anexo = cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo':PNG}).json()['anexo_id']
+    assert cliente.get('/pessoas/F-12/compromissos').json()[0]['status'] == 'em_analise'
+    cliente.post(f'/anexos/{anexo}/aprovar', json={'aprovador':'DP'})
+    assert cliente.get('/pessoas/F-12/compromissos').json()[0]['status'] == 'concluido'
+
+
+def test_compromisso_recebido_antes_do_prazo_nao_cobra(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[{'tipo':'vai_enviar','trecho':'vou enviar'}, _extracao_llm()])
+    cliente.post('/pessoas/F-12/mensagens', json={'texto':'vou enviar NR-35 amanhã'})
+    cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo':PNG})
+    assert _cliente(tmp_path).post('/regua/rodar?dia=2026-11-08').json()['etapas'] == []
+
+
+def test_compromissos_ambiguos_nao_sao_agendados():
+    from ia.conversa_documental import compromisso_explicito
+    for texto in ('envio amanhã', 'envio NR-35 em breve', 'NR-35 em 31/02/2026',
+                  'NR-35 hoje ou amanhã', 'NR-35 em 01/01/2026', 'NR-35 e NR-10 amanhã'):
+        assert compromisso_explicito(texto, HOJE, ['nr35','nr10']) is None
+    assert compromisso_explicito('NR-35 em 09/11/2026', HOJE, ['nr35','nr10']) == {'tipo':'nr35', 'dia':'2026-11-09'}
+
+
+def test_documento_novo_fecha_apenas_pendencia_da_mesma_pessoa(tmp_path):
+    cliente = _cliente(tmp_path, transcritor=TranscritorQuebrado(), respostas=[ErroLLM('fora'), ErroLLM('fora')])
+    cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo': PNG})
+    outra = cliente.post('/pessoas/F-31/documentos?tipo=nr35', files={'arquivo': PNG}).json()['anexo_id']
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    novo = cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo': ('novo.png', b'novo', 'image/png')}).json()['anexo_id']
+    cliente.post(f'/anexos/{novo}/aprovar', json={'aprovador':'DP'})
+    cards = cliente.get('/fila').json()['cards']
+    assert sum(c.get('status') == 'concluida' for c in cards) == 1
+    assert next(c for c in cards if c['caso_id'] == outra).get('status') != 'concluida'
+
+
+def test_documento_antigo_nao_resolve_impedimento_em_data_simulada_futura(tmp_path):
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    anexo = cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo':PNG}).json()['anexo_id']
+    cliente.post(f'/anexos/{anexo}/aprovar', json={'aprovador':'DP'})
+    cliente.post('/regua/rodar?dia=2026-12-03')
+    cliente = _cliente(tmp_path, respostas=[_extracao_llm()])
+    novo = cliente.post('/pessoas/F-12/documentos?tipo=nr35', files={'arquivo':('outro.png',b'outro','image/png')}).json()['anexo_id']
+    cliente.post(f'/anexos/{novo}/aprovar', json={'aprovador':'DP'})
+    assert cliente.get('/fila').json()['cards'][0].get('status') != 'concluida'
+
+
+def test_duvida_sobre_a_pendencia_e_respondida_sem_llm_e_sem_card(tmp_path):
+    cliente = _cliente(tmp_path)  # o LLM roteirizado só tem erros: a dúvida não pode depender dele
+    resposta = cliente.post('/pessoas/F-12/mensagens', json={'texto': 'O que falta?'}).json()
+    assert resposta['classificacao'] == 'duvida'
+    assert resposta['duvida']['intencoes'] == ['o_que_falta']
+    assert set(resposta['duvida']['dados']['pendentes']) == {'aso', 'nr10', 'nr35'}
+    texto = cliente.get('/pessoas/F-12/mensagens').json()[-1]['texto']
+    assert texto.startswith('Carlos, falta:') and 'NR-35' in texto
+    assert cliente.get('/fila').json()['cards'] == []
+
+
+def test_duvida_de_documento_que_o_cargo_nao_exige(tmp_path):
+    resposta = _cliente(tmp_path).post('/pessoas/F-40/mensagens', json={'texto': 'quando vence a nr35?'}).json()
+    assert resposta['classificacao'] == 'duvida'
+    assert 'não exige' in resposta['etapas'][0]['dados']['texto']

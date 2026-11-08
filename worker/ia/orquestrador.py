@@ -94,6 +94,8 @@ class AgenteDocumental:
         return Etapa(nome="matriz", resumo=resumo, dados={"itens": estados, "completa": completa})
 
     def _escalar_para_fila(self, caso: ResumoCaso, prazo: datetime, agora: datetime, acoes: list[str]) -> list[Etapa]:
+        if any(t.caso_id == caso.caso_id and t.status != "concluida" for t in self.tarefas):
+            return []  # uma nova tentativa não duplica a mesma pendência
         tarefa = Tarefa(id=f"T-{uuid.uuid4().hex[:12]}", caso_id=caso.caso_id, empresa_id=self.tenant, criada_em=agora, prazo=prazo)
         atribuicao = atribuir(tarefa, self.analistas, self.tarefas, agora, ponteiro=self.ponteiro)
         self.ponteiro = atribuicao.ponteiro

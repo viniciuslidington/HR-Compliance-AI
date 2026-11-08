@@ -84,6 +84,7 @@ sobrevive a deploy e restart; o serviço fica com uma instância e cada deploy t
 | `documentos.py` | Leitura em dois passos (visão transcreve, texto extrai, cada campo conferido contra a transcrição), conferência em código (identidade, CPF e CNPJ com dígito, carga, responsável técnico, funções do ASO, validade) e decisão: aceitar sozinho, pedir aprovação, recusar com motivo ou escalar. Transcrição de ASO não é devolvida | sim |
 | `regua.py` | Régua de renovação: aviso ao entrar na janela, lembrete na metade, lembrete firme 2 dias antes, impedimento no vencimento; pula para a etapa mais urgente se rodar atrasado | não |
 | `orquestrador.py` | Agente documental: encadeia as etapas e devolve cada uma com tempo e dados; escala na 3ª recusa seguida; régua gera card P0 no impedimento | indireto |
+| `duvidas.py` | Responde "o que falta?", "por que recusou?" e "quando vence?" a partir da matriz e dos motivos registrados; reconhece por expressão regular e não expõe motivo de escalada. `POST /pessoas/{id}/mensagens` responde antes de chamar o LLM e não abre card | não |
 | `config.py` | Lê `worker/.env` sem sobrescrever o ambiente | não |
 | `estrategico.py` | Autonomia conquistada: elegibilidade (≥ 30 decisões, ≥ 95% na primeira proposta, 0 reaberturas), v+1 no teto da política e sugestão em que todo número vem do achado | sim |
 
@@ -129,3 +130,20 @@ Inicie a admissão na tela para o agente pedir os documentos faltantes. Ao compl
 registra um evento simulado de conclusão. Respostas no chat são classificadas por IA; mensagens
 ambíguas são encaminhadas ao DP e o texto recebido não é armazenado. Cards podem receber registro
 de contato, pedido de reenvio ou conclusão manual.
+
+### Acompanhamento e recuperação de análises
+
+- Ao aceitar ou aprovar um documento válido, o agente encerra cards de anexos e impedimentos
+  da mesma pessoa e tipo. O histórico registra o anexo que resolveu a pendência. Atendimentos
+  genéricos de conversa continuam sob responsabilidade do DP.
+- A fila oferece **Reprocessar** somente para indisponibilidade de leitura/extração, até três
+  novas tentativas por anexo. O original e o identificador são mantidos. Recusas por conteúdo
+  e documentos aceitos não podem ser reprocessados. Histórico: `GET /anexos/{id}/tentativas`;
+  execução protegida pelo token: `POST /anexos/{id}/reprocessar`.
+- Uma resposta como “vou enviar NR-35 amanhã” agenda um compromisso persistente. São aceitos
+  hoje, amanhã, DD/MM/AAAA ou AAAA-MM-DD, até 90 dias à frente. Datas/documentos ambíguos
+  geram esclarecimento. O texto livre continua sem ser armazenado.
+- A régua cobra uma única vez na data combinada, tanto no acionamento manual quanto automático.
+  Um documento conferido aguardando aprovação suspende a cobrança; o aceite conclui o compromisso.
+  A régua de vencimento permanece ativa, independentemente da promessa. Consulte em
+  `GET /pessoas/{id}/compromissos`. Para testar, use a data `HOJE` como referência e avance a régua.
