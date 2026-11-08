@@ -17,6 +17,7 @@ const ITENS = [
   { href: "/rh/admissoes/nova", rotulo: "Nova admissão", chave: "nova" },
   { href: "/rh/escalacoes", rotulo: "Escalações", chave: "escalacoes" },
   { href: "/rh/catalogo", rotulo: "Catálogo e modelos", chave: "catalogo" },
+  { href: "/whatsapp", rotulo: "WhatsApp", chave: "whatsapp" },
 ] as const;
 
 /** Item ativo: `/rh` só casa exato (ou com uma admissão aberta); os demais casam por prefixo. */
