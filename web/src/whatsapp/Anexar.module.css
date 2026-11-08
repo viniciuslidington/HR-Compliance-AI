@@ -64,3 +64,13 @@
   gap: var(--space-2);
   margin-left: auto;
 }
+/* O primário compartilhado usa um gradiente preto fixo. Na conversa escura,
+   tinta e superfície precisam inverter juntas para preservar o contraste. */
+.acoes .enviar {
+  background: var(--ink);
+  color: var(--surface);
+}
+.acoes .enviar:disabled {
+  background: var(--line-strong);
+  color: var(--ink-subtle);
+}

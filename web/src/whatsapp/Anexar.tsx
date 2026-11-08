@@ -105,7 +105,7 @@ export function Anexar({ ao_enviar, children }: AnexarProps) {
             <Button tamanho="sm" variante="secundario" onClick={limpar} disabled={enviando}>
               Cancelar
             </Button>
-            <Button tamanho="sm" onClick={enviar} disabled={enviando}>
+            <Button tamanho="sm" className={estilos.enviar} onClick={enviar} disabled={enviando}>
               {enviando ? "Enviando…" : "Enviar"}
             </Button>
           </div>
