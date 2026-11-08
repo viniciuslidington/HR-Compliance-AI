@@ -76,7 +76,8 @@ do `tokens.css`.
 - Anime só `transform` e `opacity`, tudo dentro de `@media (prefers-reduced-motion: no-preference)`.
 - O que existe hoje: entrada em cascata dos blocos da página, linhas de tabela em stagger, pulso do
   "Agente ativo", respiração do ponto "em coleta", deslocamento pontual da faixa no hover do logo, fio de
-  gradiente e glow no botão primário, e a barra de progresso com o gradiente.
+  gradiente e glow no botão primário, destaque dos cards da landing no hover (luz que segue o ponteiro
+  e borda acesa, só com mouse), e a barra de progresso com o gradiente.
 - O movimento confirma algo (chegou, está vivo, foi aprovado). Ele não decora.
 
 ## Voz

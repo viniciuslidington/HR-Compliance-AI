@@ -85,15 +85,46 @@ export function Landing() {
       (entradas) => {
         for (const e of entradas) {
           if (!e.isIntersecting) continue;
-          e.target.classList.add(estilos.visivel);
-          if ((e.target as HTMLElement).dataset.revelar === "final") set_final_visivel(true);
-          obs.unobserve(e.target);
+          const alvo = e.target as HTMLElement;
+          alvo.classList.add(estilos.visivel);
+          if (alvo.dataset.revelar === "final") set_final_visivel(true);
+          obs.unobserve(alvo);
+          // Depois da entrada, o reveal sai de cena: o estado final é o mesmo, e o hover deixa de herdar
+          // o atraso em cascata da transição de entrada.
+          const ao_terminar = (ev: TransitionEvent) => {
+            if (ev.target !== alvo || ev.propertyName !== "opacity") return;
+            alvo.removeAttribute("data-revelar");
+            alvo.removeEventListener("transitionend", ao_terminar);
+          };
+          alvo.addEventListener("transitionend", ao_terminar);
         }
       },
       { rootMargin: "0px 0px -12% 0px", threshold: 0.15 },
     );
     alvos.forEach((a) => obs.observe(a));
     return () => obs.disconnect();
+  }, []);
+
+  // Destaque no hover: a luz de cada card segue o ponteiro. Só com mouse; no toque não há hover.
+  useEffect(() => {
+    const el = raiz.current;
+    if (!el || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    let quadro = 0;
+    const ao_mover = (ev: PointerEvent) => {
+      const alvo = (ev.target as Element).closest<HTMLElement>("[data-destaque]");
+      if (!alvo) return;
+      cancelAnimationFrame(quadro);
+      quadro = requestAnimationFrame(() => {
+        const r = alvo.getBoundingClientRect();
+        alvo.style.setProperty("--px", `${ev.clientX - r.left}px`);
+        alvo.style.setProperty("--py", `${ev.clientY - r.top}px`);
+      });
+    };
+    el.addEventListener("pointermove", ao_mover, { passive: true });
+    return () => {
+      el.removeEventListener("pointermove", ao_mover);
+      cancelAnimationFrame(quadro);
+    };
   }, []);
 
   // Com movimento reduzido, o vídeo fica parado no pôster.
@@ -180,7 +211,7 @@ export function Landing() {
             </h2>
           </div>
 
-          <div className={estilos.janela} data-revelar>
+          <div className={estilos.janela} data-revelar data-destaque>
             <div className={estilos.janela_barra} aria-hidden="true">
               <span />
               <span />
@@ -237,7 +268,7 @@ export function Landing() {
           </div>
           <ol className={estilos.passos}>
             {PASSOS.map((p, i) => (
-              <li key={p.n} className={estilos.passo} data-revelar style={{ "--i": i } as CSSProperties}>
+              <li key={p.n} className={estilos.passo} data-revelar data-destaque style={{ "--i": i } as CSSProperties}>
                 <h3 className={estilos.h3}>{p.titulo}</h3>
                 <p className={`text-body ${estilos.apagado}`}>{p.texto}</p>
               </li>
@@ -255,7 +286,7 @@ export function Landing() {
           </div>
           <ul className={estilos.regras}>
             {REGRAS.map((r, i) => (
-              <li key={r.doc} className={estilos.regra} data-revelar style={{ "--i": i % 3 } as CSSProperties}>
+              <li key={r.doc} className={estilos.regra} data-revelar data-destaque style={{ "--i": i % 3 } as CSSProperties}>
                 <span className={`text-data ${estilos.regra_doc}`}>{r.doc}</span>
                 <p className={`text-lead ${estilos.regra_texto}`}>{r.regra}</p>
               </li>

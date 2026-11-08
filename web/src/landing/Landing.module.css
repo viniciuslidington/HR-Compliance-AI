@@ -491,7 +491,6 @@
 .passo p {
   margin: 0;
 }
-/* Brilho do gradiente que acende na borda superior no hover. */
 
 /* Regras */
 .regras {
@@ -507,11 +506,10 @@
   flex-direction: column;
   gap: var(--space-3);
   min-height: 180px;
-  padding: var(--space-8) var(--space-8) var(--space-8) 0;
+  padding: var(--space-8);
   border-bottom: 1px solid var(--line);
 }
 .regra + .regra:not(:nth-child(3n + 1)) {
-  padding-left: var(--space-8);
   border-left: 1px solid var(--line);
 }
 .regra_doc {
@@ -584,6 +582,128 @@
 .rodape_marca {
   font-size: 18px;
   color: var(--ink);
+}
+
+/* ---------- Destaque no hover ----------
+   Cards não são clicáveis, então não ganham --shadow-card: a borda acende e uma luz laranja segue o
+   ponteiro (--px/--py vêm do Landing.tsx). Só com mouse; no toque, nada muda. */
+.passo,
+.regra,
+.janela {
+  --px: 50%;
+  --py: 0%;
+}
+.passo,
+.regra {
+  isolation: isolate;
+}
+.regra {
+  position: relative;
+}
+.passo::before,
+.regra::before,
+.janela::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    420px circle at var(--px) var(--py),
+    color-mix(in srgb, var(--orange-bright) 13%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+.janela::after {
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+/* Fio de luz na borda superior do passo, que acende no hover. */
+.passo::after {
+  content: "";
+  position: absolute;
+  inset: 0 12% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--orange-bright), transparent);
+  opacity: 0;
+  transform: scaleX(0.3);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+.passo {
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+.janela::before {
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+.regra_doc {
+  display: inline-block;
+}
+.nav_links a {
+  position: relative;
+}
+.nav_links a::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -6px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .passo:hover::before,
+  .regra:hover::before,
+  .janela:hover::after {
+    opacity: 1;
+  }
+  .passo:hover {
+    border-color: var(--line-strong);
+  }
+  .passo:hover::after {
+    opacity: 1;
+    transform: none;
+  }
+  .janela:hover::before {
+    transform: scaleX(1.2);
+  }
+  .nav_links a:hover::after {
+    transform: none;
+    transform-origin: left;
+  }
+
+  /* Elevação: `translate` é independente do `transform` usado pelo reveal, então os dois somam. */
+  @media (prefers-reduced-motion: no-preference) {
+    .passo,
+    .janela {
+      transition:
+        translate var(--duration-base) var(--ease-out),
+        border-color var(--duration-fast) var(--ease-out);
+    }
+    .passo:hover {
+      translate: 0 -4px;
+    }
+    .janela:hover {
+      translate: 0 -3px;
+    }
+    .regra_doc {
+      transition: translate var(--duration-base) var(--ease-out);
+    }
+    .regra:hover .regra_doc {
+      translate: 4px 0;
+    }
+    .doc_marca {
+      transition: scale var(--duration-base) var(--ease-spring);
+    }
+    .doc:hover .doc_marca {
+      scale: 1.15;
+    }
+  }
 }
 
 /* ---------- Movimento ---------- */
@@ -745,7 +865,7 @@
   .regra,
   .regra + .regra:not(:nth-child(3n + 1)) {
     min-height: 0;
-    padding: var(--space-6) 0;
+    padding: var(--space-6);
     border-left: 0;
   }
 }
