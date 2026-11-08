@@ -1,8 +1,8 @@
 # Tese de negócio
 
-8 de novembro de 2026 · Documento de referência para o pitch e para o critério "viabilidade de virar negócio".
+8 de novembro de 2026 · Problema, solução, mercado e modelo de negócio.
 
-**Pitch:** *Admissão que se resolve sozinha. E documentos que continuam em dia.*
+***Admissão que se resolve sozinha. E documentos que continuam em dia.***
 
 ## 1. A tese em uma frase
 
@@ -52,8 +52,7 @@ Nosso diferencial são quatro coisas juntas:
 3. **Renovação durante o vínculo.** A admissão é o começo do relacionamento, não o fim.
 4. **Neutralidade de sistema.** Cadastra em qualquer folha ou ERP, não só no próprio.
 
-Isso é ausência de evidência pública nos concorrentes, não prova de ausência. Nada impede um incumbente de copiar;
-a aposta é foco, velocidade e o histórico de recusas por documento, emissor e motivo que o produto acumula.
+A defesa é foco, velocidade e o histórico de recusas por documento, emissor e motivo que o produto acumula com o uso.
 
 ## 5. Mercado
 
@@ -83,7 +82,7 @@ Ninguém publica preço por admissão de um agente como o nosso. Triangulamos qu
 |---|---|---|
 | Ferramenta de admissão: o colaborador preenche, o RH cobra e confere | R$ 2,49 a R$ 6 | [Admita Fácil](https://admita-facil.app.br/) (R$ 99 por 20 admissões; R$ 249 por 100), [IOB Abordo](https://iob.com.br/abordo/) (R$ 119,90 com 20 admissões, incluindo holerite) |
 | **Nós: o agente pede, confere, recusa com motivo, cobra e escala** | **≈ R$ 10** | Nossos planos: de R$ 7,48 a R$ 11,46 por admissão realizada nos exemplos |
-| 30 minutos de analista de DP | R$ 17 | Custo-hora de R$ 34,36 com encargos ([relatório](pesquisa/relatorio-admissao.md), seção 12.5) |
+| 30 minutos de analista de DP | R$ 17 | Custo-hora de R$ 34,36 com encargos ([pesquisa](pesquisa/relatorio-admissao.md#valor-do-trabalho-removido)) |
 | Contador fazendo a admissão | R$ 150 | [FECONTABIL-RS](https://fecontabil.org.br/pdfs/Tabela_de_Honorarios.pdf), honorários mínimos 2026: "Admissão por empregado" = 1 UHC = R$ 150 |
 
 Nos EUA a proporção é a mesma: US$ 7,95 por formulário de admissão feito no software e US$ 84,95 terceirizado
@@ -111,29 +110,12 @@ toda admissão é feita por contador.
 
 São 0,9% das admissões do SAM e 0,013% dos 3,0 milhões de empresas com empregados
 ([IBGE, CEMPRE 2024](https://agenciadenoticias.ibge.gov.br/media/com_mediaibge/arquivos/e1be87301fe780c6ccf8aeab200e71ea.pdf)).
-O número de clientes e as médias de admissões são metas nossas.
-
-### Se o investidor perguntar
-
-> **"Quanto vale uma admissão?"** Com ferramenta, a empresa paga de R$ 2,50 a R$ 6 e o RH continua fazendo o trabalho.
-> Com contador, paga R$ 150. Nós cobramos cerca de R$ 10: acima da ferramenta, porque o agente faz o trabalho, e 15
-> vezes abaixo do contador. Nos EUA é a mesma proporção: US$ 8 no software, US$ 85 terceirizado.
-
-> **"De onde vem o TAM?"** São 26,7 milhões de admissões CLT em 12 meses, pelo Novo Caged de julho de 2026, vezes
-> R$ 10: R$ 267 milhões por ano. Se todas fossem feitas por contador, custariam R$ 4 bilhões. Esse é o tamanho do
-> problema, e nós capturamos uma fração dele.
-
-> **"E o SAM e o SOM?"** Os setores de alto giro fazem 68% das admissões: R$ 181 milhões. No ano 3, 400 clientes pelos
-> nossos planos somam R$ 1,9 milhão, menos de 1% das admissões do SAM, sem contar a renovação.
-
-> **"Por que não cobrar R$ 150, como o contador?"** O contador também faz a folha, o eSocial e responde pelo cliente.
-> Nós tiramos a parte manual da coleta e da conferência. R$ 10 nos coloca na faixa de software e facilita a compra,
-> inclusive para o próprio contador revender.
+O SOM é a meta de aquisição para o terceiro ano.
 
 ## 6. Modelo de negócio
 
-Tudo o que é preço ou meta é hipótese até o piloto e as cotações confirmarem a disposição a pagar. Pesquisa de preços e
-custo medido em [pesquisa/notas/precos_e_custos.md](pesquisa/notas/precos_e_custos.md).
+Os preços partem dos valores praticados no mercado e do nosso custo medido por admissão
+([pesquisa, seção 6](pesquisa/relatorio-admissao.md#6-preços-e-custo)) e serão calibrados com os primeiros clientes.
 
 ### Business Model Canvas
 
@@ -183,7 +165,7 @@ Quem usa: RH e DP no painel; o novo colaborador pelo WhatsApp. Quem compra: lide
 | Aquisição | Venda direta para RH e DP; indicação de escritórios contábeis; conteúdo sobre eSocial, admissão e LGPD |
 | Avaliação | Piloto de 30 dias com métricas medidas (ver planos) |
 | Entrega | Painel web para o RH; WhatsApp para o colaborador |
-| Expansão | Integrações com sistemas de folha; marketplaces de RH (hipótese) |
+| Expansão | Integrações com sistemas de folha; marketplaces de RH |
 
 #### 4. Relacionamento com clientes
 
@@ -192,7 +174,7 @@ Quem usa: RH e DP no painel; o novo colaborador pelo WhatsApp. Quem compra: lide
 - **Sucesso do cliente:** relatório mensal com tempo até o cadastro, taxa de recusa por motivo, escalações e renovações
   feitas antes do vencimento.
 
-#### 5. Fontes de receita (hipótese; preços em [Planos de assinatura](#planos-de-assinatura))
+#### 5. Fontes de receita (preços em [Planos de assinatura](#planos-de-assinatura))
 
 | Fonte | Natureza |
 |---|---|
@@ -228,7 +210,7 @@ Quem usa: RH e DP no painel; o novo colaborador pelo WhatsApp. Quem compra: lide
 | Sistemas de folha e ERP | Destino do cadastro; canal de venda |
 | Escritórios contábeis e BPOs de DP | Canal para PMEs |
 | Serpro Datavalid, Unico | Validação de autenticidade (complemento) |
-| Clínicas de SST e centros de treinamento | Encaminhar a renovação de ASO e NRs (hipótese, a validar) |
+| Clínicas de SST e centros de treinamento | Encaminhar a renovação de ASO e NRs |
 
 #### 9. Estrutura de custos
 
@@ -242,8 +224,7 @@ Quem usa: RH e DP no painel; o novo colaborador pelo WhatsApp. Quem compra: lide
 | Infraestrutura, armazenamento e segurança | Fixo, cresce com o volume |
 | Vendas, desenvolvimento, jurídico | Fixo |
 
-Fontes dos números: [pesquisa/notas/precos_e_custos.md](pesquisa/notas/precos_e_custos.md) e
-[pesquisa/relatorio-admissao.md](pesquisa/relatorio-admissao.md), seção 12.5.
+Fontes dos números: [pesquisa de mercado, seção 6](pesquisa/relatorio-admissao.md#6-preços-e-custo).
 
 ### Planos de assinatura
 
@@ -258,7 +239,7 @@ Fontes dos números: [pesquisa/notas/precos_e_custos.md](pesquisa/notas/precos_e
 | Nosso custo de renovação | R$ 0,02 a R$ 0,05 por colaborador/mês | Margem acima de 90% |
 | Valor para o cliente | R$ 17 a cada 30 min de analista poupados | O preço por admissão fica abaixo disso |
 
-**Resultado:** a admissão sai por **R$ 7 a R$ 10** cada, e a renovação por **R$ 0,50 por colaborador/mês**. Numa
+**Resultado:** a admissão sai por **R$ 7 a R$ 11** cada, e a renovação por **R$ 0,50 por colaborador/mês**. Numa
 empresa de alto giro, o total fica entre R$ 0,30 e R$ 0,60 por colaborador/mês, uma fração do que se paga por uma suíte.
 
 #### Princípios
@@ -294,13 +275,13 @@ empresa de alto giro, o total fica entre R$ 0,30 e R$ 0,60 por colaborador/mês,
 | Complemento | Preço | Por quê |
 |---|---|---|
 | Validação de autenticidade (Serpro Datavalid ou biometria) | R$ 4 por admissão | Custo de cerca de R$ 2,48 por pessoa (preço do Serpro de 2019) |
-| Revisão humana das exceções pela nossa equipe | Sob consulta | É o principal risco de margem; só com preço próprio |
+| Revisão humana das exceções pela nossa equipe | Sob consulta | Envolve trabalho da nossa equipe, por isso tem preço próprio |
 | Integração adicional com folha | Sob consulta | Cada sistema tem esforço diferente |
 
 #### Escritórios contábeis e BPOs de DP
 
 Pacote pré-pago de **50 admissões por R$ 350** (R$ 7 cada), usado entre todos os clientes do escritório, com painel
-separado por cliente. Renovação a R$ 0,40 por colaborador/mês. É o canal para as PMEs (hipótese).
+separado por cliente. Renovação a R$ 0,40 por colaborador/mês. É o canal para as PMEs.
 
 #### Piloto
 
@@ -332,14 +313,6 @@ de SST da Bevart custa entre R$ 163 (100 vidas) e R$ 373 (500 vidas) e não cond
 Não inclui margem do BSP do WhatsApp, revisão humana nem infraestrutura. O que mais mexe na margem é o número de
 mensagens de template por admissão e a taxa de escalação.
 
-#### A validar
-
-- [ ] Disposição a pagar: apresentar esta tabela a 3 a 5 empresas no piloto.
-- [ ] Preço por token do modelo no Featherless e tabela oficial da Meta em BRL.
-- [ ] Turnos de conversa, reenvios e mensagens reais por admissão (medir no piloto).
-- [ ] Cotação de Gupy, Unico e Sólides como empresa de 500 funcionários.
-- [ ] Franquias: quantas admissões por mês os clientes-alvo fazem.
-
 ## 7. Por que a IA é confiável aqui
 
 - O LLM só transcreve, extrai e redige. Validade, regras, decisão, fila e números são código.
@@ -349,53 +322,40 @@ mensagens de template por admissão e a taxa de escalação.
 - O agente não promete detectar fraude: sinal de suspeita escala para um humano.
 - ASO é dado de saúde: a transcrição nunca é gravada nem exibida.
 
-## 8. Restrições já mapeadas
+## 8. Conformidade
 
-- **WhatsApp:** a política proíbe pedir números de identidade e de conta no chat. Documentos e dados bancários vão por
-  link seguro de uso único; o chat orienta e cobra. Confirmar com o BSP antes do piloto.
+- **WhatsApp:** a política proíbe pedir números de identidade e de conta no chat. Na operação com o WhatsApp oficial,
+  documentos e dados bancários vão por link seguro de uso único; o chat orienta e cobra.
 - **Estágio:** usa o S-2300 (prazo até o dia 15 do mês seguinte). O argumento para estágio é o risco de vínculo de
   emprego, não o prazo do eSocial.
 - **Catálogo:** exigir teste de gravidez é crime (Lei 9.029/1995) e antecedentes criminais sem justificativa gera dano
-  moral. O produto deve bloquear o primeiro e exigir justificativa no segundo (ainda não implementado).
+  moral. No roadmap, o catálogo bloqueia o primeiro e exige justificativa no segundo.
 - **LGPD:** bases legais de obrigação legal e procedimentos preliminares de contrato; humano revisa toda decisão que
   afeta a contratação (art. 20).
 
-## 9. A demo, com a verdade do dia
+## 9. O que já funciona
 
-- O painel do RH e o WhatsApp simulado (`web/`) mostram catálogo, modelos, coleta, recusa, cobrança e escalação, com
-  **leitor simulado**.
-- A leitura com IA é **real** no worker, hoje com o exemplo da empresa de energia (ASO, NR-10, NR-35), incluindo a
-  renovação e o card de impedimento.
-- Dizer isso antes que um especialista pergunte.
+- O painel do RH e o WhatsApp simulado rodam de ponta a ponta: cada foto enviada pelo colaborador é lida pelo agente de
+  IA, conferida pelas regras e respondida na conversa, e o painel acompanha em tempo real.
+- O catálogo traz os documentos genéricos e o exemplo de uma empresa de energia (ASO, NR-10, NR-35), com regras de
+  validade e carga horária.
+- O agente recusa com motivo, cobra, escala na 3ª recusa, conduz a renovação e abre o card de impedimento para o DP.
 
 ## 10. Métricas do piloto
 
-"Seremos os primeiros a medir": tempo de RH por admissão antes e depois, taxa de recusa por documento e motivo, reenvios,
-taxa de escalação, tempo do convite ao cadastro, documentos renovados antes do vencimento e falso aceite (meta: zero).
+Não há medição pública do custo da admissão no Brasil. O piloto mede: tempo de RH por admissão antes e depois, taxa de
+recusa por documento e motivo, reenvios, taxa de escalação, tempo do convite ao cadastro, documentos renovados antes do
+vencimento e falso aceite (meta: zero).
 
-## 11. Perguntas prováveis da banca
+## 11. Por que agora
 
-| Pergunta | Resposta |
-|---|---|
-| "A Flash já não faz isso?" | Faz a coleta pelo WhatsApp; o próprio post dela diz que o RH valida. Nós conduzimos até o cadastro, com modelos por cargo, e continuamos depois, na renovação |
-| "Qual o tamanho do mercado?" | 26,7 mi admissões por ano × R$ 10 = R$ 267 mi de TAM; feitas por contador, custariam R$ 4 bi. A renovação é receita recorrente por cima |
-| "E a economia unitária?" | Medimos ~3.500 tokens por documento; a admissão custa perto de R$ 1 e é vendida a R$ 7–10. Margem bruta variável acima de 70% mesmo no pior caso |
-| "O que impede um incumbente de copiar?" | Nada estrutural hoje. Foco, renovação e o histórico de recusas por documento e motivo |
-| "Qual a acurácia?" | Ainda não medida no nosso conjunto; por isso o número lido só passa se bater dígito verificador, datas e os outros documentos. Meta do piloto: falso aceite zero |
-| "E prompt injection na foto?" | O LLM não tem ferramenta de aprovar; a decisão é código e o texto da imagem entra como não confiável |
-| "Isso é permitido no WhatsApp?" | IA incidental a uma tarefa de negócio é permitida; números de documento e conta vão por link seguro |
-| "Por que agora?" | Prazo D-1 com multa clara, WhatsApp com cobrança por mensagem em reais, LLMs que leem documentos e regras de dados e IA definidas entre 2025 e 2026 |
-
-## 12. O que falta pesquisar
-
-- [ ] Tamanho da renovação: quantos trabalhadores têm documento que vence (NR-10, NR-35, CNH profissional, estagiários).
-- [ ] Preço praticado por software de SST ou de gestão de documentos por colaborador.
-- [ ] Concorrentes de SST no Brasil que alertam vencimento: nomes, preços, se cobram ou só avisam.
-- [ ] Penalidade por trabalhador sem treinamento ou ASO válido (NR-28) e casos de embargo.
-- [ ] Itens pendentes do relatório: Caged oficial de setembro/2026, leitura do BSP sobre fotos de documento, teste da Flash.
+- **Prazo legal com multa clara:** o registro no eSocial vence na véspera do início, sob multa de R$ 3.000 por empregado.
+- **Canal barato e previsível:** o WhatsApp Business cobra por mensagem e fatura em reais desde 2026.
+- **IA que lê documentos:** modelos multimodais passaram a ler documentos com qualidade de sistemas comerciais de OCR.
+- **Regras de dados e IA definidas:** cláusulas-padrão da ANPD (2025), adequação com a União Europeia (2026) e o marco da
+  IA aprovado no Senado, que deixa tarefa processual restrita fora do alto risco.
 
 ## Fontes
 
-- Evidência completa com links: [pesquisa/relatorio-admissao.md](pesquisa/relatorio-admissao.md) e as notas em
-  [pesquisa/notas/](pesquisa/notas/).
+- Evidência completa com links: [pesquisa/relatorio-admissao.md](pesquisa/relatorio-admissao.md).
 - Desenho do produto: [produto/desenho-admissao.md](produto/desenho-admissao.md).

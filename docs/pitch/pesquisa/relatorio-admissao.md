@@ -1,194 +1,204 @@
-# Autonomia, não o canal, sustenta o pitch
+# Pesquisa de mercado: admissão no Brasil
 
-> **Papel deste relatório (08/11/2026).** É a base de evidência da tese de admissão. A tese consolidada, que acrescenta
-> modelos por cargo e renovação de documentos, está em [../tese-de-negocio.md](../tese-de-negocio.md). As fontes de cada
-> número estão nas notas em [notas/](notas/).
+Novembro de 2026 · Evidência que sustenta a [tese de negócio](../tese-de-negocio.md): volume e dor, regulação, canal,
+concorrência, confiabilidade da IA, preços e custo.
 
-O Agente de Admissão tem evidência sólida para três dos cinco blocos da pauta e lacunas honestas nos outros dois. A dor é grande e oficial: o Brasil fez **26,6 milhões de admissões CLT em 2025**, cerca de 73 mil por dia, sobre um estoque de 48,5 milhões de vínculos. A regulação dá à coleta um prazo legal duro, porque o registro do empregado CLT no eSocial vence **na véspera do primeiro dia de trabalho**, sob multa de **R$ 3.000 por empregado**. A economia unitária também se sustenta: o custo variável fica abaixo de **R$ 2 por admissão** no cenário base, contra um preço hipotético de R$ 25. Quatro achados, porém, obrigam a reescrever partes da narrativa. A Flash lançou admissão com IA pelo WhatsApp em fevereiro de 2026, então o canal deixou de ser diferencial e o que sobra é autonomia. A política de mensagens do WhatsApp proíbe pedir números de documentos de identidade e de contas financeiras, o que bate de frente com o catálogo do produto. O estagiário da demo usa outro evento do eSocial, com prazo folgado. E não existe dado independente sobre horas de RH por admissão nem sobre taxa de documentos recusados. Com uma base única (admissões CLT de 2025 a R$ 25 cada), o TAM fica em **R$ 665 milhões por ano** e o SAM dos setores de alto giro em **R$ 453 milhões**. Este relatório organiza a evidência por bloco da pauta (seção 12 do desenho do produto) e fecha com o que pode ir para o slide, o que a banca vai perguntar e o que verificar antes do evento.
+## Resumo
 
-| Achado que muda a narrativa | Evidência | O que muda no pitch |
-| --- | --- | --- |
-| (a) A Flash já faz admissão com IA no WhatsApp | Lançamento em 02/02/2026 ([Canaltech](https://canaltech.com.br/mercado/flash-aposta-em-ia-no-whatsapp-para-agilizar-a-admissao-em-empresas-brasileiras/)); post de 21/05/2026 diz que o RH valida os documentos ([Flash](https://flashapp.com.br/novidades-de-produto/coleta-documentos-whatsapp-admissao)) | Abandonar "ninguém faz pelo WhatsApp". Vender autonomia até o cadastro: explica a recusa, cobra sozinho, aplica regras entre documentos em código, escala só exceções e cadastra em qualquer sistema de destino |
-| (b) A Política do WhatsApp proíbe pedir números de identidade e de contas | Política de Mensagens atualizada em 23/09/2026 ([WhatsApp Business Messaging Policy](https://whatsappbusiness.com/pt-br/policy/)) | Upload de documentos e dados bancários por link seguro de uso único; o chat orienta e cobra; o agente nunca pede nem repete números; confirmar a leitura com o BSP antes do piloto |
-| (c) Estagiário usa o S-2300, com prazo até o dia 15 do mês seguinte | MOS eSocial S-1.3 ([gov.br/esocial](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026.pdf)) | O argumento de prazo eSocial vale para CLT (S-2200 na véspera), não para a demo "Estágio". Para estágio, o argumento é o risco de vínculo de emprego (Lei 11.788, art. 3º, § 2º) |
-| (d) Não há dado independente de horas de RH nem de taxa de recusa | Só casos de fornecedores e um dado americano de segunda mão ([Jornal do Brás](https://jornaldobras.com.br/noticia/139069/depois-da-contratacao-admissao-ainda-e-um-gargalo-manual-para-o-rh)) | Não pôr esses números no slide. Transformá-los em métricas do piloto ("seremos os primeiros a medir") |
+- O Brasil fez **26,66 milhões de admissões CLT** nos 12 meses até julho de 2026, cerca de 73 mil por dia. A maior parte
+  é reposição: no comércio, foram cerca de 25 admissões para cada vaga líquida criada em 2025.
+- O registro do empregado no eSocial vence **na véspera do primeiro dia**, sob multa de **R$ 3.000 por empregado** sem
+  registro.
+- O mercado de admissão digital segue um padrão: o colaborador preenche um portal, uma ferramenta confere e **o RH valida,
+  cobra e corrige**. Nenhum fornecedor descreve publicamente um agente que conduza a coleta até o fim e continue na
+  renovação.
+- Uma admissão custa de **R$ 2,49 a R$ 6** numa ferramenta e **R$ 150** com contador. Nosso agente custa perto de
+  **R$ 1** por admissão para operar e é vendido a cerca de **R$ 10**.
 
-## 12.1 — O giro gera 26,6 milhões de admissões por ano, com ou sem crescimento do emprego
+## 1. Volume e dor
 
-O volume é o número mais forte do pitch porque vem de estatística oficial e não depende do ciclo econômico. Em 2025 o Novo Caged registrou **26.599.698 admissões** e 25.320.179 desligamentos, para um saldo de apenas 1,28 milhão de postos; o estoque fechou dezembro em **48.474.348 vínculos celetistas** ([MTE, Sumário Executivo dez/2025](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/estatisticas-trabalho/novo-caged/2025/dezembro/sumario-executivo_-acumulado-e-dezembro-2025.pdf)). A razão entre os dois dá cerca de 55 admissões para cada 100 empregos ativos, coerente com a rotatividade de 54,8% que o DIEESE mediu em 2015, a série oficial mais recente ([DIEESE](https://www.dieese.org.br/livro/2017/rotatividade/81.html)). Dividido por 365, o total dá **cerca de 72,9 mil admissões por dia**. O ritmo segue em 2026: 16.257.880 admissões de janeiro a julho ([Poder360, PDF Novo Caged jul/2026](https://static.poder360.com.br/uploads/2026/08/caged-julho2026.pdf)), 2.294.563 em agosto ([Agência Gov](https://agenciagov.ebc.com.br/noticias/202609/novo-caged-emprego-formal-gera-165-8-mil-vagas-em-agosto-e-acumula-1-13-milhao-de-postos-no-ano)) e 2.214.437 em setembro ([EuQueroInvestir](https://euqueroinvestir.com/economia/caged-pais-cria-1213-mil-empregos-abaixo-das-expectativas-do-mercado)). A soma, cerca de 20,8 milhões até setembro, é conta nossa sobre séries com ajustes diferentes, e não deve ir ao slide como dado oficial.
+### Admissões
 
-A concentração setorial define o cliente. Serviços (**12.558.015**) e comércio (**6.266.830**) somam 71% das admissões de 2025 ([MTE, Tabela 1](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/estatisticas-trabalho/novo-caged/2025/dezembro/sumario-executivo_-acumulado-e-dezembro-2025.pdf)). O comércio admitiu 6,27 milhões para um saldo de só +247 mil, ou **cerca de 25 admissões por vaga líquida criada**; em 2026, de janeiro a agosto, o saldo do setor foi de apenas +9.300 ([Agência Gov](https://agenciagov.ebc.com.br/noticias/202609/novo-caged-emprego-formal-gera-165-8-mil-vagas-em-agosto-e-acumula-1-13-milhao-de-postos-no-ano)). A dor é de reposição contínua, não de expansão. Os segmentos de alto giro (comércio; alojamento e alimentação; transporte e logística; serviços administrativos, que incluem call center e terceirização; saúde e educação) somam **18.100.778 admissões** em 2025, soma nossa sobre a mesma tabela oficial.
+| Dado | Valor | Fonte |
+|---|---|---|
+| Admissões CLT, ago/2025 a jul/2026 | **26.658.253** | [MTE, Novo Caged, jul/2026](https://www.gov.br/trabalho-e-emprego/pt-br/acesso-a-informacao/acoes-e-programas/programas-projetos-acoes-obras-e-atividades/estatisticas-trabalho/novo-caged/2026/julho/sumario-executivo_julho-de-2026.pdf) |
+| Admissões CLT em 2025 | 26.599.698 | [MTE, Novo Caged, dez/2025](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/estatisticas-trabalho/novo-caged/2025/dezembro/sumario-executivo_-acumulado-e-dezembro-2025.pdf) |
+| Estoque de vínculos CLT (dez/2025) | 48.474.348 | Idem |
+| Admissões em comércio, alimentação, transporte, serviços administrativos, saúde e educação (2025) | 18.100.778 (68,0%) | Idem, Tabela 1 |
+| Comércio: admissões para saldo de +247 mil em 2025 | 6.266.830 (≈ 25 por vaga líquida) | Idem |
+| Salário médio de admissão (jul/2026) | R$ 2.419,23 | MTE, Novo Caged, jul/2026 |
+| Empresas com empregados | 3,0 milhões | [IBGE, CEMPRE 2024](https://agenciadenoticias.ibge.gov.br/media/com_mediaibge/arquivos/e1be87301fe780c6ccf8aeab200e71ea.pdf) |
 
-Os estagiários ficam fora do Caged porque estágio não é vínculo CLT. O estoque gira em torno de **990 mil estudantes no 1º bimestre de 2025**, segundo o MTE citado pela imprensa ([Portal IN](https://www.portalin.com.br/in-loco/desemprego-entre-jovens-recua-e-numero-de-estagiarios-atinge-recorde-no-brasil/)), e a ABRES fala em 1,1 milhão sem informar o ano ([BNE Blog](https://www.bne.com.br/blog/bne-registra-843-mil-vagas-de-estagio-em-aberto/)). Não há série pública de novos termos por ano. A estimativa de 400 a 600 mil novos contratos anuais supõe duração média de 1,5 a 2,5 anos e é hipótese, não dado.
+A rotatividade de cerca de 55 admissões para cada 100 empregos ativos é coerente com a taxa de 54,8% medida pelo
+[DIEESE](https://www.dieese.org.br/livro/2017/rotatividade/81.html). Estagiários não entram no Caged: o estoque gira em
+torno de 1 milhão, segundo o MTE citado pela [imprensa](https://www.portalin.com.br/in-loco/desemprego-entre-jovens-recua-e-numero-de-estagiarios-atinge-recorde-no-brasil/).
 
-A lacuna mais séria do bloco está no tamanho da dor por admissão. **Não existe benchmark brasileiro independente de horas de RH por admissão.** O que existe são casos publicados por fornecedores: a Gupy descreve o processo tradicional como de uma a três semanas ([Gupy](https://gupy.io/blog/onboarding-digital)); a Pmweb levava cerca de 4 dias para juntar e validar documentos ([Gupy, case Pmweb](https://www.gupy.io/case-pmweb)); a Alta Mogiana tinha SLA de 19 dias ([Gupy](https://www.gupy.io/historias-de-sucesso/alta-mogiana-adm)); a Ailos levava 15 dias do convite à admissão ([Gupy](https://www.gupy.io/historias-de-sucesso/ailos-sistema-de-cooperativas)). O dado de que cerca de 40% das atividades de onboarding são papelada vem da SHRM americana, sem ano, citado por uma executiva de um fornecedor ([Jornal do Brás](https://jornaldobras.com.br/noticia/139069/depois-da-contratacao-admissao-ainda-e-um-gargalo-manual-para-o-rh)). A taxa de documentos que chegam ilegíveis, incompletos ou vencidos é ainda mais escassa: **nenhuma fonte pública brasileira a quantifica**. Os vizinhos disponíveis medem fraude, não erro. O contexto organizacional ajuda a explicar a dor sem inventar número: em pesquisa da Sólides com mais de 2.500 profissionais, o time de RH tem em média duas pessoas e acumula o DP em 61% a 68% das empresas ([Contadores.cnt.br](https://contadores.cnt.br/projetos/51/noticias/empresariais/2023/02/16/em-61-das-grandes-empresas-brasileiras-o-rh-ainda-e-responsavel-por-departamento-pessoal.html)).
+### Quem sente a dor
 
-A saída é transformar a lacuna em argumento: o produto gera exatamente esses dados. As métricas de piloto propostas são o tempo de RH por admissão antes e depois, a taxa de recusa por tipo de documento e por motivo, o número médio de reenvios, a taxa de escalação e o tempo do convite ao cadastro. "Seremos os primeiros a medir" é mais defensável diante de um VC do que um número de fornecedor sem metodologia.
+Em pesquisa da Sólides com mais de 2.500 profissionais, o time de RH tem em média **duas pessoas** e acumula o
+Departamento Pessoal em **61% a 68%** das empresas
+([Contadores.cnt.br](https://contadores.cnt.br/projetos/51/noticias/empresariais/2023/02/16/em-61-das-grandes-empresas-brasileiras-o-rh-ainda-e-responsavel-por-departamento-pessoal.html)).
+Casos publicados por fornecedores mostram processos de admissão de **4 a 19 dias** do convite ao cadastro
+([Gupy, Pmweb](https://www.gupy.io/case-pmweb); [Gupy, Alta Mogiana](https://www.gupy.io/historias-de-sucesso/alta-mogiana-adm);
+[Gupy, Ailos](https://www.gupy.io/historias-de-sucesso/ailos-sistema-de-cooperativas)).
 
-### Um TAM, uma base, uma conta
+Não há medição pública e independente das horas de RH por admissão nem da taxa de documentos recusados no Brasil. São as
+primeiras métricas que o piloto mede.
 
-As duas notas de pesquisa chegaram a números diferentes porque usaram bases diferentes, não porque discordam. A nota de dor e mercado somou às admissões CLT uma hipótese de 0,5 milhão de termos de estágio (cerca de 27 milhões) e aplicou a faixa inteira de preço, R$ 15 a R$ 40, o que dá **R$ 0,4 a 1,1 bilhão**. A nota de modelo de negócio usou um marcador provisório de 25 milhões de admissões, ainda sem o Caged confirmado, a R$ 25, o que dá **R$ 625 milhões**. Fixando a base no único número oficial (admissões CLT de 2025) e o preço no ponto central usado nas contas de margem e ROI, os dois cálculos convergem.
+## 2. Regulação
 
-| Recorte | Base (admissões/ano) | Conta | Resultado |
-| --- | --- | --- | --- |
-| TAM (preço central) | 26.599.698 CLT, 2025 ([MTE](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/estatisticas-trabalho/novo-caged/2025/dezembro/sumario-executivo_-acumulado-e-dezembro-2025.pdf)) | 26.599.698 × R$ 25 | **R$ 665 milhões/ano** |
-| TAM, piso de preço | idem | 26.599.698 × R$ 15 | R$ 399 milhões/ano |
-| TAM, teto de preço | idem | 26.599.698 × R$ 40 | R$ 1,064 bilhão/ano |
-| SAM (alto giro, preço central) | 18.100.778 (comércio, alimentação, transporte, serviços administrativos, saúde/educação) | 18.100.778 × R$ 25 | **R$ 453 milhões/ano** |
-| SAM, faixa | idem | × R$ 15 / × R$ 40 | R$ 272 a 724 milhões/ano |
-| Estágio (fora do número principal) | 0,5 milhão de novos termos (hipótese) | 500.000 × R$ 25 | + R$ 12,5 milhões/ano |
+### Prazo e multa
 
-O valor central de R$ 665 milhões cai dentro da faixa da primeira nota e corrige o marcador da segunda. O estágio fica fora da manchete por ser hipótese e por pesar menos de 2% do total. Duas ressalvas precisam acompanhar o slide. O preço de R$ 25 é hipótese, porque nenhum concorrente publica preço por admissão (ver 12.5). E o TAM conta admissões, não empresas compradoras: a maioria dos cerca de 10 milhões de organizações do CEMPRE não tem empregado ([IBGE](https://agenciadenoticias.ibge.gov.br/pt/agencia-noticias/45117-empresas-contrataram-mais-e-registraram-ganho-real-do-salario-medio-em-2023.html?lang=pt-BR); [Agência Gov](https://agenciagov.ebc.com.br/noticias/202406/empresas-formadas-apenas-por-socios-e-proprietarios-eram-maioria-e-pagavam-menores-salarios-em-2022)), então o SAM é o número mais honesto para conversar com o associate.
+- **CLT:** o S-2200 vai ao eSocial até o dia anterior ao início da prestação de serviços. A alternativa é o S-2190
+  (registro preliminar) no mesmo prazo, com o S-2200 completo até o dia 15 do mês seguinte
+  ([MOS eSocial S-1.3](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026.pdf)).
+- **Multa:** R$ 3.000 por empregado não registrado, dobrando na reincidência (CLT, art. 47), mais R$ 600 por empregado
+  quando faltam dados do registro (art. 47-A) ([CLT](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm)).
+- **Estágio:** o evento é o S-2300, com prazo até o dia 15 do mês seguinte. O risco maior é outro: sem matrícula atestada
+  e termo de compromisso, o estágio **caracteriza vínculo de emprego** (Lei 11.788/2008, art. 3º, § 2º), e a declaração
+  de matrícula vence a cada semestre ([Lei 11.788](https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11788.htm)).
 
-## 12.2 — O relógio legal é a véspera do início para CLT, e o canal tem uma regra que derruba o catálogo
+### O que a empresa não pode pedir
 
-### O prazo do eSocial vale para CLT, não para o estagiário da demo
+Exigir teste ou atestado de gravidez ou esterilização é **crime** ([Lei 9.029/1995](https://www.planalto.gov.br/ccivil_03/leis/l9029.htm)).
+Exigir certidão de antecedentes criminais sem previsão legal ou justificativa pela função gera dano moral
+([TST, IRR Tema 1](https://www.tst.jus.br/documents/10157/24627054/Tema01.pdf/04a50887-88e5-a950-c717-63439a9f6d3c)).
+Como o RH configura o catálogo, o produto é o lugar certo para impedir esses pedidos.
 
-O Manual de Orientação do eSocial S-1.3, consolidado em 25/02/2026, fixa o envio do **S-2200 até o dia imediatamente anterior ao início da prestação de serviços** ([MOS S-1.3](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026.pdf)). A empresa pode, alternativamente, enviar o S-2190, um registro preliminar com informações básicas no mesmo prazo, e completar o S-2200 até o dia 15 do mês seguinte. Fontes secundárias antigas falam em dia 7; o manual vigente diz dia 15 ([MOS S-1.3](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026.pdf)). Sem o registro, o empregado está "não registrado" e o art. 47 da CLT impõe **R$ 3.000 por empregado**, dobrando na reincidência; o art. 47-A soma R$ 600 por empregado quando faltam dados do registro ([CLT, Planalto](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm)). Isso transforma documento pendente em risco financeiro: dez admissões sem registro a tempo expõem a empresa a R$ 30 mil numa fiscalização. Também dá um argumento de produto: o agente pode priorizar o mínimo do S-2190 e garantir o registro preliminar mesmo com documento pendente. Os campos exatos do S-2190 ainda não foram conferidos no leiaute.
+### Dados pessoais e IA
 
-Para o estagiário o quadro muda, e esse é o achado (c). O evento é o **S-2300, com prazo até o dia 15 do mês seguinte ao início do estágio** ([MOS S-1.3](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026.pdf)). Um especialista na banca que ouvir "o agente evita a multa do eSocial" durante a demo do modelo "Estágio" vai notar o erro. O argumento correto para estágio é outro e mais forte: a Lei 11.788/2008 exige matrícula e frequência atestadas pela instituição de ensino e termo de compromisso tripartite, e o descumprimento **caracteriza vínculo de emprego** (art. 3º, § 2º). A concedente precisa manter esses documentos à disposição da fiscalização (art. 9º), e a reincidente fica impedida de receber estagiários por dois anos (art. 15) ([Lei 11.788/2008](https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11788.htm)). A declaração de matrícula que vence a cada semestre é o gancho natural para o pilar de renovação. Há duas saídas para a demo: manter "Estágio" e trocar o argumento de prazo pelo de vínculo, ou mostrar o prazo D-1 num caso CLT, como o Bruno Lima já escalado no mock-up do painel.
+- **LGPD:** a admissão se apoia em cumprimento de obrigação legal (art. 7º, II) e em procedimentos preliminares de
+  contrato (art. 7º, V), sem depender de consentimento. O art. 20 garante revisão de decisões exclusivamente
+  automatizadas; no produto, toda decisão com efeito sobre a contratação passa pelo RH
+  ([LGPD](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)).
+- **Transferência internacional:** cláusulas-padrão da ANPD obrigatórias desde 23/08/2025
+  ([Lefosse](https://lefosse.com/noticias/transferencia-internacional-de-dados-prazo-para-adocao-das-clausulas-padrao-da-anpd-se-encerra-em-23-de-agosto/));
+  União Europeia reconhecida como adequada em 26/01/2026
+  ([Cescon Barrieu](https://cesconbarrieu.com.br/decisao-de-adequacao-reciproca-entre-brasil-e-uniao-europeia-implicacoes-para-fluxos-transfronteiricos-de-dados/)).
+- **Marco da IA:** o PL 2338/2023, aprovado no Senado, classifica como alto risco a IA de recrutamento e triagem, mas
+  afasta o alto risco para tarefa processual restrita ([Câmara](https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262)).
+  O agente atua depois da decisão de contratar e decide por regras determinísticas.
 
-O valor reduzido de R$ 800 para ME/EPP no art. 47 aparece numa das notas como vigente e na outra como ambíguo, porque o § 1º consta na compilação como alterado por uma medida provisória que caducou ([CLT, Planalto](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm)). Os valores de R$ 402,53 a R$ 805,06 por S-2200 atrasado vêm só de blogs ([Meu Contador Online](https://www.meucontadoronline.com.br/blog/esocial-descomplicado-guia-essencial-multas/)). Nenhum dos dois deve ir ao slide.
+## 3. Canal: WhatsApp
 
-### O catálogo precisa de trava contra documentos proibidos
+- **Alcance:** o WhatsApp está na tela inicial de 64,8% dos smartphones brasileiros
+  ([Mobile Time](https://www.mobiletime.com.br/noticias/09/06/2026/whatsapp-super-panorama/)), e 82% dos usuários já
+  falaram com empresas pelo app ([Canaltech](https://canaltech.com.br/apps/o-que-os-brasileiros-mais-fazem-no-whatsapp-segundo-pesquisa/)).
+- **Custo:** cobrança por mensagem desde 01/07/2025; template de utilidade a cerca de US$ 0,0068 no Brasil; faturamento
+  em reais desde 2026 ([Meta, Pricing](https://developers.facebook.com/docs/whatsapp/pricing)).
+- **Regras:** fora da janela de 24 horas, só templates aprovados; opt-in antes do contato; IA incidental a uma tarefa de
+  negócio é permitida ([Meta Terms](https://www.facebook.com/legal/Meta-Terms-for-WhatsApp-Business-Platform)).
+- **Números de documento e de conta:** a política proíbe pedi-los no chat
+  ([WhatsApp Business Messaging Policy](https://whatsappbusiness.com/pt-br/policy/)). Na operação com o WhatsApp
+  oficial, documentos e dados bancários vão por link seguro de uso único; o chat orienta e cobra, e o agente nunca repete
+  um número na conversa.
 
-A CLT manda registrar qualificação civil e dados da admissão (art. 41), mas exigir teste ou atestado de gravidez ou esterilização é **crime**, com pena de detenção de um a dois anos ([Lei 9.029/1995](https://www.planalto.gov.br/ccivil_03/leis/l9029.htm)). Exigir certidão de antecedentes criminais sem previsão legal ou justificativa pela natureza da função gera dano moral presumido, conforme o TST no IRR Tema 1 ([TST, Tema 01](https://www.tst.jus.br/documents/10157/24627054/Tema01.pdf/04a50887-88e5-a950-c717-63439a9f6d3c)). Como o RH configura o checklist, o produto deve bloquear o primeiro caso e exigir justificativa no segundo. O "documento personalizado", ainda em aberto na seção 11 do desenho, é onde esse risco mora. Isso vira frase de venda: o agente não deixa o RH pedir o que a lei proíbe.
+## 4. Concorrência
 
-### LGPD e marco da IA favorecem quem já nasce com humano no circuito
+| Fornecedor | Como faz a admissão | Fonte |
+|---|---|---|
+| Senior | OCR compara com os campos digitados; o RH confere na aba "Em validação". Assistente SARA anunciada para coletar documentos, só em sistemas Senior | [Senior](https://documentacao.senior.com.br/seniorxplatform/manual-do-usuario/hcm/admissao-digital/validacao-ocr), [Baguete](https://www.baguete.com.br/noticias/senior-orquestra-agentes-de-ia-com-ibm) |
+| Sólides | O RH defere ou indefere documento a documento | [Sólides](https://solides.com.br/lp/demonstracao-modulo-admissao/) |
+| Gupy | IA e especialistas com SLA de até 120 min; confere nome, CPF e NIS com o eSocial; WhatsApp é complemento pago | [Gupy](https://gupy.io/software-de-admissao-digital), [Gupy, preços](https://www.gupy.io/precos) |
+| Unico | Valida contra eSocial e Correios, com biometria facial | [NeoFeed](https://neofeed.com.br/startups/na-idtech-unico-quem-ve-cara-ve-assinatura/) |
+| Flash | Admissão com IA pelo WhatsApp desde 02/02/2026: pede documentos, verifica legibilidade e preenche dados; o RH valida | [Canaltech](https://canaltech.com.br/mercado/flash-aposta-em-ia-no-whatsapp-para-agilizar-a-admissao-em-empresas-brasileiras/), [Flash](https://flashapp.com.br/novidades-de-produto/coleta-documentos-whatsapp-admissao) |
+| Software de SST (ex.: Bevart) | Calcula vencimento de ASO e treinamentos e envia convocação; não lê nem confere o documento novo | [Bevart](https://bevart.com.br/) |
 
-As bases legais dispensam consentimento: cumprimento de obrigação legal (art. 7º, II) e procedimentos preliminares de contrato (art. 7º, V) ([LGPD](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)). A foto do RG só vira dado biométrico sensível quando é processada para reconhecimento facial, o que no roadmap acontece com o Datavalid e exige a base do art. 11, II, "g" e um relatório de impacto. O art. 20 dá ao titular direito de revisão de decisões exclusivamente automatizadas; o desenho já responde a isso, porque toda decisão com efeito sobre a contratação passa pelo RH. Para o LLM hospedado fora do Brasil, a Resolução CD/ANPD 19/2024 tornou obrigatórias as cláusulas-padrão contratuais desde **23/08/2025** ([Lefosse](https://lefosse.com/noticias/transferencia-internacional-de-dados-prazo-para-adocao-das-clausulas-padrao-da-anpd-se-encerra-em-23-de-agosto/)), e a ANPD reconheceu a União Europeia como adequada em **26/01/2026** ([Cescon Barrieu](https://cesconbarrieu.com.br/decisao-de-adequacao-reciproca-entre-brasil-e-uniao-europeia-implicacoes-para-fluxos-transfronteiricos-de-dados/)). A ANPD colocou IA entre os quatro temas prioritários de fiscalização em 2026–2027 ([ANPD](https://www.gov.br/anpd/pt-br/assuntos/noticias/anpd-publica-mapa-de-temas-prioritarios-para-o-bienio-2026-2027-e-atualiza-agenda-regulatoria-2025-2026)).
+Nenhum desses materiais descreve um agente que **explique a recusa no chat, cobre com cadência própria, aplique regras
+entre documentos, escale ao RH só por exceção, cadastre em qualquer sistema de destino e conduza a renovação**. Todos os
+incumbentes estão presos à própria plataforma.
 
-O PL 2338/2023, aprovado pelo Senado em 10/12/2024, segue aguardando parecer do relator na comissão especial da Câmara em novembro de 2026 ([Câmara](https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262)). O texto do Senado classifica como alto risco a IA de recrutamento, triagem e avaliação de candidatos, mas afasta o alto risco para tarefa processual restrita ([texto do PL](https://www.camara.leg.br/proposicoesWeb/prop_mostrarintegra?codteor=3106629&filename=Avulso+PL+2338%2F2023)). Como o agente atua depois da decisão de contratar e decide por regras determinísticas, o enquadramento como tarefa processual é defensável. O pitch pode dizer que o produto nasce compatível com o texto do Senado, mas nunca que a lei está em vigor.
+O apetite por esse mercado é alto: HR techs brasileiras captaram R$ 590 milhões em 2024
+([Fusões & Aquisições](https://fusoesaquisicoes.com/hr/hrtechs-captaram-r-590-milhoes/)); a Tako levantou R$ 100 milhões
+em 2025 ([Startupi](https://startupi.com.br/tako-levanta-r-100-milhoes-agentes-de-ia/)); a Comp, R$ 100 milhões em 2026
+([Baguete](https://www.baguete.com.br/noticias/comp-levanta-r-100-milhoes)); a Flash, Série D de R$ 150 milhões em 2026
+([Startups.com.br](https://startups.com.br/negocios/hrtech/flash-fecha-serie-d-de-r-150m-para-ser-lider-em-beneficios-ate-2030/)).
+Há precedentes de aquisição no setor: Gupy comprou a Kenoby e Sólides comprou a Tangerino.
 
-### A Política do WhatsApp proíbe pedir números de documento e de conta
+## 5. Confiabilidade da IA
 
-Esse é o achado (b) e o maior risco operacional do canal. A Política de Mensagens do WhatsApp Business, atualizada em 23/09/2026, proíbe pedir que as pessoas informem números completos de cartão de pagamento e estende a vedação a **números de contas financeiras e números de documentos de identidade**, sem exceção explícita para RH ([WhatsApp Business Messaging Policy](https://whatsappbusiness.com/pt-br/policy/)). A mesma política exige opt-in antes do contato e caminho claro de escalação para um humano. O catálogo do MVP pede RG/CNH, CPF e dados bancários, ou seja, exatamente o que a regra veta, e a violação pode custar o bloqueio do número.
+### Estado da arte
 
-A mitigação tem quatro partes. Documentos e dados bancários são enviados por um **link seguro próprio, autenticado por token de uso único**, mandado pelo WhatsApp; o chat fica com a orientação, a cobrança e a explicação. O agente nunca pede que um número seja digitado e nunca o repete nas mensagens: a recusa diz que "o dígito verificador do CPF não confere", sem citar o CPF. Os dados bancários entram como formulário no link seguro, o que também resolve uma decisão em aberto da seção 11. E a interpretação precisa ser confirmada com a Meta ou o BSP antes do piloto, porque não há leitura oficial sobre fotos de documento. O mercado já aponta nessa direção: a Flash descreve upload por URL assinada e apaga a conversa após 24 horas ([Canaltech](https://canaltech.com.br/mercado/flash-aposta-em-ia-no-whatsapp-para-agilizar-a-admissao-em-empresas-brasileiras/)), embora o post posterior da empresa fale em "sem link externo" ([Flash](https://flashapp.com.br/novidades-de-produto/coleta-documentos-whatsapp-admissao)). O link seguro enfraquece o slogan de "tudo no WhatsApp", mas como o diferencial passou a ser autonomia (achado a), essa troca custa pouco.
+- No IDP Leaderboard, LLMs de fronteira marcam entre 80 e 90 pontos em extração de documentos
+  ([IDP Leaderboard](https://benchmarking.nanonets.com/)).
+- Num estudo com 720 CNHs sintéticas brasileiras, um OCR especializado chegou a F1 de 96,33% em nomes, contra 87,35% do
+  GPT-4o ([SBC SEMISH 2025](https://sol.sbc.org.br/index.php/semish/article/view/36801)).
+- Modelos podem errar em imagens de baixa qualidade e não detectam imagem gerada por IA
+  ([Claude Vision](https://platform.claude.com/docs/en/build-with-claude/vision)); em documentos degradados, tendem a
+  inventar conteúdo em vez de recusar ([KIE-HVQA](https://arxiv.org/abs/2506.20168)).
 
-O resto do canal cabe no desenho. Fora da janela de 24 horas, só templates aprovados podem ser enviados ([Meta, Templates](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview)); a abertura e os lembretes de cobrança são templates de **utilidade**, a cerca de **US$ 0,0068 por mensagem no Brasil**, com cobrança por mensagem desde 01/07/2025. Desde 01/10/2026, utilidade dentro da janela aberta passou a ser cobrada, e mensagens de serviço acima de 1.000 por mês por número também ([Meta, Pricing](https://developers.facebook.com/docs/whatsapp/pricing)). Um número novo começa limitado a 250 usuários únicos fora da janela em 24 horas ([Meta, Messaging limits](https://developers.facebook.com/docs/whatsapp/messaging-limits)), e as URLs de mídia recebida expiram em 5 minutos ([Meta, Media](https://developers.facebook.com/docs/whatsapp/cloud-api/reference/media)). A seção 4.7 dos Termos da Plataforma proíbe IA de propósito geral, mas permite IA incidental a uma tarefa de negócio ([Meta Terms](https://www.facebook.com/legal/Meta-Terms-for-WhatsApp-Business-Platform)); no Brasil, o CADE ainda mantém desde 04/03/2026 medida preventiva que obriga a Meta a aceitar chatbots de terceiros ([CNN Brasil](https://www.cnnbrasil.com.br/economia/negocios/cade-mantem-medida-preventiva-que-obriga-meta-a-permitir-chatbots-de-ia-no-whatsapp/)). Manter o escopo fechado no processo de admissão protege o agente dos dois lados.
+### Como o produto responde
 
-A penetração do canal é alta, mas falta número oficial de usuários. O WhatsApp está na tela inicial de **64,8% dos smartphones brasileiros** (junho de 2026) ([Mobile Time](https://www.mobiletime.com.br/noticias/09/06/2026/whatsapp-super-panorama/)), e **82% dos usuários já falaram com empresas pelo app**, enquanto 58% gostariam de separar o uso pessoal do profissional ([Canaltech](https://canaltech.com.br/apps/o-que-os-brasileiros-mais-fazem-no-whatsapp-segundo-pesquisa/)). O Brasil tem 185 milhões de usuários de internet ([DataReportal](https://datareportal.com/reports/digital-2026-brazil)). Os 150 a 160 milhões de usuários de WhatsApp que circulam em sites não têm fonte verificável.
+- **O LLM lê e explica; o código decide.** Quase tudo que decide o aceite tem regra fechada: dígitos verificadores de
+  CPF e CNPJ, datas de validade e emissão, carga horária mínima, consistência de nome entre documentos. A validade é
+  calculada pelo código, nunca lida pelo modelo.
+- **Guarda de fidelidade:** todo campo extraído precisa aparecer na transcrição da imagem.
+- **Prompt injection:** ataques só por imagem chegam a 45% de sucesso contra modelos de fronteira
+  ([AgentTypo](https://arxiv.org/html/2510.04257v1)). No produto, o texto da imagem entra marcado como não confiável e o
+  LLM não tem ferramenta de aprovar; no pior caso, uma extração errada é pega pelas regras ou vai para revisão.
+- **Fraude:** o produto não promete detectar falsificação. Sinais baratos (inconsistência entre documentos, dígito
+  inválido em número nítido, datas impossíveis, arquivo repetido entre candidatos) escalam para um humano; a
+  autenticidade forte fica com APIs como o [Serpro Datavalid](https://serpro.gov.br/menu/noticias/noticias-2024/nova-versao-do-datavalid).
+- **Padrão de arquitetura:** segue a recomendação de preferir fluxos com caminhos de código definidos e pontos de
+  controle humano quando a tarefa é bem definida
+  ([Anthropic, Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)).
 
-O "por que agora" se apoia em quatro mudanças recentes. O registro tem prazo duro D-1 e multa clara. O canal ficou barato e previsível, com cobrança por mensagem e faturamento em reais desde julho de 2026. Os LLMs multimodais passaram a ler documentos com qualidade comparável à de IDPs comerciais (ver 12.4). E as regras de dados e IA se definiram entre 2025 e 2026: cláusulas-padrão da ANPD, adequação da UE, CADE e PL 2338 pendente.
+### Métricas
 
-## 12.3 — A Flash já coleta pelo WhatsApp com IA; o espaço livre é fechar o ciclo até o cadastro
+No campo: acerto exato nos campos críticos e taxa de campo ilegível devolvido como vazio. No documento: falso aceite,
+falsa recusa e escalação. No processo: tempo até o cadastro e admissões concluídas sem edição do RH. Meta de falso
+aceite: zero.
 
-O mercado brasileiro de admissão digital é maduro e segue um padrão que se repete de fornecedor em fornecedor: **portal ou link com upload, OCR ou IA para conferir, e um humano que valida**. A Senior compara OCR com os campos digitados e deixa o RH conferir na aba "Em validação" ([Senior](https://documentacao.senior.com.br/seniorxplatform/manual-do-usuario/hcm/admissao-digital/validacao-ocr)). A Sólides faz o RH deferir ou indeferir documento a documento ([Sólides](https://solides.com.br/lp/demonstracao-modulo-admissao/)). A Gupy combina IA e um time de especialistas com SLA de até 120 minutos, compara nome, CPF e NIS com a qualificação cadastral do eSocial e cobra o WhatsApp como complemento pago ([Gupy](https://gupy.io/software-de-admissao-digital); [Gupy, preços](https://www.gupy.io/precos)). A Unico valida contra o eSocial e os Correios e usa biometria facial ([NeoFeed](https://neofeed.com.br/startups/na-idtech-unico-quem-ve-cara-ve-assinatura/)). O pitch, portanto, não pode dizer que "ninguém valida": Gupy e Unico validam mais fundo que o MVP.
+## 6. Preços e custo
 
-A Flash é o concorrente direto mais próximo, e é por causa dela que o achado (a) muda a narrativa. Em **02/02/2026** a empresa lançou a admissão por fluxo conversacional com IA no WhatsApp: o sistema inicia o contato, pede os documentos, verifica a legibilidade e preenche os dados, usando modelos da Anthropic, do Google e da OpenAI ([Canaltech](https://canaltech.com.br/mercado/flash-aposta-em-ia-no-whatsapp-para-agilizar-a-admissao-em-empresas-brasileiras/)). Em 21/05/2026 a Head de Produto descreveu que os arquivos caem no perfil do candidato e que **o RH valida** e identifica pendências; o post não menciona cobrança automática, explicação do motivo da recusa nem eSocial ([Flash](https://flashapp.com.br/novidades-de-produto/coleta-documentos-whatsapp-admissao)). Três meses depois a Flash fechou Série D de **R$ 150 milhões** destinada a IA e novas soluções ([Startups.com.br](https://startups.com.br/negocios/hrtech/flash-fecha-serie-d-de-r-150m-para-ser-lider-em-beneficios-ate-2030/)). A Gupy chama sua jornada de "contratação agêntica no WhatsApp", mas na etapa de admissão envia um link e uma mensagem que avisa não receber respostas ([Gupy, jornada WhatsApp](https://www.gupy.io/lm/menu-site/jornada-whatsapp-contratacao)). A Senior anunciou em agosto de 2025 que a assistente SARA ainda vai coletar e validar documentos, e ela só se conecta a sistemas Senior ([Baguete](https://www.baguete.com.br/noticias/senior-orquestra-agentes-de-ia-com-ibm); [Senior, FAQ SARA](https://documentacao.senior.com.br/sara-no-whatsapp/perguntas-frequentes.htm)).
+### Quanto o mercado cobra
 
-O que os materiais públicos não mostram define o posicionamento. Nenhum player brasileiro descreve publicamente um agente que **explica a recusa de forma específica no chat, cobra com cadência própria, aplica regras determinísticas entre documentos, escala ao RH só por exceção e cadastra em qualquer sistema de destino**. Todos os incumbentes estão presos à própria plataforma (recrutamento, benefícios, identidade, ERP). Isso é ausência de evidência pública, não prova de ausência; a Flash não foi testada nesta pesquisa. Lá fora, o padrão já existe em outro setor: a Superdash pede e revalida documentos pelo WhatsApp para fintechs, inclusive pedindo reenvio com o motivo ([Product Hunt](https://www.producthunt.com/p/document-collection-by-superdash/document-collection-by-superdash)).
+| Referência | Preço | Fonte |
+|---|---|---|
+| Admita Fácil (extração com IA, checagem de CPF) | R$ 99/mês por 20 admissões (R$ 4,95 cada); R$ 249/mês por 100 (R$ 2,49) | [Admita Fácil](https://admita-facil.app.br/) |
+| IOB Abordo (coleta pelo app, integração com folha) | R$ 119,90/mês com 20 admissões (até R$ 6 cada, incluindo holerite); R$ 292,20 com 100 | [IOB Abordo](https://iob.com.br/abordo/) |
+| Convenia Ágil (diretório, admissão, desligamento, relatórios) | R$ 14 por colaborador/mês | [Convenia](https://www.convenia.com.br/planos-convenia) |
+| Sólides | A partir de R$ 1,90 por colaborador/mês | [Sólides](https://solides.com.br/planos-e-precos/) |
+| Bevart (software de SST com vencimento de ASO e NRs) | R$ 99/mês (20 vidas) a R$ 548/mês (1.000 vidas): R$ 0,31 a R$ 1,63 por vida | [Bevart](https://bevart.com.br/) |
+| Contador: "Admissão por empregado" | R$ 150 (honorário mínimo, 2026) | [FECONTABIL-RS](https://fecontabil.org.br/pdfs/Tabela_de_Honorarios.pdf) |
+| EUA: formulário de admissão I-9 | US$ 7,95 no software; US$ 84,95 terceirizado | [Equifax Forms HQ](https://workforce.equifax.com/forms-hq-plans) |
+| Serpro Datavalid | R$ 0,80 por validação cadastral; R$ 1,68 por biometria (preço de 2019) | [Tecnoblog](https://tecnoblog.net/noticias/mpdft-acusa-serpro-usar-dados-cnh-sem-autorizacao/) |
 
-O capital confirma o apetite e o risco ao mesmo tempo. HR techs brasileiras captaram R$ 590 milhões em 2024 ([Fusões & Aquisições](https://fusoesaquisicoes.com/hr/hrtechs-captaram-r-590-milhoes/)); a Tako levantou R$ 100 milhões em julho de 2025 com agentes sobre regras formais ([Startupi](https://startupi.com.br/tako-levanta-r-100-milhoes-agentes-de-ia/)); a Comp, R$ 100 milhões com a Khosla em fevereiro de 2026 para RH operado por IA ([Baguete](https://www.baguete.com.br/noticias/comp-levanta-r-100-milhoes)); a Humand, US$ 66 milhões no mesmo mês ([Startups.com.br](https://startups.com.br/negocios/rodada-de-investimento/meses-apos-chegar-no-brasil-humand-levanta-us-66m/)). Os mesmos incumbentes capitalizados podem acrescentar resposta conversacional à admissão, porque WhatsApp e IA já estão nos produtos de Gupy e Flash. A defesa honesta é foco: admissão de alto volume, autonomia até o cadastro e neutralidade de sistema, com saída plausível por M&A, já que Gupy comprou a Kenoby e Sólides comprou a Tangerino ([Mondaq](https://www.mondaq.com/brazil/corporate-and-company-law/1164866/portal-beyond-the-law-announces-acquisition-of-kenoby-shares-by-gupy); [Startupi](https://startupi.com.br/tags/niduu/)).
+A admissão é vendida dentro de suítes, por colaborador ativo, ou em ferramentas baratas em que o RH continua fazendo o
+trabalho. O serviço completo, feito por contador, custa cerca de 25 a 60 vezes mais que a ferramenta.
 
-## 12.4 — O LLM lê e explica, o código decide, o humano vê a exceção
+### Quanto custa para nós
 
-O estado da arte não permite prometer leitura perfeita, e o pitch fica mais forte quando assume isso. No IDP Leaderboard, os LLMs de fronteira marcam entre 80 e 90 pontos em extração de documentos, com Claude Sonnet 4.6 em 80,7 e GPT-5.4 em 83,5, mas o ranking é mantido por um fornecedor que lidera a própria tabela ([IDP Leaderboard](https://benchmarking.nanonets.com/)). O único estudo público recente com documentos brasileiros avaliou 720 CNHs sintéticas do dataset BID: um OCR especializado com recorte de campos (TrOCR Large) chegou a **F1 de 96,33%** em nomes, contra **87,35% do GPT-4o**, que também falhou em processar parte das instâncias ([SBC SEMISH 2025](https://sol.sbc.org.br/index.php/semish/article/view/36801)). O estudo usa um modelo de 2024 e imagens limpas; modelos de 2026 tendem a ser melhores, e fotos de WhatsApp, piores. O número não se extrapola em nenhuma direção, e por isso o produto precisa medir no próprio conjunto.
+Medição de 08/11/2026 no worker, com inferência real (`deepseek-ai/DeepSeek-V4.1-Flash-1017` no Featherless):
+**4 documentos, 8 chamadas, 13.928 tokens, zero erros**, cerca de **3.500 tokens por documento**. Ao preço público do
+modelo (US$ 0,30 por milhão de tokens de entrada e US$ 1,20 de saída,
+[pricepertoken](https://pricepertoken.com/pricing-page/model/deepseek-deepseek-v4.1-flash)), uma leitura custa cerca de
+R$ 0,02.
 
-A própria Anthropic avisa que o Claude pode alucinar em imagens de baixa qualidade, rotacionadas ou menores que 200 pixels, que compressão JPEG pesada dificulta a leitura de texto e que o modelo **não detecta imagem gerada por IA** ([Claude Vision docs](https://platform.claude.com/docs/en/build-with-claude/vision)). O KIE-HVQA, benchmark de alucinação em documentos degradados apresentado no NeurIPS 2025, mostra modelos de fronteira inventando conteúdo em regiões ruins em vez de recusar ([arXiv 2506.20168](https://arxiv.org/abs/2506.20168)). A resposta de arquitetura é a do desenho: uma camada de qualidade em código antes do LLM (resolução mínima, variância do Laplaciano calibrada, documento inteiro no quadro, reflexo), que pede nova foto com instrução específica em vez de tentar ler ([PyImageSearch](https://pyimagesearch.com/2015/09/07/blur-detection-with-opencv/)).
+| Item | Premissas | Custo |
+|---|---|---|
+| LLM por admissão | 5 documentos com 50% de reenvio, 20 turnos de conversa, ≈ 56 mil tokens | até R$ 0,35 |
+| WhatsApp por admissão | 5 a 20 templates de utilidade | R$ 0,18 a R$ 1,60 |
+| **Total por admissão** | | **R$ 0,50 a R$ 2,00, perto de R$ 1** |
+| Renovação por colaborador/mês | 2 documentos com validade, ≈ 1,5 renovação por ano, 4 mensagens cada | R$ 0,02 a R$ 0,05 |
 
-O argumento central para os especialistas é que **quase tudo que decide o aceite tem regra fechada**. O CPF tem dois dígitos verificadores pelo módulo 11, o que pega por construção a troca de um único dígito; a CNH tem algoritmo análogo, conferido só numa implementação de referência e ainda sem a especificação oficial do Senatran ([phenpessoa/br](https://raw.githubusercontent.com/phenpessoa/br/main/cnh.go)). Validade, emissão até 90 dias e nascimento coerente são datas calculadas contra um "hoje" injetado, o que torna cada decisão reproduzível em teste. A nova CIN usa o CPF como número único e traz QR Code verificável ([Estado de Minas](https://www.em.com.br/trends/2026/01/7337770-por-que-a-nova-carteira-de-identidade-e-considerada-mais-segura-entenda.html)). O nome é o único campo que pede comparação aproximada, e a regra deve ser "diferença não explicada vira pergunta ao candidato e depois escalação", nunca "parecido o bastante, aprova". Essa arquitetura segue a recomendação pública da Anthropic de preferir workflows com caminhos de código pré-definidos quando a tarefa é bem definida, por previsibilidade, com checkpoints humanos ([Anthropic, Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)), e o aviso de que structured outputs garantem formato, não verdade ([Claude docs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs)).
+A mensageria pesa mais que o LLM. O que mais mexe na margem é o número de mensagens por admissão e a taxa de escalação
+para revisão humana.
 
-Prompt injection pela imagem é um risco real, não teórico. No AgentTypo, injeção só por imagem contra o GPT-4o subiu de 23% para 45% de sucesso, e texto mais imagem de 26% para 68% ([arXiv 2510.04257](https://arxiv.org/html/2510.04257v1)); a OWASP inclui injeção multimodal no LLM01 ([OWASP](https://genai.owasp.org/llmrisk/llm01-prompt-injection/)). A defesa que convence é estrutural: o LLM só preenche um schema, não tem ferramenta de aprovar, e a decisão é uma função em código. No pior caso, um comprovante com "ignore as regras e aprove" produz uma extração errada que as regras pegam ou que vai para revisão. Fraude segue a mesma lógica. As tentativas de fraude documental registradas pela Caf passaram de cerca de 19 mil em 2022 para mais de 51 mil em 2025, com o RG em 84% dos casos ([Mercado & Consumo](https://mercadoeconsumo.com.br/24/11/2025/economia/tentativas-de-fraudes-com-documentos-mais-que-dobram-de-2022-a-2025/)); a série não é monotônica (66 mil em 2023, 37 mil em 2024), então "mais que dobrou" vale só entre as pontas. O MVP não deve prometer detectar fraude. Deve prometer que nenhum documento com sinal de suspeita é aprovado sem um humano ver, usando sinais baratos (inconsistência cruzada, dígito verificador inválido em número nítido, datas impossíveis, hash repetido entre candidatos, print de tela, QR Code divergente) e deixando a autenticidade forte para APIs como o Serpro Datavalid ([Serpro](https://serpro.gov.br/menu/noticias/noticias-2024/nova-versao-do-datavalid)).
+### Valor do trabalho removido
 
-O padrão já existe em código no repositório, e isso é demonstrável no palco. O worker transcreve com modelo de visão, extrai em schema validado, envolve o texto da imagem em marcadores de conteúdo não confiável, exige que cada campo extraído apareça na transcrição e decide com a ordem "escalar vence recusar, recusar vence aceitar", com 28 testes (`worker/ia/documentos.py`, `worker/ia/llm.py`, `worker/tests/test_documentos.py`). As notas registram lacunas nesse pipeline: ele cobre ASO e certificados NR, não RG, CNH e comprovante; não tem camada de qualidade nem consistência cruzada entre documentos; e a guarda de fidelidade compara extração com transcrição, não transcrição com imagem, de modo que um dígito trocado na leitura só é pego pelo dígito verificador. Uma segunda leitura independente com comparação campo a campo fecha essa brecha por centavos. Fora das notas, o histórico do repositório mostra que o app web ganhou validação em três camadas (qualidade, regras, consistência) no commit `002b79a` e um **leitor de documentos simulado** no commit `fa6c871` (`web/src/domain/validacao/`, `web/src/domain/leitor_mock.ts`). Se a demo usar o leitor simulado, a equipe precisa dizer isso antes que um especialista pergunte.
+Um analista de DP ganha em média R$ 4.203,53 ([Convenia](https://blog.convenia.com.br/recursos-humanos-salario-e-carreira/));
+com encargos (fator de 1,8), o custo-hora fica em R$ 34,36. Cada 30 minutos poupados por admissão valem cerca de R$ 17.
 
-As métricas de piloto propostas pelas notas separam três níveis. No campo, acurácia exata nos campos críticos (CPF, nascimento, número do documento, validade, emissão) e a taxa de "nulo correto" em campos ilegíveis, que mede alucinação. No documento, falso aceite, falso recusa e escalação. No processo, tempo até a admissão completa e taxa de admissões concluídas sem edição do RH. Os limiares sugeridos (falso aceite igual a zero no conjunto de teste, falso recusa de 5% a 10%, escalação de 15% a 20% nas primeiras semanas) são propostas sem fonte e devem ser apresentados como metas. Um conjunto de 30 a 60 documentos fictícios fotografados em dois ou três celulares e enviados pelo WhatsApp, com casos plantados (comprovante velho, dígito trocado, nome divergente, foto borrada, print, texto de injeção), basta para mostrar uma matriz de confusão no palco.
+## 7. Mercado
 
-## 12.5 — R$ 25 por admissão contra menos de R$ 2 de custo variável
+Com o preço de R$ 10 por admissão, entre a ferramenta (R$ 2,49 a R$ 6) e o contador (R$ 150):
 
-Nenhum fornecedor brasileiro pesquisado publica preço de admissão. O mercado cobra por colaborador ativo por mês dentro de suítes, com o módulo "sob consulta"; o único piso público confiável é o da Sólides, **a partir de R$ 1,90 por colaborador por mês** ([Sólides](https://solides.com.br/planos-e-precos/)). Isso abre espaço para cobrar por **admissão concluída**, unidade que cresce com a dor e não pune reenvios. A conversão mostra que o preço fica discreto ao lado de uma suíte: uma empresa de 1.000 empregados com 50% de rotatividade faz cerca de 500 admissões por ano; a R$ 25, paga R$ 12.500 por ano, ou **R$ 1,04 por colaborador por mês**, abaixo do piso da Sólides. A faixa de R$ 15 a R$ 40, o pacote mínimo mensal e o add-on de autenticidade são hipóteses.
+| Camada | Conta | Valor por ano |
+|---|---|---|
+| Tamanho do problema | 26,66 mi × R$ 150 | R$ 4,0 bilhões |
+| TAM | 26,66 mi × R$ 10 | R$ 267 milhões |
+| SAM | 18,14 mi (68,0%, alto giro) × R$ 10 | R$ 181 milhões |
+| SOM (ano 3) | 400 clientes pelos planos | R$ 1,9 milhão |
 
-O custo variável é baixo e dominado pela visão (com Sonnet) ou pela mensageria (com Haiku). As premissas da estimativa são 8 documentos com 50% de reenvio (12 extrações), 20 turnos de conversa, 20 mensagens de utilidade no pior caso pós-outubro de 2026 e câmbio de R$ 5,21. Os preços vêm da tabela oficial da Anthropic ([Anthropic, Pricing](https://platform.claude.com/docs/en/about-claude/pricing)) e da Meta ([Meta, Pricing](https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing)). O preço do Datavalid é antigo e de data incerta entre as notas (2019 a 2022), e a loja do Serpro bloqueou o acesso ([Tecnoblog](https://tecnoblog.net/noticias/mpdft-acusa-serpro-usar-dados-cnh-sem-autorizacao/)).
-
-| Cenário | Composição | Custo por admissão | Margem bruta variável a R$ 25 |
-| --- | --- | --- | --- |
-| Enxuto | Haiku 5.5 na extração e na conversa; 3 templates | ≈ R$ 0,21 | 99,2% |
-| Base | Sonnet 5.5 na extração, Haiku 5.5 na conversa; 20 mensagens de utilidade | ≈ R$ 1,92 | 92,3% |
-| Alto | Sonnet 5.5 em tudo + Datavalid cadastral e facial (R$ 2,48) | ≈ R$ 5,39 | 78,4% |
-
-O que corrói a margem não são os tokens, e sim o custo humano de escalação (se a startup operar parte da revisão), a margem do BSP, que pode somar de R$ 0,01 a R$ 0,30 por mensagem, e implantação. Classificar uma cobrança como template de marketing em vez de utilidade custaria cerca de nove vezes mais por mensagem.
-
-O retorno para o cliente é o ponto mais fraco do bloco, porque depende da lacuna (d). Com um analista de DP a R$ 4.203,53 de média ([Convenia](https://blog.convenia.com.br/recursos-humanos-salario-e-carreira/)), o custo-hora é de R$ 19,09, ou **R$ 34,36 com um fator de encargos de 1,8**, este sem fonte verificada. Com 1,5 a 3 horas economizadas por admissão, também hipótese, a economia fica entre R$ 51,54 e R$ 103,08, de duas a quatro vezes o preço. A frase "cada admissão custa cerca de R$ 70 de analista correndo atrás de documento; cobramos R$ 25 e custamos menos de R$ 2" só pode ser dita como hipótese a validar no piloto.
-
-Para o primeiro cliente, as notas apontam dois beachheads. O primeiro são médias empresas de varejo, alimentação, serviços e terceirização (100 a 3.000 empregados), com a maior dor e o maior ticket, mas com ciclo de venda mais longo e incumbentes presentes. O segundo são programas de estágio com pico sazonal: só o CIEE projetou **68,2 mil vagas sazonais até fevereiro de 2026** ([Portal Tela](https://www.portaltela.com/noticias/economia/2025/12/03/ciee-abre-68-mil-vagas-de-estagio-e-aprendizagem-ate-fevereiro/)), com um conjunto de documentos idêntico ao da demo. Escritórios contábeis (de 80 a 100 mil organizações, número não confirmado no CFC) entram como canal para PMEs, como já fazem Tangerino e ContaAzul ([Diário do Comércio](https://diariodocomercio.com.br/negocios/hr-tech-tangerino-unifica-rotinas-do-dp-em-jornada-unica/)), e integrações com folha e ERP como terceira etapa, porque o sistema de destino do agente é a folha.
-
-## O que isso significa para o pitch
-
-### Números seguros para o slide
-
-| Número | Uso sugerido | Fonte |
-| --- | --- | --- |
-| 26,6 milhões de admissões CLT em 2025; estoque de 48,5 milhões | Tamanho da dor | [MTE, Sumário Executivo dez/2025](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/estatisticas-trabalho/novo-caged/2025/dezembro/sumario-executivo_-acumulado-e-dezembro-2025.pdf) |
-| ~73 mil admissões por dia (26,6 mi / 365) | Frase de abertura | Conta direta sobre o MTE |
-| Comércio: ~25 admissões por vaga líquida criada em 2025 | "A dor é reposição, não expansão" | [MTE](https://www.gov.br/trabalho-e-emprego/pt-br/assuntos/estatisticas-trabalho/novo-caged/2025/dezembro/sumario-executivo_-acumulado-e-dezembro-2025.pdf) |
-| S-2200 até a véspera do início (CLT) | Prazo legal | [MOS eSocial S-1.3](https://www.gov.br/esocial/pt-br/documentacao-tecnica/manuais/mos-s-1-3-consolidada-ate-a-no-s-1-3-08-2026.pdf) |
-| R$ 3.000 por empregado não registrado (art. 47); R$ 600 (art. 47-A) | Custo do atraso | [CLT](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm) |
-| Estágio sem matrícula atestada e termo tripartite vira vínculo de emprego | Argumento da demo "Estágio" | [Lei 11.788/2008](https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11788.htm) |
-| WhatsApp na tela inicial de 64,8% dos smartphones; 82% já falaram com empresas | Canal | [Mobile Time](https://www.mobiletime.com.br/noticias/09/06/2026/whatsapp-super-panorama/); [Canaltech](https://canaltech.com.br/apps/o-que-os-brasileiros-mais-fazem-no-whatsapp-segundo-pesquisa/) |
-| Template de utilidade a ~US$ 0,0068 no Brasil | Custo do canal | [Meta, Pricing](https://developers.facebook.com/docs/whatsapp/pricing) |
-| Flash: lançamento em 02/02/2026 e Série D de R$ 150 mi em 19/08/2026 | Concorrência e validação de mercado | [Canaltech](https://canaltech.com.br/mercado/flash-aposta-em-ia-no-whatsapp-para-agilizar-a-admissao-em-empresas-brasileiras/); [Startups.com.br](https://startups.com.br/negocios/hrtech/flash-fecha-serie-d-de-r-150m-para-ser-lider-em-beneficios-ate-2030/) |
-| Limitações oficiais do Claude em imagens ruins e sintéticas | Honestidade técnica | [Claude Vision docs](https://platform.claude.com/docs/en/build-with-claude/vision) |
-
-### Números a evitar ou mostrar como estimativa
-
-| Número | Tratamento | Motivo |
-| --- | --- | --- |
-| TAM R$ 665 mi / SAM R$ 453 mi | Estimativa, com a conta e o preço hipotético visíveis | Base oficial, preço de R$ 25 não validado |
-| Custo < R$ 2 e margem de 92% | Estimativa com premissas | Turnos e reenvios por admissão ainda não medidos |
-| Economia de R$ 50–100 por admissão | Hipótese a validar no piloto | Horas de RH por admissão sem fonte; fator de encargos sem fonte |
-| 4 a 15 dias do convite ao cadastro | "Casos publicados por fornecedores", nunca média | Cases da Gupy, sem metodologia |
-| 40% do onboarding é papelada | Evitar | Dado americano, sem ano, de segunda mão |
-| Taxa de documentos recusados | Não usar; virar métrica do piloto | Nenhuma fonte pública |
-| ~20,8 mi de admissões em 2026 até setembro | Evitar até o sumário oficial | Soma nossa de séries com ajustes diferentes |
-| ~1 milhão de estagiários | "Cerca de 1 milhão (MTE via imprensa)" | Fonte primária não obtida; ABRES sem data |
-| R$ 800 para ME/EPP; R$ 402–805 por S-2200 atrasado | Evitar | Vigência ambígua; blogs |
-| "Fraude documental mais que dobrou" | Só com "entre 2022 e 2025, dados da Caf" | Série não monotônica, fonte é fornecedor |
-| F1 de 87% do GPT-4o em CNH | Só como "estudo com modelo de 2024 e dados sintéticos" | Não se extrapola para o produto |
-| Datavalid R$ 0,80 / R$ 1,68 | "Preço antigo, referência de ordem de grandeza" | Data incerta; loja bloqueou acesso |
-
-### Perguntas prováveis da banca e respostas com evidência
-
-| Quem pergunta | Pergunta | Resposta apoiada em evidência |
-| --- | --- | --- |
-| Associate de VC | "A Flash já não faz isso?" | Faz a coleta pelo WhatsApp com IA desde 02/02/2026, mas o próprio post de maio diz que o RH valida. Não há evidência pública de explicação da recusa no chat, cobrança autônoma, regras entre documentos nem escalação por exceção, e a Flash cadastra só no próprio sistema. O nosso agente fecha o ciclo e entrega em qualquer folha |
-| Associate de VC | "Qual o tamanho do mercado?" | 26,6 mi de admissões CLT × R$ 25 = R$ 665 mi/ano de TAM; SAM de alto giro de R$ 453 mi. O preço é hipótese e mostramos a sensibilidade (R$ 399 mi a R$ 1,06 bi) |
-| Associate de VC | "E a economia unitária?" | Menos de R$ 2 de custo variável no cenário base, margem de ~92% a R$ 25. O risco de margem é a escalação humana, não o token |
-| Associate de VC | "O que impede Gupy ou Flash de copiar?" | Nada estrutural hoje. A aposta é foco em alto volume, autonomia e neutralidade de sistema, mais o dado de recusas por motivo que o produto acumula. A saída por M&A tem precedente (Kenoby, Tangerino) |
-| Associate de VC | "Quem é o primeiro cliente?" | Média empresa de varejo ou serviços de 100 a 3.000 empregados, ou um programa de estágio na janela sazonal (68,2 mil vagas do CIEE até fev/2026). Contadores como canal depois |
-| Especialista em IA | "Qual a acurácia?" | Ainda não medida no nosso conjunto. O melhor dado público em CNH brasileira dá 87% de F1 ao GPT-4o, por isso o número lido só passa se bater dígito verificador, datas e os outros documentos. Meta do piloto: falso aceite zero |
-| Especialista em IA | "E se o modelo alucinar um CPF?" | Schema com nulo permitido, prompt de não completar, guarda de fidelidade e dígito verificador, que pega a troca de um dígito por construção. A segunda leitura independente está no plano |
-| Especialista em IA | "E prompt injection na foto?" | É real (até 45% de sucesso só por imagem no AgentTypo). O LLM não tem ferramenta de aprovar; a decisão é função em código, e o texto da imagem entra marcado como não confiável |
-| Especialista em IA | "Vocês detectam documento falso?" | Não prometemos. A Anthropic diz que o Claude não detecta imagem sintética. Usamos sinais baratos para escalar e deixamos autenticidade para Datavalid ou Unico no roadmap |
-| Especialista em IA | "A leitura da demo é real?" | Responder com a verdade do dia: o worker tem pipeline real com modelo de visão; o app web tem leitor simulado (`leitor_mock.ts`) |
-| Especialista em IA | "LGPD com LLM nos EUA?" | Cláusulas-padrão da ANPD obrigatórias desde 23/08/2025, ou região na UE (adequada desde 26/01/2026); humano revisa toda decisão que afeta a contratação (art. 20) |
-| Organizadores | "Qual é a dor e quem a sente?" | 73 mil admissões por dia, times de RH com média de duas pessoas que acumulam o DP, prazo legal na véspera do início |
-| Organizadores | "Isso é permitido no WhatsApp?" | IA incidental a uma tarefa de negócio é permitida; templates de utilidade e opt-in no cadastro. Números de documento e conta vão por link seguro, porque a política proíbe pedi-los no chat |
-| Organizadores | "Por que agora?" | Prazo D-1 com multa clara, canal barato com cobrança por mensagem em reais, LLMs que leem documentos e regras de dados e IA definidas entre 2025 e 2026 |
-
-### Itens a verificar antes do evento
-
-| Item | Por quê | Onde |
-| --- | --- | --- |
-| Sumário executivo oficial do Novo Caged de setembro de 2026 | Substituir a soma de 20,8 mi por número oficial | gov.br/trabalho-e-emprego, novo-caged/2026/setembro |
-| Leitura da Política do WhatsApp sobre foto de documento e dados bancários | Achado (b); risco de bloqueio do número | BSP ou Meta; [Política](https://whatsappbusiness.com/pt-br/policy/) |
-| Como a Flash recebe documentos (chat ou URL assinada) | Calibrar a mitigação e a comparação | Teste ou demo da Flash |
-| Ausência de explicação de recusa e de cobrança na Flash e na Gupy | Sustentar o diferencial de autonomia | Demos comerciais |
-| Rate card oficial da Meta em BRL e tarifa de serviço pós-01/10/2026 | Custo unitário | CSV/PDF em [Meta, Pricing](https://developers.facebook.com/docs/whatsapp/pricing) |
-| Limite de 250 usuários em 24 h e verificação do negócio no número da demo | Evitar falha ao vivo | [Meta, Messaging limits](https://developers.facebook.com/docs/whatsapp/messaging-limits) |
-| Narrativa da demo "Estágio" sem argumento de prazo eSocial | Achado (c) | Roteiro da demo, seção 10 do desenho |
-| Campos obrigatórios do S-2190 | Sustentar o "registro preliminar no prazo" | Leiaute S-1.3 |
-| Vigência do art. 47, § 1º (R$ 800 ME/EPP) | Evitar erro diante de especialistas | Advogado trabalhista |
-| Algoritmo de dígito verificador da CNH | Regra usada na validação | CNHs de teste; especificação do Senatran |
-| Leitor real ou simulado na demo; estado da validação em `web/src/domain/validacao/` | Transparência com os especialistas | Repositório (commits `002b79a`, `fa6c871`) |
-| Região de inferência e cláusulas-padrão com o provedor de LLM | Resposta de LGPD | Contrato do provedor |
-| Número primário de estagiários (MTE, CIEE ou ABRES) | Fonte do "1 milhão" | MTE |
-| Preço vigente do Datavalid | Cenário "alto" de custo | [Loja Serpro](https://www.store.serpro.gov.br/datavalid) |
-| Status do PL 2338 na semana do evento | Frase sobre marco da IA | [Câmara](https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262) |
-
-## Conclusão
-
-A pesquisa inverteu a hierarquia do pitch. O desenho original apoiava a diferenciação no canal ("tudo pelo WhatsApp") e a urgência no eSocial; a evidência mostra que o canal já foi ocupado por um concorrente capitalizado, que esse mesmo canal veta parte do que o catálogo pede, e que o prazo eSocial não se aplica ao caso da demo. O que sobra, e resiste à banca, é a tese de autonomia: um agente que é dono da pendência até o cadastro, com decisões reproduzíveis em código e o RH só nas exceções. As duas concessões, o link seguro para números e o argumento de vínculo para o estágio, deixam o pitch mais crível para especialistas, sem enfraquecê-lo.
-
-A segunda mudança é de postura diante dos dados que faltam. Horas de RH por admissão e taxa de recusa são justamente o que o mercado não mede e o produto mede por construção. Apresentá-las como métricas do piloto, com definições prontas e falso aceite zero como meta, transforma a principal fraqueza do argumento de ROI na resposta mais forte à pergunta do associate sobre o que a empresa sabe que os outros não sabem.
+Detalhes, sensibilidade e a conta do SOM na [tese de negócio](../tese-de-negocio.md#5-mercado).

@@ -19,7 +19,7 @@ até o colaborador estar cadastrado, sem o RH correr atrás de ninguém.
 - **Proposta.** O RH cadastra o novo colaborador e escolhe os documentos exigidos. O agente assume o
   contato, extrai e valida cada documento, explica o que está errado, cobra pendências e cadastra o
   colaborador quando tudo está completo. O RH só entra quando o agente escala.
-- **Pitch.** *Admissão que se resolve sozinha.*
+- **Em uma frase.** *Admissão que se resolve sozinha.*
 
 ## 2. Atores
 
@@ -28,7 +28,7 @@ até o colaborador estar cadastrado, sem o RH correr atrás de ninguém.
 | RH | Painel web | Configura catálogo e modelos, cadastra admissões, acompanha status, resolve escalações |
 | Novo colaborador | WhatsApp | Recebe as instruções, envia documentos, tira dúvidas sobre o processo |
 | Agente | WhatsApp e painel | Conduz a coleta, valida, cobra, escala e cadastra |
-| Sistema de destino | API | Recebe o cadastro do colaborador (mock na demo) |
+| Sistema de destino | API | Recebe o cadastro do colaborador (simulado no MVP) |
 
 ## 3. Configuração pelo RH
 
@@ -140,7 +140,7 @@ documentos do checklist estão aprovados.
 Toda recusa vem com o motivo e o que fazer, por exemplo: *"o comprovante é de março; preciso de um
 emitido nos últimos 90 dias"*.
 
-**Cobrança (proposta, a validar com o time):**
+**Cobrança:**
 
 | Momento | Ação do agente |
 | --- | --- |
@@ -234,14 +234,14 @@ uma admissão sem alterar o modelo.
 
 ## 10. Escopo do MVP e roteiro da demo
 
-O MVP prova o loop completo com poucos documentos; o resto vira slide de evolução.
+O MVP prova o loop completo com poucos documentos; o resto é evolução do produto.
 
 | Entra no MVP | Fica para depois |
 | --- | --- |
-| Catálogo com RG/CNH, CPF, comprovante, dados bancários, declaração de matrícula | Documento personalizado (a decidir) |
+| Catálogo com RG/CNH, CPF, comprovante, dados bancários, declaração de matrícula | Documento livre descrito em texto, fora do catálogo |
 | Modelos "CLT padrão" e "Estágio" com ajuste por admissão | Validação de autenticidade via API externa (ex.: Serpro Datavalid) |
 | Coleta, validação, cobrança e escalação pelo WhatsApp | Agendamento de exame admissional |
-| Cadastro em sistema de destino mock | Integração real com folha e eSocial |
+| Cadastro em sistema de destino simulado | Integração real com folha e eSocial |
 | Painel do RH com lista, detalhe e escalações | Assinatura de contrato |
 
 **Roteiro da demo (cerca de 3 min):**
@@ -253,11 +253,14 @@ O MVP prova o loop completo com poucos documentos; o resto vira slide de evoluç
 5. O colaborador para de responder; o agente cobra sozinho (tempo acelerado) e alerta o RH.
 6. Com tudo completo, o agente cadastra o colaborador e o painel fica verde.
 
-## 11. Decisões em aberto
+## 11. Decisões
 
-- [ ] Documento personalizado entra no MVP?
-- [ ] Cadência de cobrança: a proposta acima está boa?
-- [ ] Limite de tentativas antes de escalar: 3 está bom?
-- [ ] Dados bancários entram como documento (foto) ou como formulário na conversa?
-- [ ] O colaborador pode tirar dúvidas gerais do processo, ou o agente só coleta?
-- [ ] Qual sistema de destino simular no mock (formato do cadastro)?
+- **Documentos específicos:** cada empresa acrescenta aos seus modelos os documentos do seu negócio (ex.: ASO, NR-10 e
+  NR-35 numa empresa de energia), com regras de validade e carga horária.
+- **Cadência de cobrança:** a da seção 7 (24 h sem resposta, metade do prazo, 2 dias antes do início, prazo estourado).
+- **Limite de tentativas:** 3 recusas seguidas do mesmo documento escalam para o RH.
+- **Dados bancários:** na operação com o WhatsApp oficial, por formulário em link seguro, porque a política do WhatsApp
+  proíbe pedir números de conta no chat.
+- **Dúvidas do colaborador:** o agente responde sobre o processo (o que falta, por que recusou, quando vence) e
+  encaminha ao RH o que estiver fora do escopo.
+- **Sistema de destino:** simulado no MVP; recebe o cadastro concluído e devolve um identificador externo.
