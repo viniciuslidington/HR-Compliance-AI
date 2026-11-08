@@ -77,7 +77,7 @@ Os testes de inferência real dependem de `FEATHERLESS_API_KEY`; sem a chave, s�
 
 - `web/` — aplicação Next.js, painel, simulador e regras da admissão.
 - `worker/` — API FastAPI, agentes, leitura de documentos e testes.
-- `contracts/` — matrizes, playbooks, esquema e dados de exemplo.
+- `contracts/` — matrizes de exigências por cargo e dados de exemplo.
 - `design-system/` — tokens e guia visual da marca.
 - `docs/` — documentação de produto, arquitetura e demonstração.
 - `render.yaml` — configuração dos serviços para deploy no Render.

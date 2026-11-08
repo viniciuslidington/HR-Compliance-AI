@@ -1,7 +1,6 @@
 # MVP reformulado: admissão e renovação documental em setores regulados
 
-7 de novembro de 2026 · Substitui o recorte de pendências de ponto como foco do MVP. A arquitetura de agentes,
-playbooks, fila e autonomia conquistada do [plano final](plano-final-agentes-dp.md) continua valendo.
+7 de novembro de 2026 · Plano do agente documental para documentos regulados (ASO, NR-10, NR-35), com renovação.
 
 **O problema em uma frase:** em construção e energia, um documento vencido tira a pessoa de campo (sem NR-35 em dia,
 ninguém sobe em altura), e hoje o DP ou o SESMT descobre isso numa planilha e passa semanas cobrando, lendo e conferindo
@@ -21,13 +20,6 @@ documentos à mão.
 | Do desenho do Marcelo, entra | Escalar quando o mesmo documento falha 3 vezes; régua de cobrança com intensidade crescente até o prazo; tela de escalações no painel do RH; sistema de destino mock |
 
 ## 1. Por que agora faz mais sentido como agente
-
-| | Pendências de ponto | Documentos em setor regulado |
-|---|---|---|
-| Entrada não estruturada | Só a resposta das pessoas | Quase tudo: foto de certificado, PDF de ASO, carteira de conselho |
-| Trabalho do agente | Perguntar e ajustar um horário | Pedir, ler, conferir, recusar com motivo, pedir de novo, agendar, acompanhar vencimento |
-| Custo de errar | Divergência no fechamento | Pessoa impedida de trabalhar, embargo, multa na fiscalização |
-| Recorrência | Mensal | Contínua: cada documento tem seu vencimento |
 
 **Recorte de mercado.** Admissão digital genérica já tem concorrente agêntico: a Gupy anuncia contratação agêntica no
 WhatsApp e validação de documentos por IA com especialistas humanos. Não competimos nisso. Ferramentas de SST alertam
@@ -114,7 +106,6 @@ Empresa fictícia de manutenção elétrica; hoje é 07/11/2026.
 | `fila.py`, `card.py` | Reaproveitados; urgência passa a vir da data de impedimento |
 | `proximo_passo.py`, `redacao.py`, `relatorio.py` | Reaproveitados com novos modelos de mensagem |
 | `estrategico.py`, `compilador.py` | Reaproveitados; a categoria vira "emissor × tipo de documento" |
-| `interpretacao.py`, `autonomia.py` (art. 58) | Específicos de ponto; ficam congelados |
 | Novo: `documentos.py` | Transcrever, extrair, conferir; validade calculada pela matriz |
 
 ## 8. Divisão em 3 partes

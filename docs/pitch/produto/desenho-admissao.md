@@ -1,8 +1,6 @@
 # Agente de Admissão — Desenho do Produto
 
-> Transcrição estruturada do PDF `docs/Agente de Admissão — Desenho do Produto (1).pdf` (07/11/2026, @Marcelo).
->
-> **Atualização de 08/11/2026:** o catálogo base continua com os documentos genéricos. Cada empresa monta modelos por
+> Desenho do produto de 07/11/2026, atualizado em 08/11/2026: o catálogo base continua com os documentos genéricos. Cada empresa monta modelos por
 > cargo e acrescenta os documentos específicos do seu negócio (ex.: numa empresa de energia, "Eletricista" pede também
 > ASO, NR-10 e NR-35). Documentos com validade continuam sendo cobrados durante o
 > vínculo (renovação). A tese completa está em [../tese-de-negocio.md](../tese-de-negocio.md).

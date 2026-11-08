@@ -101,7 +101,6 @@ Tudo em `worker/` (Python 3.12, `uv`). 162 testes, incluindo testes com inferên
 | Bucket por hash + banco SQLite (anexos, lembretes, falhas seguidas) | `infra/anexos.py` | Pronto |
 | API FastAPI (saúde, pessoas, matriz, upload, aprovação; token nas escritas) | `api.py` | No ar no Render |
 | Utilitário de fluxos no terminal | `scripts/fluxos.py` | Pronto: `admissao`, `renovacao`, `escalacao`, `todos` |
-| Camada de ponto (pivô anterior) | `ia/interpretacao.py`, `ia/autonomia.py`, `scripts/rodar_agentes.py` | Congelada; não usar no MVP |
 
 ### Rodar
 
