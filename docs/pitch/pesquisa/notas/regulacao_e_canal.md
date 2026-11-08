@@ -152,7 +152,7 @@ fiscalização 2026-2027.
 - **Retenção trabalhista (referência):** prescrição de créditos trabalhistas de 5 anos, até 2 anos após o fim do contrato (CF art. 7º,
   XXIX) — justifica conservação de documentos do vínculo além do término. — [Constituição, Planalto](https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm)
 - **Proposta estratégica §7.3 (reuso):** os controles mínimos ali (minimização, perfis de acesso, retenção definida, registro de
-  acesso, isolamento de tenants, papel controlador/operador, RIPD) são compatíveis com os artigos acima e reutilizáveis. — [docs/HR_Compliance_AI_Proposta_Estrategica_Startup.md, §7.3](../../../HR_Compliance_AI_Proposta_Estrategica_Startup.md)
+  acesso, isolamento de tenants, papel controlador/operador, RIPD) são compatíveis com os artigos acima e reutilizáveis. — docs/HR_Compliance_AI_Proposta_Estrategica_Startup.md, §7.3 (removido em 08/11/2026; ver histórico do git)
 
 ### Inferences
 - **Papéis:** a empresa cliente é controladora; o Agente de Admissão é operador; o provedor de LLM e a Meta (WhatsApp) são
@@ -344,7 +344,7 @@ por mensagem, ~US$ 0,007 por lembrete) + LLMs multimodais capazes de ler documen
 - PL 2338 aguardando parecer na Câmara — [Câmara](https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262)
 - Proposta estratégica, "Por que agora?": os bullets ali (3,6 milhões de casos novos na Justiça do Trabalho em 2024; autuação MTE de
   out/2026; EC 141/2026 e fim da escala 6×1) tratam de jornada/litígio, **não de admissão**; não foram re-verificados nesta pesquisa e
-  só devem ser reaproveitados como contexto geral de compliance trabalhista. — [docs/HR_Compliance_AI_Proposta_Estrategica_Startup.md](../../../HR_Compliance_AI_Proposta_Estrategica_Startup.md)
+  só devem ser reaproveitados como contexto geral de compliance trabalhista. — docs/HR_Compliance_AI_Proposta_Estrategica_Startup.md (removido em 08/11/2026; ver histórico do git)
 
 ### Inferences
 **Riscos de compliance e mitigações (para slide de "riscos"):**
