@@ -78,7 +78,7 @@ export class HttpApi implements Api {
     if (r.status === 304) return;
     if (!r.ok) throw new Error(`estado: ${r.status}`);
     const etag = r.headers.get("ETag");
-    this.receber(await r.text(), etag ? etag.replace(/"/g, "") : null);
+    this.receber(await r.text(), etag ? etag.replace(/^W\//, "").replace(/"/g, "") : null);
   }
 
   private async rpc(metodo: string, args: unknown[]): Promise<unknown> {

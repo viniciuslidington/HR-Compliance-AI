@@ -81,7 +81,7 @@ def test_numero_precisa_aparecer_na_transcricao():
 
 
 def test_documento_ilegivel_traz_o_detalhe():
-    leitura, _ = _ler("[ilegível]", {"tipo": "rg_cnh", "legivel": False,
+    leitura, _ = _ler("REGISTRO GERAL 12.345.678-9\n[ilegível]", {"tipo": "rg_cnh", "legivel": False,
                                       "problema_legibilidade": "a foto está desfocada"})
     assert leitura.qualidade == "ilegivel"
     assert leitura.detalhe_qualidade == "a foto está desfocada"
@@ -95,6 +95,23 @@ def test_transcricao_quase_toda_ilegivel_vira_ilegivel_sem_chamar_o_modelo():
     assert leitura.qualidade == "ilegivel"
     assert leitura.detalhe_qualidade == "a imagem está borrada"
     assert llm.chamadas == []
+
+
+def test_poucos_trechos_ilegiveis_e_sem_numeros_tambem_e_ilegivel():
+    borrada = "CUMENTO FIC\nDOCUMENTO FIC\n[ilegível]\nCUMENTO FICTÍCIO — DEMO\n[ilegível]\nDOCUMENTO FICTÍCIO — DEMO • sem validade legal"
+    leitura = ler_generico(TranscritorFixo(borrada), LLMRoteirizado([]), b"img", "image/png", [RG])
+    assert leitura.qualidade == "ilegivel"
+
+
+def test_documento_com_um_trecho_ilegivel_mas_com_dados_vai_ao_modelo():
+    leitura, llm = _ler(TRANSCRICAO_RG + "\n[ilegível]", {
+        "tipo": "rg_cnh", "legivel": True, "problema_legibilidade": None, "nome": "MARIANA SOUZA LIMA"})
+    assert leitura.qualidade == "ok" and len(llm.chamadas) == 1
+
+
+def test_ilegivel_vence_outro():
+    leitura, _ = _ler("???", {"tipo": "outro", "legivel": False, "problema_legibilidade": "a foto está borrada"})
+    assert leitura.qualidade == "ilegivel" and leitura.tipo_documento_id is None
 
 
 def test_documento_que_nao_e_nenhum_dos_pedidos_e_tipo_errado():

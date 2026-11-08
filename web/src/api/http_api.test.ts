@@ -11,7 +11,8 @@ function servidor() {
     if (url.endsWith("/api/estado")) {
       const h = new Headers(init?.headers);
       if (h.get("If-None-Match") === `"${versao}"`) return new Response(null, { status: 304 });
-      return new Response(JSON.stringify(estado), { headers: { ETag: `"${versao}"` } });
+      // Como o proxy do Render: ETag fraco.
+      return new Response(JSON.stringify(estado), { headers: { ETag: `W/"${versao}"` } });
     }
     if (url.endsWith("/api/acao")) {
       const { metodo } = JSON.parse(String(init?.body));

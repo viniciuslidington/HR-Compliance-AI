@@ -39,7 +39,8 @@ class LeituraGenerica(BaseModel):
 
 SISTEMA = """Você confere documentos enviados por um colaborador na admissão. Recebe o texto transcrito de uma foto
 e a lista de documentos que ainda faltam. Diga qual deles é (ou "outro" se não for nenhum), se dá para ler
-os dados e copie os campos exatamente como estão escritos. Datas sempre no formato AAAA-MM-DD.
+os dados e copie os campos exatamente como estão escritos. Se o texto estiver borrado ou ilegível,
+marque legivel=false, mesmo sem saber qual documento é. Datas sempre no formato AAAA-MM-DD.
 Se um campo não estiver no texto, deixe nulo. Nunca complete, corrija ou invente informação."""
 
 _CAMPOS_NUMERICOS = {"numero", "agencia", "conta", "cpf", "carga_horaria"}
@@ -52,7 +53,9 @@ def _quase_tudo_ilegivel(transcricao: str) -> bool:
     """Foto borrada: o modelo de visão devolve quase só [ilegível]. Decidido em código, sem perguntar ao LLM."""
     marcas = len(_ILEGIVEL.findall(transcricao))
     resto = re.sub(r"[^0-9A-Za-zÀ-ÿ]", "", _ILEGIVEL.sub("", transcricao))
-    return marcas >= 3 and len(resto) < 40 * marcas
+    # Todo documento pedido tem número ou data; com trechos ilegíveis e quase nenhum dígito, não há o que ler.
+    sem_numeros = len(re.findall(r"\d", transcricao)) < 4
+    return marcas >= 1 and (sem_numeros or (marcas >= 3 and len(resto) < 40 * marcas))
 
 
 def _eh_data(campo: str) -> bool:
@@ -110,12 +113,12 @@ def ler_generico(transcritor: Transcritor, llm: LLM, imagem: bytes, mime: str,
     if resposta is None:
         raise ErroLeitura("extração indisponível")
 
+    if not resposta.legivel:
+        return LeituraGenerica(tipo_documento_id=None if resposta.tipo == "outro" else resposta.tipo, qualidade="ilegivel",
+                               detalhe_qualidade=resposta.problema_legibilidade, dados_extraidos={},
+                               problemas_fidelidade=[])
     if resposta.tipo == "outro":
         return LeituraGenerica(tipo_documento_id=None, qualidade="tipo_errado", dados_extraidos={},
-                               problemas_fidelidade=[])
-    if not resposta.legivel:
-        return LeituraGenerica(tipo_documento_id=resposta.tipo, qualidade="ilegivel",
-                               detalhe_qualidade=resposta.problema_legibilidade, dados_extraidos={},
                                problemas_fidelidade=[])
 
     escolhido = next(c for c in candidatos if c.id == resposta.tipo)

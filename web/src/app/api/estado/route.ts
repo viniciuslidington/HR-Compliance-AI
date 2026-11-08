@@ -7,7 +7,9 @@ export async function GET(request: Request) {
   try {
     const { versao, estado } = await servico().ler();
     const etag = `"${versao}"`;
-    if (request.headers.get("if-none-match") === etag) return new Response(null, { status: 304, headers: { ETag: etag } });
+    // O proxy do Render comprime e enfraquece o ETag (W/"..."): compara sem o prefixo.
+    const pedido = request.headers.get("if-none-match")?.replace(/^W\//, "");
+    if (pedido === etag) return new Response(null, { status: 304, headers: { ETag: etag } });
     return new Response(estado, {
       headers: { "Content-Type": "application/json", ETag: etag, "Cache-Control": "no-store" },
     });
