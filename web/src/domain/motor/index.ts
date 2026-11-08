@@ -15,7 +15,7 @@ export function aplicar(estado: Estado, evento: Evento, agora: Date): Estado {
     case "arquivo_recebido":
       return receber_arquivo(estado, evento.admissao_id, evento.nome_arquivo, evento.arquivo_url, agora, evento.leitura);
     case "texto_recebido":
-      return receber_texto(estado, evento.admissao_id, evento.texto, agora);
+      return receber_texto(estado, evento.admissao_id, evento.texto, agora, evento.resposta);
     case "tempo_avancado":
       return executar_cobranca(estado, new Date(evento.ate));
     case "escalacao_resolvida":

@@ -14,6 +14,38 @@ export interface Leitor {
 
 export class ErroLeitura extends Error {}
 
+export interface ContextoConversa {
+  nome: string;
+  cargo: string;
+  data_inicio: string;
+  status: string;
+  documentos: { nome: string; status: string; motivo_recusa: string | null; instrucao: string }[];
+  historico: { autor: "colaborador" | "agente" | "rh"; texto: string; anexo: boolean }[];
+  texto: string;
+}
+
+export interface Conversador {
+  responder(contexto: ContextoConversa): Promise<{ texto: string; encaminhar_rh: boolean }>;
+}
+
+export class ConversadorWorker implements Conversador {
+  constructor(private cfg: ConfigWorker) {}
+  async responder(contexto: ContextoConversa) {
+    const r = await (this.cfg.fetcher ?? fetch)(`${this.cfg.url}/conversa`, {
+      method: "POST",
+      headers: cabecalhos(this.cfg.token, { "Content-Type": "application/json" }),
+      body: JSON.stringify(contexto),
+      signal: AbortSignal.timeout(40_000),
+    });
+    if (!r.ok) throw new Error(`conversa indisponível (${r.status})`);
+    const resposta = await r.json();
+    if (typeof resposta.texto !== "string" || !resposta.texto.trim() || resposta.texto.length > 2000 || typeof resposta.encaminhar_rh !== "boolean") {
+      throw new Error("resposta de conversa inválida");
+    }
+    return { texto: resposta.texto, encaminhar_rh: resposta.encaminhar_rh };
+  }
+}
+
 export interface ConfigWorker {
   url: string;
   token: string | null;

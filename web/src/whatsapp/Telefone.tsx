@@ -33,6 +33,7 @@ interface Retencao {
 }
 
 interface EnvioPendente {
+  tipo: "texto" | "arquivo";
   admissao_id: string;
   nome: string;
   url: string | null;
@@ -42,9 +43,10 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
   const executar = useAcao();
   const admissoes = useConsulta((api) => api.listar_admissoes());
   const epoca = useConsulta((api) => api.epoca());
-  const [texto, setTexto] = useState("");
+  const [rascunhos, setRascunhos] = useState<Record<string, string>>({});
   const [retencao, setRetencao] = useState<Retencao | null>(null);
   const [pendente, setPendente] = useState<EnvioPendente | null>(null);
+  const [errosTexto, setErrosTexto] = useState<Record<string, string | null>>({});
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { id, escolher } = useSelecaoTravada({
@@ -56,6 +58,17 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
   });
 
   const detalhe = useConsulta((api) => (id ? api.obter_admissao(id) : null), [id]);
+  // Rascunhos e falhas pertencem ao contato e à época: uma resposta lenta nunca
+  // restaura o texto de outra pessoa nem reaparece depois de reiniciar a demo.
+  const chaveRascunho = `${epoca}:${id}`;
+  const texto = rascunhos[chaveRascunho] ?? "";
+  const erroTexto = errosTexto[chaveRascunho] ?? null;
+  function setTexto(valor: string) {
+    setRascunhos((atuais) => ({ ...atuais, [chaveRascunho]: valor }));
+  }
+  function setErroTexto(valor: string | null) {
+    setErrosTexto((atuais) => ({ ...atuais, [chaveRascunho]: valor }));
+  }
 
   const area = useRef<HTMLDivElement>(null);
   const no_fim = useRef(true);
@@ -102,22 +115,33 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
     timer.current = setTimeout(() => setRetencao(null), ATRASO_DIGITANDO_MS);
   }
 
-  function enviar_texto(e: FormEvent) {
+  async function enviar_texto(e: FormEvent) {
     e.preventDefault();
     const limpo = texto.trim();
-    if (!id || !limpo) return;
+    if (!id || !limpo || pendente) return;
     segurar_resposta(id);
-    executar((api) => api.enviar_texto(id, limpo));
-    soltar_resposta();
+    setErroTexto(null);
+    setPendente({ tipo: "texto", admissao_id: id, nome: limpo, url: null });
     setTexto("");
     no_fim.current = true;
+    try {
+      await executar((api) => api.enviar_texto(id, limpo));
+      soltar_resposta();
+    } catch {
+      setTexto(limpo);
+      setRetencao(null);
+      setErroTexto("Não foi possível enviar. Tente novamente.");
+    } finally {
+      setPendente(null);
+    }
   }
 
   async function enviar_arquivo(arquivo: File, url: string | null) {
     if (!id) return;
+    if (pendente) throw new Error("Aguarde o envio da mensagem anterior.");
     segurar_resposta(id);
     // Bolha otimista: a entrada real só existe depois de reduzir e salvar a imagem.
-    setPendente({ admissao_id: id, nome: arquivo.name, url });
+    setPendente({ tipo: "arquivo", admissao_id: id, nome: arquivo.name, url });
     no_fim.current = true;
     try {
       await executar((api) => api.enviar_arquivo(id, arquivo));
@@ -138,7 +162,7 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
         <div className={estilos.apresentacao}>
           <h1 className={`text-caption ${estilos.titulo}`}>WhatsApp simulado</h1>
           <p className={`text-caption ${estilos.dica}`}>
-            Dica: nomes de arquivo com borrado, antigo ou outro-nome forçam uma recusa.
+            Converse com o agente e use o clipe para enviar fotos dos documentos.
           </p>
         </div>
         {admissoes && admissoes.length > 0 && id && (
@@ -182,10 +206,11 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
                 <span className={`text-caption ${estilos.legenda}`}>Enviando…</span>
               </div>
             )}
-            {retendo && !enviando_aqui && <Digitando />}
+            {retendo && (!enviando_aqui || enviando_aqui.tipo === "texto") && <Digitando />}
           </div>
         )}
 
+        {erroTexto && <p role="alert">{erroTexto}</p>}
         <form className={estilos.barra} onSubmit={enviar_texto}>
           <Anexar key={id ?? "nenhuma"} ao_enviar={enviar_arquivo}>
             <input
@@ -194,10 +219,11 @@ export function Telefone({ admissao_inicial, ao_trocar_contato, ao_resetar }: Te
               placeholder="Mensagem"
               autoComplete="off"
               value={texto}
-              disabled={!id}
+              disabled={!id || !!pendente}
+              maxLength={4000}
               onChange={(e) => setTexto(e.target.value)}
             />
-            <button type="submit" className={estilos.enviar} aria-label="Enviar" disabled={!texto.trim()}>
+            <button type="submit" className={estilos.enviar} aria-label="Enviar" disabled={!texto.trim() || !!pendente}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M12 19V5M5 12l7-7 7 7" />
               </svg>

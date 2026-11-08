@@ -143,7 +143,8 @@ export class HttpApi implements Api {
     return this.disparar("resolver_escalacao", [id, acao, texto]);
   }
   enviar_texto(admissao_id: string, texto: string): Promise<void> {
-    return this.disparar("enviar_texto", [admissao_id, texto]);
+    // O chat espera o envio para mostrar falhas e permitir tentar novamente.
+    return this.rpc("enviar_texto", [admissao_id, texto]).then(() => undefined);
   }
   avancar_tempo(preset: PresetTempo, admissao_id: string): Promise<void> {
     return this.disparar("avancar_tempo", [preset, admissao_id]);

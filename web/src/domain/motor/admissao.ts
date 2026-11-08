@@ -60,20 +60,20 @@ export function criar_admissao(estado: Estado, dados: NovaAdmissaoInput, agora: 
 
 const PALAVRAS_FORA_DO_ESCOPO = ["salario", "beneficio", "contrato"];
 
-export function receber_texto(estado: Estado, admissao_id: string, texto: string, agora: Date): Estado {
+export function receber_texto(estado: Estado, admissao_id: string, texto: string, agora: Date, resposta?: { texto: string; encaminhar_rh: boolean }): Estado {
   const e = copiar(estado);
   const admissao = achar_admissao(e, admissao_id);
   mensagem_entrada(e, admissao_id, texto, null, agora);
 
   const t = normalizar(texto);
-  if (PALAVRAS_FORA_DO_ESCOPO.some((p) => t.includes(p))) {
+  if (resposta?.encaminhar_rh || (!resposta && PALAVRAS_FORA_DO_ESCOPO.some((p) => t.includes(p)))) {
     const ja_aberta = e.escalacoes.some(
       (x) => x.admissao_id === admissao_id && x.motivo === "fora_do_escopo" && x.status === "aberta",
     );
     if (!ja_aberta) abrir_escalacao(e, admissao, "fora_do_escopo", null, agora);
-    mensagem_agente(e, admissao_id, conversa.encaminhado_ao_rh(), agora);
+    mensagem_agente(e, admissao_id, resposta?.texto ?? conversa.encaminhado_ao_rh(), agora);
   } else {
-    mensagem_agente(e, admissao_id, conversa.status_pendentes(rotulos_faltantes(e, admissao_id)), agora);
+    mensagem_agente(e, admissao_id, resposta?.texto ?? conversa.status_pendentes(rotulos_faltantes(e, admissao_id)), agora);
   }
   e.rev += 1;
   return e;

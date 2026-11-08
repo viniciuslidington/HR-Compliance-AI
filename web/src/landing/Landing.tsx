@@ -312,7 +312,7 @@ export function Landing() {
           </div>
           <div className={estilos.perguntas}>
             {[
-              ["O que consigo testar agora?", "Cadastre uma admissão, escolha os documentos, anexe arquivos na conversa e acompanhe recusas, reenvios, lembretes e revisão pelo RH. A demonstração usa dados fictícios, WhatsApp e leitura de documentos simulados."],
+              ["O que consigo testar agora?", "Cadastre uma admissão, escolha os documentos, converse com o agente e anexe fotos. Acompanhe recusas, reenvios, lembretes e revisão pelo RH. A demonstração usa dados fictícios e uma tela de WhatsApp simulada, com conversa e leitura de fotos por IA quando conectada ao servidor."],
               ["O agente toma a decisão de contratar?", "A Vinda acompanha a documentação da admissão. A decisão de contratar continua com a empresa. Casos que exigem revisão são encaminhados ao RH com o histórico disponível."],
               ["Funciona com a minha folha ou ERP?", "A proposta é levar os dados conferidos ao sistema de destino. Na demonstração, esse cadastro é simulado; a integração com a sua folha ou ERP precisa ser avaliada antes de uma implantação."],
               ["Como avaliar o retorno para a minha operação?", "Em um piloto, acompanhe o tempo do convite à conclusão, os reenvios por documento e os casos que exigem intervenção do RH. Compare com o seu processo atual para medir o resultado."],
@@ -338,7 +338,7 @@ export function Landing() {
 
       <footer className={`text-caption ${estilos.rodape}`}>
         <MarcaChegada movimento="parado" className={estilos.rodape_marca} />
-        <span>Demonstração com dados fictícios e leitura simulada.</span>
+        <span>Demonstração com dados fictícios e WhatsApp simulado.</span>
         <Link href="/rh">Acessar painel</Link>
       </footer>
     </div>

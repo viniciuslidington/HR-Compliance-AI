@@ -24,7 +24,7 @@ export const CATALOGO: TipoDocumento[] = [
     campos_extracao: ["titular", "endereco", "data_emissao"],
     regras_validacao: ["emitido_menos_90_dias"],
     instrucao_colaborador:
-      "Uma conta de luz, água, internet ou telefone com seu endereço, emitida nos últimos 90 dias. Foto ou PDF, mostrando a página inteira.",
+      "Uma conta de luz, água, internet ou telefone com seu endereço, emitida nos últimos 90 dias. Envie uma foto legível (JPG ou PNG), mostrando a página inteira.",
   },
   {
     id: "dados_bancarios",
@@ -40,7 +40,7 @@ export const CATALOGO: TipoDocumento[] = [
     campos_extracao: ["nome", "instituicao", "curso", "data"],
     regras_validacao: ["nome_igual_rg", "data_recente"],
     instrucao_colaborador:
-      "A declaração de matrícula da sua faculdade ou escola, emitida recentemente, com seu nome, a instituição e o curso. Foto ou PDF.",
+      "A declaração de matrícula da sua faculdade ou escola, emitida recentemente, com seu nome, a instituição e o curso. Envie uma foto legível (JPG ou PNG).",
   },
   // Especializados (construção e energia): a validade sai da data de realização, calculada pelo código.
   {

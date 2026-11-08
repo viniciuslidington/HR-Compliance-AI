@@ -25,7 +25,7 @@ export type Evento =
       /** Sem leitura, o motor usa o leitor simulado; "indisponivel" = a IA não respondeu (não conta tentativa). */
       leitura?: LeituraExterna | "indisponivel";
     }
-  | { tipo: "texto_recebido"; admissao_id: string; texto: string }
+  | { tipo: "texto_recebido"; admissao_id: string; texto: string; resposta?: { texto: string; encaminhar_rh: boolean } }
   | { tipo: "tempo_avancado"; ate: string }
   | {
       tipo: "escalacao_resolvida";

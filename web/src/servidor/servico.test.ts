@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Estado } from "../domain/estado";
 import type { TipoDocumento } from "../domain/tipos";
 import { Servico } from "./servico";
-import { ErroLeitura, PersistenciaMemoria, type Leitor } from "./worker";
+import { ErroLeitura, PersistenciaMemoria, type Leitor, type ContextoConversa, type Conversador } from "./worker";
 
 const JPEG = { dados: Buffer.from("jpeg"), mime: "image/jpeg" };
 
@@ -28,6 +28,53 @@ async function nova_admissao(s: Servico, modelo_id = "eletricista") {
 }
 
 describe("Servico (servidor do painel)", () => {
+  it("conversa usa histórico e pendências reais, persiste a resposta e não aprova CPF digitado", async () => {
+    const recebidos: ContextoConversa[] = [];
+    const conversador: Conversador = { async responder(c) {
+      recebidos.push(c);
+      return { texto: "Recebi sua mensagem. Anexe uma foto legível do CPF pelo clipe.", encaminhar_rh: false };
+    } };
+    const p = new PersistenciaMemoria();
+    const s = new Servico(p, null, conversador);
+    const id = await nova_admissao(s);
+    const antes = estado(await s.ler()).documentos;
+    const r = await s.executar("enviar_texto", [id, "122222222"]);
+    expect(recebidos[0].documentos.map((d) => d.nome)).toEqual(["CPF", "Certificado NR-35"]);
+    expect(recebidos[0].historico.at(-1)?.autor).toBe("agente");
+    expect(recebidos[0].nome).toBe("Rafael Costa");
+    expect(estado(r).mensagens.at(-2)?.texto).toBe("122222222");
+    expect(estado(r).mensagens.at(-1)?.texto).toContain("foto legível");
+    expect(estado(r).documentos).toEqual(antes);
+    await s.executar("enviar_texto", [id, "mandei"]);
+    expect(recebidos[1].historico.at(-2)?.texto).toBe("122222222");
+    expect((await new Servico(p, null).ler()).estado).toBe((await s.ler()).estado);
+  });
+
+  it("IA encaminha pedido de humano ao RH uma única vez", async () => {
+    const s = new Servico(new PersistenciaMemoria(), null, { async responder() {
+      return { texto: "Encaminhei sua dúvida ao RH.", encaminhar_rh: true };
+    } });
+    const id = await nova_admissao(s);
+    await s.executar("enviar_texto", [id, "quero falar com uma pessoa"]);
+    const e = estado(await s.executar("enviar_texto", [id, "por favor"]));
+    expect(e.escalacoes.filter((x) => x.admissao_id === id && x.motivo === "fora_do_escopo")).toHaveLength(1);
+  });
+
+  it("falha da conversa permite tentar de novo sem gravar resposta nem duplicar mensagem", async () => {
+    let falhar = true;
+    const s = new Servico(new PersistenciaMemoria(), null, { async responder() {
+      if (falhar) throw new Error("indisponível");
+      return { texto: "Pode anexar por aqui.", encaminhar_rh: false };
+    } });
+    const id = await nova_admissao(s);
+    const antes = (await s.ler()).estado;
+    await expect(s.executar("enviar_texto", [id, "oi"])).rejects.toThrow("indisponível");
+    expect((await s.ler()).estado).toBe(antes);
+    falhar = false;
+    const e = estado(await s.executar("enviar_texto", [id, "oi"]));
+    expect(e.mensagens.filter((m) => m.admissao_id === id && m.direcao === "entrada")).toHaveLength(1);
+  });
+
   it("nasce com o seed, grava no armazenamento e muda de versão a cada mutação", async () => {
     const p = new PersistenciaMemoria();
     const s = new Servico(p, null);

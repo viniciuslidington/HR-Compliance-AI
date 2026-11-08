@@ -11,6 +11,20 @@ admissão, grava o estado no disco do worker (`/front/kv`) e manda cada foto par
 As regras de aprovação e recusa continuam no front (`web/src/domain/validacao`). Contrato e arquitetura:
 [contrato-frontend-ia.md](designs/contrato-frontend-ia.md).
 
+### Conversa por IA (08/11)
+
+No modo HTTP, mensagens de texto vão para `POST /conversa` no worker, com o histórico das últimas 30
+mensagens, o checklist real, status e motivos de recusa. A IA orienta o envio e encaminha dúvidas ao RH;
+não altera documentos nem aprova dados digitados. O contexto é da admissão selecionada. A resposta e a
+mensagem ficam persistidas junto ao estado. Se a IA falhar, o texto volta ao campo para tentar novamente.
+O indicador de digitação acompanha a espera real. `WORKER_URL`/`WORKER_TOKEN` habilitam esse caminho;
+sem worker, ou com `NEXT_PUBLIC_API_MODO=mock`, continuam as respostas fixas de desenvolvimento.
+`LEITOR=mock` afeta apenas os anexos, não a conversa. Não há integração com o WhatsApp real.
+
+Verificação da conversa: envie um CPF só em texto (deve pedir foto), depois “mandei” sem anexo (deve
+explicar que a foto ainda não chegou), pergunte como enviar comprovante e peça para falar com o RH
+(deve abrir uma escalação). Nenhuma dessas mensagens pode aprovar documentos.
+
 | Peça | Onde |
 |---|---|
 | Servidor do Next (estado único, uma mutação por vez) | `web/src/servidor/servico.ts`, `web/src/app/api/*` |

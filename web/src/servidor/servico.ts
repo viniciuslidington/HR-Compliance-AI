@@ -11,6 +11,8 @@ import { ArmazenamentoMemoria } from "../store/armazenamento";
 import { CHAVE_ESTADO, carregar_estado } from "../store/estado";
 import {
   ErroLeitura,
+  ConversadorWorker,
+  type Conversador,
   LeitorWorker,
   PersistenciaMemoria,
   PersistenciaWorker,
@@ -49,6 +51,7 @@ export class Servico {
   constructor(
     private persistencia: Persistencia,
     private leitor: Leitor | null,
+    private conversador: Conversador | null = null,
   ) {}
 
   /** Carrega o estado do worker na primeira vez; se o worker falhar, tenta de novo na próxima chamada. */
@@ -106,7 +109,29 @@ export class Servico {
           this.api.resolver_escalacao(String(args[0]), args[1] as never, args[2] as string | undefined);
           break;
         case "enviar_texto":
-          this.api.enviar_texto(String(args[0]), String(args[1]));
+          if (this.conversador) {
+            const id = String(args[0]);
+            const texto = String(args[1] ?? "").trim();
+            if (!texto || texto.length > 4000) throw new Error("Envie uma mensagem com até 4000 caracteres.");
+            const detalhe = this.api.obter_admissao(id);
+            if (!detalhe) throw new Error("Admissão não encontrada");
+            const { admissao: a } = detalhe;
+            // A fila mantém o contexto consistente com anexos e decisões do RH durante a resposta.
+            const resposta = await this.conversador.responder({
+              nome: a.nome, cargo: a.cargo, data_inicio: a.data_inicio, status: a.status, texto,
+              documentos: detalhe.documentos.map(({ documento: d, tipo }) => ({
+                nome: tipo?.nome ?? d.descricao_personalizada ?? "Documento",
+                status: d.status, motivo_recusa: d.motivo_recusa, instrucao: tipo?.instrucao_colaborador ?? "",
+              })),
+              historico: detalhe.mensagens.slice(-30).map((m) => ({
+                autor: m.direcao === "entrada" ? "colaborador" : m.autor ?? "agente",
+                texto: m.texto.slice(0, 8000), anexo: !!m.midia_url,
+              })),
+            });
+            this.api.aplicar_evento({ tipo: "texto_recebido", admissao_id: id, texto, resposta });
+          } else {
+            this.api.enviar_texto(String(args[0]), String(args[1]));
+          }
           break;
         case "avancar_tempo":
           this.api.avancar_tempo(args[0] as never, String(args[1]));
@@ -189,7 +214,7 @@ function criar_servico(): Servico {
     return new Servico(new PersistenciaMemoria(), null);
   }
   const leitor = process.env.LEITOR === "mock" ? null : new LeitorWorker({ url, token });
-  return new Servico(new PersistenciaWorker({ url, token }), leitor);
+  return new Servico(new PersistenciaWorker({ url, token }), leitor, new ConversadorWorker({ url, token }));
 }
 
 // Um serviço por processo (sobrevive ao hot reload do dev).

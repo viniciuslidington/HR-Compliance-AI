@@ -26,6 +26,7 @@ from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Query, 
 from pydantic import BaseModel
 
 from ia.config import carregar_env
+from ia.chat_admissao import PedidoChat, responder_chat
 from ia.conversa_documental import interpretar, compromisso_explicito
 from ia.documentos import Funcionario, Transcritor
 from ia.duvidas import estado_recente, responder_duvida
@@ -495,6 +496,13 @@ def criar_app(
             parada.set()
 
     # --- painel de admissão (web/): leitura por IA e armazenamento do estado do servidor do Next ---
+
+    @app.post("/conversa", dependencies=[Depends(exigir_token)])
+    def conversa_admissao(pedido: PedidoChat) -> dict:
+        resposta = responder_chat(llm, pedido)
+        if resposta is None:
+            raise HTTPException(503, "Não consegui responder agora. Tente novamente em instantes.")
+        return resposta.model_dump()
 
     @app.post("/leitura", dependencies=[Depends(exigir_token)])
     def leitura_admissao(arquivo: UploadFile = File(...), candidatos: str = Form(...)) -> dict:

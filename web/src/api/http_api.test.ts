@@ -25,6 +25,13 @@ function servidor() {
 }
 
 describe("HttpApi", () => {
+  it("propaga erro ao enviar texto para o chat recuperar o rascunho", async () => {
+    const api = new HttpApi({
+      fetcher: (async () => Response.json({ erro: "IA indisponível" }, { status: 503 })) as typeof fetch,
+    });
+    await expect(api.enviar_texto("adm_1", "Já mandei")).rejects.toThrow("IA indisponível");
+  });
+
   it("carrega o estado do servidor e responde as consultas com ele", async () => {
     const s = servidor();
     const api = new HttpApi({ fetcher: s.fetcher, intervalo_ms: 10 });

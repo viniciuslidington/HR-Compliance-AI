@@ -102,6 +102,52 @@ describe("Telefone", () => {
     expect(campo).toHaveValue("");
   });
 
+  it("texto lento mostra bolha e digitando enquanto espera a resposta", async () => {
+    const { api, u } = montar();
+    let concluir!: () => void;
+    vi.spyOn(api, "enviar_texto").mockImplementation(() => new Promise<void>((r) => (concluir = r)));
+    const campo = await screen.findByLabelText("Mensagem");
+    await u.type(campo, "Já mandei{Enter}");
+    expect(screen.getByText("Já mandei")).toBeInTheDocument();
+    expect(screen.getByText("Enviando…")).toBeInTheDocument();
+    expect(screen.getByText("Agente digitando")).toBeInTheDocument();
+    expect(campo).toBeDisabled();
+    await act(async () => concluir());
+    expect(campo).toBeEnabled();
+    expect(screen.queryByText("Enviando…")).not.toBeInTheDocument();
+  });
+
+  it("falha de texto restaura o rascunho e permite tentar novamente", async () => {
+    const { api, u } = montar();
+    vi.spyOn(api, "enviar_texto").mockRejectedValue(new Error("503"));
+    const campo = await screen.findByLabelText("Mensagem");
+    await u.type(campo, "Onde anexo o CPF?{Enter}");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Não foi possível enviar");
+    expect(campo).toHaveValue("Onde anexo o CPF?");
+    expect(campo).toBeEnabled();
+    expect(screen.queryByText("Agente digitando")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enviar" })).toBeEnabled();
+  });
+
+  it("falha após trocar contato recupera o texto só na conversa original", async () => {
+    const { api, u } = montar();
+    let falhar!: (erro: Error) => void;
+    vi.spyOn(api, "enviar_texto").mockImplementation(() => new Promise<void>((_r, rejeitar) => (falhar = rejeitar)));
+    const campo = await screen.findByLabelText("Mensagem");
+    await u.type(campo, "Minha dúvida{Enter}");
+    const seletor = screen.getByLabelText("Conversando como");
+    await u.selectOptions(seletor, id_de(api, "Ana Souza"));
+    await act(async () => falhar(new Error("503")));
+    expect(screen.getByLabelText("Mensagem")).toHaveValue("");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    await u.type(screen.getByLabelText("Mensagem"), "Rascunho da Ana");
+    await u.selectOptions(seletor, id_de(api, "Diego Rocha"));
+    expect(screen.getByLabelText("Mensagem")).toHaveValue("Minha dúvida");
+    expect(screen.getByRole("alert")).toHaveTextContent("Não foi possível enviar");
+    await u.selectOptions(seletor, id_de(api, "Ana Souza"));
+    expect(screen.getByLabelText("Mensagem")).toHaveValue("Rascunho da Ana");
+  });
+
   it("rg-borrado.jpg: mostra a imagem, segura a recusa por 1200 ms com 'digitando…'", async () => {
     const { api, u } = montar();
     const diego = id_de(api, "Diego Rocha");
