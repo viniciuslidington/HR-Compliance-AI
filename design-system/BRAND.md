@@ -1,50 +1,80 @@
-# Tako
+# vinda
 
-Design tokens capturados do site tako.ai/pt (07/11/2026), a partir dos estilos computados e das variáveis CSS da página. Servem de base para estilizar um projeto novo na mesma linguagem visual.
+Marca própria do agente de admissão (08/11/2026). Substitui a v1, que era uma captura da linguagem visual
+da Tako. O guia vivo, com logo, cores, tipos e motion renderizados, está em `/marca` no app web.
 
-## Linguagem visual
+> **Admissão que se resolve sozinha.**
 
-Editorial e quente. Títulos serifados grandes com tracking negativo, corpo em sans **light (300)**, muito respiro, e uma única cor de marca — um laranja vivo — usada com parcimônia.
+## Nome
 
-- **Duas superfícies alternadas.** Seções creme (`surface` #eeebe7) e grafite (`surface` #0d0d0d no tema escuro). Uma página típica alterna: hero creme → faixa escura de logos → creme → escuro… Use os dois temas deste sistema como "tipos de seção", não como modo claro/escuro do usuário.
-- **Laranja é sinal, não fundo.** `orange` (#ff4802) e `orange-bright` (#ff5e00) aparecem em pontos de 4–6px, linhas de progresso de 2px, botão de envio circular e no brilho do gradiente do hero. A única área grande laranja é a barra de anúncio (`orange-dark` #e13e00).
-- **Bordas, não sombras.** Cards usam hairline `line` (10% de opacidade). Sombras pesadas só existem sob mockups escuros de produto (`shadow-window`, `shadow-hero`).
-- **Tudo é pill.** Botões, toggles e badges usam `radius-pill`. Cards usam `radius-xl` (14px).
+**vinda**, sempre em minúsculas: a chegada de quem é admitido, de "boas-vindas". O nome fica em um lugar só
+(`MARCA` em `web/src/ui/Logo.tsx`); se o nome mudar, mude ali e neste arquivo.
+
+## Símbolo
+
+Um "v" que também é um check: dois traços que convergem num ponto. Ele se lê como a *vinda* do colaborador e
+como o documento aprovado.
+
+- O tile é um quadrado com raio de 30% preenchido com `--gradient-brand`. O traço é sempre `--surface-deep`,
+  com espessura de 3.4/32 e pontas redondas.
+- Tamanhos: 22px (inline), 28px (navegação), 44px e acima (vitrine). Abaixo de 16px, use só o favicon
+  (`web/src/app/icon.svg`).
+- Wordmark: Funnel Display 600, tracking −0.05em, à direita do tile, com gap de 36% do tile.
+- Não faça: mudar a cor do traço, girar o símbolo, pôr o tile sobre outro gradiente ou usar o wordmark em
+  maiúsculas.
+
+## Cor
+
+A interface é quase monocromática (papel e tinta). A cor tem dois papéis:
+
+| Papel | Tokens | Onde |
+| --- | --- | --- |
+| Marca | `--gradient-brand` (lima `#d4f75b` → menta `#5be3a0` → água `#3cc3e6`) | Tile do logo, barras de progresso, `.text-gradient` em títulos grandes, luz `--gradient-aurora` no topo das páginas |
+| Resolvido | `--accent` (gráfico), `--accent-ink` (texto), `--accent-tint` (fundo) | Ponto do item ativo, "em coleta", "concluída", eyebrows, foco de inputs |
+| Precisa de alguém | `--alert`, `--alert-ink`, `--alert-tint` | Escalações, recusas, erros de campo |
+
+Regras:
+- O gradiente nunca vira fundo de texto pequeno nem aparece em mais de dois lugares por tela.
+- `--accent` e `--alert` são para gráficos (≥3:1). Para texto, use as versões `-ink` (≈6:1).
+- `--ink-subtle` é o mínimo para texto legível; `--ink-faint` serve só para placeholders.
+- O tema `dark` (`.section-dark`) é um tipo de seção, como o WhatsApp simulado, e não um modo escuro do
+  sistema operacional.
 
 ## Tipografia
 
-- `display` — **PP Eiko** (Pangram Pangram, fonte comercial; o site a hospeda como "ppEiko"). Peso 500, tracking negativo ≈ −0.025em (hero 56px/−1.4px; h2 36px/−0.9px). Sem licença, use **Instrument Serif** (Google Fonts) como substituto próximo.
-- `sans` — **Plus Jakarta Sans** (Google Fonts). Corpo em 300; rótulos, botões e eyebrows em 500.
-- Eyebrows: 12px, 500, UPPERCASE, +0.3px, em `orange-deep` sobre creme ou `orange-dark` sobre grafite.
-- Números de destaque: 40px, 300, −1px, em `orange-text`.
+| Papel | Família | Uso |
+| --- | --- | --- |
+| Display | **Funnel Display** 500–600, tracking negativo | Títulos, números de destaque (`text-stat`), wordmark |
+| Texto | **Funnel Sans** 400/500 | Corpo, rótulos, botões |
+| Técnico | **Geist Mono** 400/500, tabular | Eyebrows, cabeçalhos de tabela, CPFs, prazos e contagens (`text-data`) |
 
-O site também declara Satoshi, mas não a usa na página.
+Funnel tem terminais cortados e um desenho geométrico próprio, longe das grotescas genéricas (Inter,
+Plus Jakarta) que fazem uma interface parecer gerada. O corpo usa peso 400, e não 300: texto light em tela
+parece frágil. Eyebrows são em mono e em caixa normal, com um quadradinho de gradiente; nada de rótulos em
+CAIXA ALTA espaçada.
 
-## Componentes observados
+No Next, as fontes vêm de `next/font` (`web/src/app/layout.tsx`) e preenchem `--font-funnel-*` e
+`--font-geist-mono`. Páginas estáticas (`worker/static`) usam o `@import` do Google Fonts que está no topo
+do `tokens.css`.
 
-- **CTA principal**: pill, 48px de altura, padding 0 32px, fundo `ink`, texto branco 14px/500.
-- **CTA WhatsApp**: pill, mesma altura, fundo transparente, borda 1.5px `whatsapp`, ícone verde.
-- **Botões do header**: pill 32px, padding 0 12px, borda 0.5px `ink`, texto 12px/300.
-- **Toggle Humano/Máquina**: trilho pill com borda `line`, segmento ativo preenchido.
-- **Barra de anúncio**: 36px, fundo `orange-dark`, texto ink 12px com seta →.
-- **Janela de produto**: fundo `surface-deep`, `radius-2xl`, borda `line`, `shadow-window`; texto interno em `zinc-400`.
+## Espaço e forma
 
-## Acessibilidade
+- Container de 1120px, texto até 560px, grid de 4px. O topo da página tem 64px; entre blocos, 48px.
+- Raios: inputs com 12, cards com 16, janelas com 24, botões e badges em pill.
+- Bordas hairline (`--line`) mais `--shadow-xs`; `--shadow-card` só no hover de algo clicável, e
+  `--shadow-glow` só sob o botão primário e o logo.
 
-- `orange` / `orange-bright` sobre creme dá ~3:1 — só para elementos gráficos e texto ≥24px. Para texto pequeno use `orange-deep` (5.6:1).
-- `orange-dark` como eyebrow sobre grafite fica em ~4.4:1: um pouco abaixo de AA para 12px. O site faz assim; se precisar de AA estrito, clareie para `orange-bright`.
-- `ink-subtle` (55%) é o mínimo para texto legível; `ink-faint` só para placeholders.
+## Movimento
 
-## Layout
+- Curva padrão `--ease-out`; `--ease-spring` só para pontos e ícones pequenos.
+- Durações: 140ms para cor, 260ms para transforms, 560ms para entradas.
+- Anime só `transform` e `opacity`, tudo dentro de `@media (prefers-reduced-motion: no-preference)`.
+- O que existe hoje: entrada em cascata dos blocos da página, linhas de tabela em stagger, pulso do
+  "Agente ativo", respiração do ponto "em coleta", traço do check do logo, brilho no hover do logo, fio de
+  gradiente e glow no botão primário, e a barra de progresso com o gradiente.
+- O movimento confirma algo (chegou, está vivo, foi aprovado). Ele não decora.
 
-Container de 1152px, texto até 576px, seções com 96px de padding vertical (64px nas compactas), grid de 4px.
+## Voz
 
-## Uso em código
-
-```css
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Instrument+Serif&display=swap');
-:root { --surface:#eeebe7; --ink:#0d0d0d; --orange:#ff4802; --radius-pill:9999px; }
-.section-dark { --surface:#0d0d0d; --ink:#eeebe7; }
-```
-
-Logo não foi copiado: o wordmark "tako" é da marca Tako. Num projeto próprio, use texto ou o seu logo.
+Fala como um colega do RH: o fato primeiro, o próximo passo depois. Sem emoji, sem a palavra "IA" no texto
+para o colaborador e sem jargão de sistema ("processo concluído com sucesso").

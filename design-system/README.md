@@ -1,8 +1,7 @@
 # Design system
 
-Os design tokens da interface do HR-Compliance-AI. Eles vêm do artifact
-[Tako](https://claude.ai/artifact/JtXM5615xQnir9ge51zPMK) (em 07/11/2026), que capturou
-a linguagem visual de tako.ai/pt.
+Os design tokens da marca **vinda** (o agente de admissão). O guia visual está em [BRAND.md](BRAND.md), e a
+versão renderizada fica em `/marca` no app web.
 
 | Arquivo | O que é |
 | --- | --- |
@@ -22,25 +21,26 @@ body {
   background: var(--surface);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-weight: 300;
+  font-weight: 400;
 }
 ```
 
-Os dois temas funcionam como **tipos de seção**, e não como modo claro/escuro do usuário. O creme é o
+Os dois temas funcionam como **tipos de seção**, e não como modo claro/escuro do usuário. O papel é o
 padrão; para uma seção grafite, use a classe `.section-dark` ou o atributo `data-theme="dark"`:
 
 ```html
 <section class="section-dark" style="background: var(--surface); color: var(--ink)">
-  <p class="text-eyebrow" style="color: var(--orange-dark)">Conformidade</p>
+  <p class="text-eyebrow" style="color: var(--accent-ink)">Conformidade</p>
   <h2 class="text-display-h2">Auditoria contínua</h2>
 </section>
 ```
 
 As principais regras (os detalhes estão no [BRAND.md](BRAND.md)):
-- O laranja é para sinais (pontos, linhas, ícones), não para fundos. Em texto pequeno sobre creme,
-  use `--orange-deep`.
-- Use bordas `--line` em vez de sombras. Os botões levam `--radius-pill`; os cards, `--radius-xl`.
-- `--ink-subtle` é o mínimo para texto legível; `--ink-faint` serve apenas para placeholders.
+- O gradiente da marca (`--gradient-brand`) aparece em poucos lugares: o logo, o progresso e a luz do topo.
+- Para texto, use `--accent-ink` (resolvido) e `--alert-ink` (precisa de alguém), nunca `--accent` ou
+  `--alert`, que são para gráficos.
+- Bordas `--line` com `--shadow-xs`. Os botões levam `--radius-pill`; os cards, `--radius-xl`.
+- Animações usam `--ease-out` e as `--duration-*`, sempre dentro de `prefers-reduced-motion: no-preference`.
 
 ## Mudar um token
 
@@ -59,6 +59,7 @@ novo `tokens.json` para cá e rode o script.
 
 ## Pontos de atenção
 
-- **PP Eiko** é uma fonte comercial (Pangram Pangram). Sem licença, a pilha de fontes cai para
-  **Instrument Serif**, que o `tokens.css` já carrega do Google Fonts junto com a Plus Jakarta Sans.
-- O logo da Tako não foi copiado. Use o nome do produto em texto ou um logo próprio.
+- As fontes (Funnel Display, Funnel Sans e Geist Mono) são livres (OFL). O Next as hospeda com `next/font`,
+  e o `@import` do topo do `tokens.css` serve só páginas fora do Next, como `worker/static`.
+- O logo é um componente (`web/src/ui/Logo.tsx`); o favicon fica em `web/src/app/icon.svg`.
+- Renomeado na v2: `--orange*` virou `--accent*` e `--alert*`, e `--surface-sand` virou `--surface-sunken`.

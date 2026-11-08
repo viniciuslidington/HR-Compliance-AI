@@ -53,7 +53,7 @@
 }
 .telefone .msg[data-direcao="saida"] {
   align-self: flex-end;
-  background: var(--surface-sand);
+  background: var(--surface-sunken);
   border-bottom-right-radius: var(--radius-sm);
 }
 .telefone .msg[data-direcao="entrada"] {
@@ -80,7 +80,7 @@
 /* Telefone da colaboradora: as mensagens dela (entrada) ficam à direita, as do agente/RH à esquerda. */
 .telefone.do_colaborador .msg[data-direcao="entrada"] {
   align-self: flex-end;
-  background: var(--surface-sand);
+  background: var(--surface-sunken);
   border-bottom-left-radius: var(--radius-xl);
   border-bottom-right-radius: var(--radius-sm);
 }

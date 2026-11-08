@@ -26,7 +26,7 @@
 }
 .valor {
   margin: 0;
-  color: var(--orange-text);
+  color: var(--ink);
   order: -1;
 }
 .avisos {
@@ -46,9 +46,9 @@
   color: var(--ink-muted);
 }
 .aviso_escalacao {
-  background: var(--orange-tint);
+  background: var(--alert-tint);
   border-color: transparent;
-  color: var(--orange-deep);
+  color: var(--alert-ink);
 }
 .link {
   color: inherit;

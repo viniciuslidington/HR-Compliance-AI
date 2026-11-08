@@ -12,10 +12,29 @@ body {
   padding: 0;
 }
 
+html {
+  color-scheme: light;
+  text-rendering: optimizeLegibility;
+}
+
 body {
   background: var(--surface);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-weight: 300;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--lime) 70%, transparent);
+  color: var(--surface-deep);
+}
+
+/* Texto com o gradiente da marca. Só em tamanhos de display (≥ 28px). */
+.text-gradient {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }

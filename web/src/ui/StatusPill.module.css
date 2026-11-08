@@ -28,12 +28,26 @@
   color: var(--ink-muted);
 }
 .em_coleta::before {
-  background: var(--orange);
+  background: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .em_coleta::before {
+    animation: respira 2s var(--ease-out) infinite;
+  }
+}
+@keyframes respira {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--accent-tint);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--accent-tint);
+  }
 }
 .escalada,
 .recusado {
-  background: var(--orange-tint);
-  color: var(--orange-deep);
+  background: var(--alert-tint);
+  color: var(--alert-ink);
 }
 .escalada::before,
 .recusado::before {
@@ -42,6 +56,7 @@
 .concluida,
 .aprovado {
   background: var(--success-tint);
+  color: var(--accent-ink);
 }
 .concluida::before,
 .aprovado::before {

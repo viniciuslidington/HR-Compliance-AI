@@ -1,0 +1,88 @@
+.logo {
+  --tile: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--tile) * 0.36);
+  color: var(--ink);
+  line-height: 1;
+}
+.sm {
+  --tile: 22px;
+}
+.md {
+  --tile: 28px;
+}
+.lg {
+  --tile: 44px;
+}
+.xl {
+  --tile: 88px;
+}
+.tile {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--tile, 28px);
+  height: var(--tile, 28px);
+  border-radius: calc(var(--tile, 28px) * 0.3);
+  background: var(--gradient-brand);
+  background-size: 180% 180%;
+  color: var(--surface-deep);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35), var(--shadow-glow);
+  overflow: hidden;
+}
+/* Brilho que atravessa o tile: só no hover do logo, uma vez. */
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  transform: translateX(-120%);
+}
+.check {
+  width: 72%;
+  height: 72%;
+}
+.check path {
+  stroke-dasharray: 26;
+  stroke-dashoffset: 0;
+}
+.nome {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: calc(var(--tile) * 0.86);
+  letter-spacing: -0.05em;
+  /* O wordmark senta na linha de base óptica do tile. */
+  transform: translateY(-0.04em);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tile {
+    animation: deriva 9s ease-in-out infinite alternate;
+  }
+  .check path {
+    animation: tracar var(--duration-slow) var(--ease-out) 120ms both;
+  }
+  .logo:hover .tile::after {
+    transition: transform 700ms var(--ease-out);
+    transform: translateX(120%);
+  }
+}
+
+@keyframes deriva {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+@keyframes tracar {
+  from {
+    stroke-dashoffset: 26;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

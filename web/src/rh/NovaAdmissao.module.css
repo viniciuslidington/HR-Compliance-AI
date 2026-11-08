@@ -55,7 +55,7 @@
 }
 .erro {
   margin: var(--space-2) 0 0;
-  color: var(--orange-deep);
+  color: var(--alert-ink);
 }
 .adicionar {
   display: flex;

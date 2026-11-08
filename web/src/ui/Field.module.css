@@ -12,7 +12,7 @@
 }
 .erro {
   margin: 0;
-  color: var(--orange-deep);
+  color: var(--alert-ink);
 }
 .campo input,
 .campo textarea {
@@ -23,7 +23,7 @@
   background: var(--surface-raised);
   color: var(--ink);
   font: inherit;
-  font-weight: 300;
+  font-weight: 400;
 }
 .campo textarea {
   min-height: 96px;
@@ -34,9 +34,10 @@
 }
 .campo input:focus-visible,
 .campo textarea:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-tint);
 }
 .campo [aria-invalid="true"] {
-  border-color: var(--orange-deep);
+  border-color: var(--alert-ink);
 }

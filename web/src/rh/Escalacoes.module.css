@@ -21,7 +21,7 @@
 }
 .aba[aria-selected="true"] {
   color: var(--ink);
-  border-bottom-color: var(--orange);
+  border-bottom-color: var(--accent);
 }
 .aba:focus-visible,
 .link:focus-visible {

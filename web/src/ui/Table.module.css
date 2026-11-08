@@ -11,6 +11,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   background: var(--surface-raised);
+  box-shadow: var(--shadow-xs);
   overflow: hidden;
 }
 .envoltorio .tabela {
@@ -22,6 +23,10 @@
   text-align: start;
   color: var(--ink-subtle);
   border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption-font-size);
+  line-height: var(--text-caption-line-height);
+  font-weight: 400;
 }
 .td {
   padding: var(--space-3) var(--space-4);
@@ -35,14 +40,19 @@
   border-bottom: 0;
 }
 .linha {
-  animation: revelar 240ms ease both;
-  animation-delay: calc(var(--i, 0) * 40ms);
+  animation: revelar var(--duration-slow) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms + 120ms);
 }
 .clicavel {
   cursor: pointer;
 }
 .clicavel:hover {
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface-sunken) 55%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .clicavel {
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
 }
 .clicavel:focus-visible {
   outline: 2px solid var(--ink);

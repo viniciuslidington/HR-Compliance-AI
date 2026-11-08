@@ -3,6 +3,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
   padding: var(--space-6);
+  box-shadow: var(--shadow-xs);
 }
 .cabecalho {
   display: flex;

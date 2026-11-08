@@ -29,14 +29,15 @@
   background-color: var(--surface-raised);
   color: var(--ink);
   font: inherit;
-  font-weight: 300;
+  font-weight: 400;
   appearance: none;
   cursor: pointer;
 }
 .select:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-tint);
 }
 .select[aria-invalid="true"] {
-  border-color: var(--orange-deep);
+  border-color: var(--alert-ink);
 }

@@ -32,8 +32,8 @@
   margin: 0 0 var(--space-6);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-xl);
-  background: var(--orange-tint);
-  color: var(--orange-deep);
+  background: var(--alert-tint);
+  color: var(--alert-ink);
 }
 .link_faixa {
   color: inherit;

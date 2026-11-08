@@ -1,80 +1,86 @@
-/* Tako — gerado de tokens.json por build-tokens.mjs. Não edite à mão. */
-/* Fonte: https://tako.ai/pt/ — computed styles and CSS custom properties, captured 2026-11-07 */
+/* Vinda — gerado de tokens.json por build-tokens.mjs. Não edite à mão. */
+/* Fonte: Marca própria Vinda (08/11/2026). Ver BRAND.md. */
 
-/* PP Eiko é comercial: sem licença, o stack cai para Instrument Serif (Google Fonts). */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Instrument+Serif&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400..700&family=Funnel+Sans:ital,wght@0,300..700;1,400&family=Geist+Mono:wght@400..600&display=swap");
 
 /* Tema "light" (padrão) + tokens independentes de tema */
 :root {
-  --surface: #eeebe7;
-  --surface-sand: #e9e3db;
+  --surface: #f6f6f3;
+  --surface-sunken: #ededea;
   --surface-raised: #ffffff;
-  --surface-deep: #080808;
-  --ink: #0d0d0d;
-  --ink-muted: rgba(13,13,13,0.70);
-  --ink-subtle: rgba(13,13,13,0.55);
-  --ink-faint: rgba(13,13,13,0.30);
-  --zinc-400: #9f9fa9;
-  --zinc-500: #71717b;
-  --line: rgba(10,10,10,0.10);
-  --line-strong: rgba(10,10,10,0.20);
-  --orange: #ff4802;
-  --orange-bright: #ff5e00;
-  --orange-dark: #e13e00;
-  --orange-deep: #b33100;
-  --orange-text: #d33a00;
-  --orange-tint: rgba(255,98,0,0.10);
+  --surface-deep: #0b0c0a;
+  --ink: #10120f;
+  --ink-muted: rgba(16,18,15,0.68);
+  --ink-subtle: rgba(16,18,15,0.58);
+  --ink-faint: rgba(16,18,15,0.30);
+  --line: rgba(16,18,15,0.08);
+  --line-strong: rgba(16,18,15,0.16);
+  --lime: #d4f75b;
+  --mint: #5be3a0;
+  --aqua: #3cc3e6;
+  --accent: #0e9f5b;
+  --accent-ink: #0a6b3f;
+  --accent-tint: rgba(14,159,91,0.10);
+  --alert: #f2683a;
+  --alert-ink: #a63a12;
+  --alert-tint: rgba(242,104,58,0.11);
+  --success: #0e9f5b;
+  --success-tint: rgba(14,159,91,0.10);
+  --danger: #e5484d;
   --whatsapp: #25d366;
-  --success: #34d399;
-  --success-tint: rgba(49,216,157,0.10);
-  --danger: #ff6467;
 
-  --font-display: "PP Eiko", "ppEiko", "Instrument Serif", "Times New Roman", serif;
-  --font-sans: "Plus Jakarta Sans", "plusJakarta", system-ui, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: var(--font-funnel-display, "Funnel Display"), "Funnel Display", "Funnel Sans", system-ui, sans-serif;
+  --font-sans: var(--font-funnel-sans, "Funnel Sans"), "Funnel Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono, "Geist Mono"), "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --text-display-hero-font-size: 56px;
-  --text-display-hero-line-height: 58.8px;
-  --text-display-hero-font-weight: 500;
-  --text-display-hero-letter-spacing: -1.4px;
-  --text-display-h2-font-size: 36px;
-  --text-display-h2-line-height: 40px;
-  --text-display-h2-font-weight: 500;
-  --text-display-h2-letter-spacing: -0.9px;
-  --text-display-h2-sm-font-size: 30px;
-  --text-display-h2-sm-line-height: 36px;
-  --text-display-h2-sm-font-weight: 500;
-  --text-display-h2-sm-letter-spacing: -0.75px;
-  --text-display-h3-font-size: 16px;
+  --text-display-hero-font-size: 60px;
+  --text-display-hero-line-height: 60px;
+  --text-display-hero-font-weight: 600;
+  --text-display-hero-letter-spacing: -2.1px;
+  --text-display-h2-font-size: 38px;
+  --text-display-h2-line-height: 42px;
+  --text-display-h2-font-weight: 600;
+  --text-display-h2-letter-spacing: -1.2px;
+  --text-display-h2-sm-font-size: 28px;
+  --text-display-h2-sm-line-height: 32px;
+  --text-display-h2-sm-font-weight: 600;
+  --text-display-h2-sm-letter-spacing: -0.8px;
+  --text-display-h3-font-size: 17px;
   --text-display-h3-line-height: 24px;
-  --text-display-h3-font-weight: 500;
-  --text-stat-font-size: 40px;
+  --text-display-h3-font-weight: 600;
+  --text-display-h3-letter-spacing: -0.2px;
+  --text-stat-font-size: 44px;
   --text-stat-line-height: 48px;
-  --text-stat-font-weight: 300;
-  --text-stat-letter-spacing: -1px;
+  --text-stat-font-weight: 500;
+  --text-stat-letter-spacing: -1.6px;
+  --text-stat-font-variant-numeric: tabular-nums;
   --text-lead-font-size: 18px;
-  --text-lead-line-height: 27px;
-  --text-lead-font-weight: 300;
+  --text-lead-line-height: 28px;
+  --text-lead-font-weight: 400;
+  --text-lead-letter-spacing: -0.1px;
   --text-body-font-size: 16px;
-  --text-body-line-height: 26px;
-  --text-body-font-weight: 300;
+  --text-body-line-height: 25px;
+  --text-body-font-weight: 400;
   --text-body-sm-font-size: 14px;
-  --text-body-sm-line-height: 22.75px;
-  --text-body-sm-font-weight: 300;
+  --text-body-sm-line-height: 21px;
+  --text-body-sm-font-weight: 400;
   --text-label-font-size: 14px;
   --text-label-line-height: 20px;
   --text-label-font-weight: 500;
-  --text-nav-font-size: 12px;
-  --text-nav-line-height: 16px;
-  --text-nav-font-weight: 300;
+  --text-nav-font-size: 13px;
+  --text-nav-line-height: 18px;
+  --text-nav-font-weight: 400;
+  --text-caption-font-size: 12px;
+  --text-caption-line-height: 16px;
+  --text-caption-font-weight: 400;
   --text-eyebrow-font-size: 12px;
   --text-eyebrow-line-height: 16px;
   --text-eyebrow-font-weight: 500;
-  --text-eyebrow-letter-spacing: 0.3px;
-  --text-eyebrow-text-transform: uppercase;
-  --text-caption-font-size: 10px;
-  --text-caption-line-height: 15px;
-  --text-caption-font-weight: 400;
+  --text-eyebrow-letter-spacing: 0px;
+  --text-data-font-size: 13px;
+  --text-data-line-height: 20px;
+  --text-data-font-weight: 400;
+  --text-data-font-variant-numeric: tabular-nums;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -82,37 +88,56 @@
   --space-4: 16px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-12: 48px;
   --space-16: 64px;
   --space-24: 96px;
-  --container: 1152px;
-  --measure: 576px;
+  --container: 1120px;
+  --measure: 560px;
 
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
-  --radius-2xl: 18px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
   --radius-pill: 9999px;
 
-  --shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.05);
-  --shadow-card: 0 18px 30px -10px rgba(0,0,0,0.70);
-  --shadow-window: 0 40px 70px -10px rgba(0,0,0,0.70);
-  --shadow-hero: 0 70px 120px -10px rgba(0,0,0,0.85);
+  --shadow-xs: 0 1px 2px 0 rgba(16,18,15,0.05);
+  --shadow-card: 0 1px 0 rgba(16,18,15,0.03), 0 12px 32px -14px rgba(16,18,15,0.16);
+  --shadow-window: 0 40px 80px -28px rgba(16,18,15,0.32), 0 0 0 1px rgba(16,18,15,0.04);
+  --shadow-glow: 0 10px 30px -10px rgba(14,159,91,0.45);
+
+  --gradient-brand: linear-gradient(120deg, #d4f75b 0%, #5be3a0 50%, #3cc3e6 100%);
+  --gradient-aurora: radial-gradient(42% 60% at 12% 0%, rgba(212,247,91,0.30), transparent 70%), radial-gradient(38% 55% at 88% 0%, rgba(60,195,230,0.18), transparent 70%);
+  --gradient-ink: linear-gradient(180deg, #1a1c18 0%, #0b0c0a 100%);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 140ms;
+  --duration-base: 260ms;
+  --duration-slow: 560ms;
 }
 
 /* Tema "dark": aplique em uma seção, não como modo escuro do sistema operacional. */
 [data-theme="dark"],
 .section-dark {
-  --surface: #0d0d0d;
-  --surface-sand: #141414;
-  --surface-raised: #18181b;
-  --surface-deep: #080808;
-  --ink: #eeebe7;
-  --ink-muted: rgba(238,235,231,0.70);
-  --ink-subtle: rgba(238,235,231,0.55);
-  --ink-faint: rgba(238,235,231,0.30);
-  --line: rgba(235,235,235,0.10);
-  --line-strong: rgba(240,235,230,0.20);
+  --surface: #0b0c0a;
+  --surface-sunken: #131512;
+  --surface-raised: #1a1c18;
+  --surface-deep: #050605;
+  --ink: #f2f3ee;
+  --ink-muted: rgba(242,243,238,0.70);
+  --ink-subtle: rgba(242,243,238,0.56);
+  --ink-faint: rgba(242,243,238,0.30);
+  --line: rgba(242,243,238,0.09);
+  --line-strong: rgba(242,243,238,0.18);
+  --accent: #3ee08f;
+  --accent-ink: #8af2bb;
+  --accent-tint: rgba(62,224,143,0.14);
+  --alert: #ff8a5c;
+  --alert-ink: #ffb294;
+  --alert-tint: rgba(255,138,92,0.14);
+  --success: #3ee08f;
+  --success-tint: rgba(62,224,143,0.14);
 }
 
 /* Estilos de texto */
@@ -145,14 +170,16 @@
   font-size: var(--text-display-h3-font-size);
   line-height: var(--text-display-h3-line-height);
   font-weight: var(--text-display-h3-font-weight);
+  letter-spacing: var(--text-display-h3-letter-spacing);
 }
 
 .text-stat {
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: var(--text-stat-font-size);
   line-height: var(--text-stat-line-height);
   font-weight: var(--text-stat-font-weight);
   letter-spacing: var(--text-stat-letter-spacing);
+  font-variant-numeric: var(--text-stat-font-variant-numeric);
 }
 
 .text-lead {
@@ -160,6 +187,7 @@
   font-size: var(--text-lead-font-size);
   line-height: var(--text-lead-line-height);
   font-weight: var(--text-lead-font-weight);
+  letter-spacing: var(--text-lead-letter-spacing);
 }
 
 .text-body {
@@ -190,18 +218,25 @@
   font-weight: var(--text-nav-font-weight);
 }
 
-.text-eyebrow {
-  font-family: var(--font-sans);
-  font-size: var(--text-eyebrow-font-size);
-  line-height: var(--text-eyebrow-line-height);
-  font-weight: var(--text-eyebrow-font-weight);
-  letter-spacing: var(--text-eyebrow-letter-spacing);
-  text-transform: var(--text-eyebrow-text-transform);
-}
-
 .text-caption {
   font-family: var(--font-sans);
   font-size: var(--text-caption-font-size);
   line-height: var(--text-caption-line-height);
   font-weight: var(--text-caption-font-weight);
+}
+
+.text-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow-font-size);
+  line-height: var(--text-eyebrow-line-height);
+  font-weight: var(--text-eyebrow-font-weight);
+  letter-spacing: var(--text-eyebrow-letter-spacing);
+}
+
+.text-data {
+  font-family: var(--font-mono);
+  font-size: var(--text-data-font-size);
+  line-height: var(--text-data-line-height);
+  font-weight: var(--text-data-font-weight);
+  font-variant-numeric: var(--text-data-font-variant-numeric);
 }

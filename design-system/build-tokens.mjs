@@ -46,8 +46,7 @@ for (const group of tokens.type.groups) {
 const css = `/* ${tokens.name} — gerado de tokens.json por build-tokens.mjs. Não edite à mão. */
 /* Fonte: ${tokens.meta?.source ?? "tokens.json"} */
 
-/* PP Eiko é comercial: sem licença, o stack cai para Instrument Serif (Google Fonts). */
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Instrument+Serif&display=swap");
+@import url("${tokens.type.import}");
 
 /* Tema "${primary}" (padrão) + tokens independentes de tema */
 :root {
@@ -57,7 +56,7 @@ ${fontFamilies.join("\n")}
 
 ${typeVars.join("\n")}
 
-${["spacing", "radius", "shadow"].map((f) => listFamily(f).join("\n")).join("\n\n")}
+${["spacing", "radius", "shadow", "gradient", "motion"].map((f) => listFamily(f).join("\n")).join("\n\n")}
 }
 
 ${others

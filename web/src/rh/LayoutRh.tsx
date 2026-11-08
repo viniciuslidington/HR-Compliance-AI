@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useConsulta } from "../api/contexto";
+import { Logo } from "../ui/Logo";
 import { BarraDemo } from "./BarraDemo";
 import estilos from "./LayoutRh.module.css";
 
@@ -30,7 +31,10 @@ export function LayoutRh({ caminho_atual, children }: LayoutRhProps) {
   return (
     <div className={estilos.raiz}>
       <nav className={estilos.nav} aria-label="Painel do RH">
-        <p className={`text-display-h2-sm ${estilos.marca}`}>Admissão</p>
+        <Link href="/rh" className={estilos.marca} aria-label="vinda, início">
+          <Logo />
+        </Link>
+        <p className={`text-eyebrow ${estilos.secao}`}>Admissão</p>
         <ul className={estilos.lista}>
           {ITENS.map((item) => {
             const e_ativo = ativo(item.href, caminho_atual);
@@ -53,6 +57,15 @@ export function LayoutRh({ caminho_atual, children }: LayoutRhProps) {
             );
           })}
         </ul>
+        <div className={estilos.rodape}>
+          <p className={`text-caption ${estilos.agente}`}>
+            <span className={estilos.pulso} aria-hidden="true" />
+            Agente ativo no WhatsApp
+          </p>
+          <Link href="/marca" className={`text-caption ${estilos.link_marca}`}>
+            Guia da marca
+          </Link>
+        </div>
       </nav>
       <div className={estilos.coluna}>
         <main className={estilos.principal}>{children}</main>
